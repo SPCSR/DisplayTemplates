@@ -13,7 +13,30 @@ pfh.renderHeader = function(ctx) {
 pfh.renderFooter = function(ctx) {
 	//Define any footer content here.
 	var footerHTML = "<div>Footer</div>";
-	return footerHTML;
+	
+	//Now begin the paging control
+	var firstRow = ctx.ListData.FirstRow;
+	var lastRow = ctx.ListData.LastRow;
+	var prevPage = ctx.ListData.PrevHref;
+	var nextPage = ctx.ListData.NextHref;	
+	
+	var pagingCtrl = "<div class='paging'>";
+	// Using the JavaScript in line IF notation, we'll check IF the variable contains any data
+	// If it does, then the relevant paging control for forwards or backwards will be displayed.
+	
+	pagingCtrl += prevPage ? "<a class='ms-commandLink ms-promlink-button ms-promlink-button-enabled' href='" +
+		prevPage + "'><span class='ms-promlink-button-image'><img class='ms-promlink-button-left'" +
+		 " src='/_layouts/15/images/spcommon.png?rev=23' /></span></a>" : "";
+
+	pagingCtrl += prevPage || nextPage ? "<span class='ms-paging'><span class='First'>" + firstRow +
+		"</span> - <span class='Last'>" + lastRow + "</span></span>" : "";
+		
+	pagingCtrl += nextPage ? "<a class='ms-commandLink ms-promlink-button ms-promlink-button-enabled' href='" +
+		nextPage + "'><span class='ms-promlink-button-image'><img class='ms-promlink-button-right'" +
+		" src='/_layouts/15/images/spcommon.png?rev=23'/></span></a>" : "";
+	
+	//If you want the paging to appear above the footer content, switch the order of these two items
+	return footerHTML + pagingCtrl;
 	}
 
 //Define our item Render pattern
