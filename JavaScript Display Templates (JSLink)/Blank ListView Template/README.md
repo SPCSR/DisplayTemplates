@@ -1,6 +1,7 @@
 Blank ListView Template
 ================
 
-This template is a blank ListView Display Template that can be used in JSLink scenarios such as List View Web Parts and List Views.
+This folder is a collection of blank list view templates that can be used via the JSLink property of list view web parts of in Views via PowerShell.
 
-This template does not include Paging and will only render a single page of results.
+csr_ovr_RenderListTemplate.js             | This template renders a single page of results without any paging ability
+csr_ovr_RenderListTemplateWithPaging.js   | This template is similar, however it includes paging controls.
