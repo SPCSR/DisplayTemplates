@@ -1,3 +1,5 @@
+//Original Author: Paul Hunt - April 2014
+
 //Create our Namespace object to avoid polluting the global namespace
 var pfh = pfh || {};
 
@@ -56,6 +58,6 @@ pfh.RegisterTemplateOverride = function () {
 };
 
 //Register for MDS enabled site otherwise the display template doesn't work on refresh
-//Make sure the path here matches our JSLink
-RegisterModuleInit("~sitecollection/_catalogs/masterpage/Display%20Templates/csr_ovr_RenderListTemplate.js", pfh.RegisterTemplateOverride); // CSR-override for MDS enabled site
+//MNote: The ~sitecollection tokens cannot be used here!
+RegisterModuleInit("/_catalogs/masterpage/Display%20Templates/csr_ovr_RenderListTemplate.js", pfh.RegisterTemplateOverride); // CSR-override for MDS enabled site
 pfh.RegisterTemplateOverride(); //CSR-override for MDS disabled site (because we need to call the entry point function in this case whereas it is not needed for anonymous functions)
