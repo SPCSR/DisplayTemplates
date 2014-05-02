@@ -7,10 +7,37 @@ var pfh = pfh || {};
 pfh.renderHeader = function(ctx) {
 	//Define any header content here.
 	//You can include JavaScript and CSS links here.
-	var headerHTML = "<div><em>This DEBUG template will show properties for the FIRST item on this page only.<br/>" +
+	var headerHTML = "<div><em>This DEBUG template will show properties for the FIRST item on each page only.<br/>" +
 		"The paging controls will switch to the next page and again show the first item only.</em><br/>" +
 		"If the column you require is not visible, ensure that it is selected in the web part view</div><br/>";
+	
+	//Now add Specific list/web part information to the page
+	headerHTML += "<div class='ms-list-addnew ms-textLarge ms-soften'>Showing properties for LVWP:" + ctx.wpq + "</div>";
+    headerHTML += "<table class='ms-listviewtable'>" +
+    		"<thead id='js-listinfothead-" + ctx.wpq + "'><tr class='ms-viewheadertr ms-vhltr' align='top'><th class='ms-vh2'>Property Name</th>" +
+    		"<th class='ms-vh2'>Property Value</th></tr></thead><tbody>";
+    		
+    //If you want to show more of the base CTX properties, just add another row here.
+	headerHTML += pfh.headerPropertyRow(ctx,"wpq");
+	headerHTML += pfh.headerPropertyRow(ctx,"BaseViewID");
+	headerHTML += pfh.headerPropertyRow(ctx,"CurrentCultureName");
+	headerHTML += pfh.headerPropertyRow(ctx,"CurrentLanguage");
+	headerHTML += pfh.headerPropertyRow(ctx,"CurrentUICultureName");
+	headerHTML += pfh.headerPropertyRow(ctx,"listName");
+	headerHTML += pfh.headerPropertyRow(ctx,"ListTemplateType");
+	headerHTML += pfh.headerPropertyRow(ctx,"ListTitle");	
+	
+	headerHTML += "</tbody></table>";
+
 	return headerHTML;
+	}
+	
+pfh.headerPropertyRow = function(ctx,propName) {
+
+	var propertyRow = "<tr class='ms-itmHoverEnabled ms-itmhover'><td class='ms-cellstyle ms-vb2'>ctx." + propName + "</td><td class='ms-cellstyle ms-vb2'>" +
+			ctx[propName] + "</td></tr>"
+
+	return propertyRow;
 	}
 
 
@@ -87,9 +114,9 @@ pfh.CustomItem = function(ctx) {
 				currVal = pfh.evaluateObject(currVal);
 			}
 			
-			itemHTML += currVal + "</td></tr></tbody>";
+			itemHTML += currVal + "</td></tr>";
 		}
-    	itemHTML += "</table>";	
+    	itemHTML += "</tbody></table>";	
     }
     
 	return itemHTML;	
