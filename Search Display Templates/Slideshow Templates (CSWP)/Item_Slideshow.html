@@ -1,0 +1,39 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>Item Slideshow</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:ManagedPropertyMapping msdt:dt="string">'Path':'Path',Title':'Title','Description':'Description','Picture':'PublishingImage;PictureURL;PictureThumbnailURL'</mso:ManagedPropertyMapping>
+<mso:MasterPageDescription msdt:dt="string">This Item Display Template will show a small thumbnail icon next to a hyperlink of the item title, with an additional line that is available for a custom managed property.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <div id="SliderItem">
+<!--#_
+        var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_SliderItem_");
+        var containerId = encodedId + "container";
+
+        var path = $getItemValue(ctx, 'Path');
+        var title = $getItemValue(ctx, 'Title');
+        var description = $getItemValue(ctx, 'Description');
+        var picture = $getItemValue(ctx, 'Picture');
+
+        var renditionUrl = picture.toString();
+        renditionUrl = renditionUrl + "?width=800&height=310";
+_#-->
+        <div id="_#= containerId =#_" class="slide" style="background: url('_#= renditionUrl =#_') no-repeat;">
+            <div class="content">
+                <h2 class="title"><a href="_#= path =#_" title="_#= title =#_">_#= title =#_</a></h2>
+                <div class="description">_#= description =#_</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

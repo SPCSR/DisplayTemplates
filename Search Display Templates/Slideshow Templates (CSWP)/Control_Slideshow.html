@@ -1,0 +1,69 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>Control Slideshow</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:MasterPageDescription msdt:dt="string">This is the default Control Display Template that will list the items. It does not allow the user to page through items.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106601</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <script>
+        SP.SOD.registerSod('jquery-1.11.0.min.js', "http://code.jquery.com/jquery-1.11.0.min.js");
+        $includeCSS(this.url, "~sitecollection/_catalogs/masterpage/slideshow/slider.css");
+    </script>
+
+    <div id="Control_List">
+
+<!--#_ 
+if (!$isNull(ctx.ClientControl) &&
+    !$isNull(ctx.ClientControl.shouldRenderControl) &&
+    !ctx.ClientControl.shouldRenderControl())
+{
+    return "";
+}
+ctx.ListDataJSONGroupsKey = "ResultTables";
+
+var ListRenderRenderWrapper = function(itemRenderResult, inCtx, tpl)
+{
+    var iStr = [];
+    iStr.push(itemRenderResult);
+    return iStr.join('');
+}
+ctx['ItemRenderWrapper'] = ListRenderRenderWrapper;
+
+
+AddPostRenderCallback(ctx, function() {
+    SP.SOD.registerSod('jquery.cycle2.min.js', Srch.U.replaceUrlTokens("~sitecollection/_catalogs/masterpage/slideshow/jquery.cycle2.min.js"));
+    SP.SOD.registerSodDep('jquery.cycle2.min.js', 'jquery-1.11.0.min.js');
+    SP.SOD.executeFunc("jquery.cycle2.min.js", null, function() {
+        $('.page-slider').removeAttr('style');
+		$('.page-slider .slides').cycle({
+            speed: 600,
+            timeout: 5000,
+            next: '.next',
+            prev: '.prev',
+            slides: 'div.slide',
+            log: false
+        });
+	});
+});
+_#-->
+    
+        <div class="page-slider" style="display:none">
+            <a class="prev browse left" title="Previous slide">&#x2770;</a>
+            <a class="next browse right" title="Next slide">&#x2771;</a>
+            <div class="slides" data-cycle-pause-on-hover='true' data-cycle-fx='scrollHorz'>
+                _#= ctx.RenderGroups(ctx) =#_
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
