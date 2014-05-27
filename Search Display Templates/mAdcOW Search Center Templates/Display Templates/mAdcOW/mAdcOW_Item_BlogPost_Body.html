@@ -1,0 +1,156 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>Blog Post Body</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:MasterPageDescription msdt:dt="string">Displays the inline result body elements that are common to all results.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#SearchResults;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+<mso:ManagedPropertyMapping msdt:dt="string">'Title':'Title','Path':'Path','Description':'Description','EditorOWSUSER':'EditorOWSUSER','LastModifiedTime':'LastModifiedTime','CollapsingStatus':'CollapsingStatus','DocId':'DocId','HitHighlightedSummary':'HitHighlightedSummary','HitHighlightedProperties':'HitHighlightedProperties','FileExtension':'FileExtension','ViewsLifeTime':'ViewsLifeTime','ParentLink':'ParentLink','FileType':'FileType','IsContainer':'IsContainer','SecondaryFileExtension':'SecondaryFileExtension','DisplayAuthor':'DisplayAuthor','RefinableString01':'RefinableString01','LikesCount':'LikesCount','PublishedDateOWSDATE':'PublishedDateOWSDATE','SiteTitle':'SiteTitle'</mso:ManagedPropertyMapping>
+<mso:HtmlDesignConversionSucceeded msdt:dt="string">True</mso:HtmlDesignConversionSucceeded>
+<mso:HtmlDesignStatusAndPreview msdt:dt="string">https://spc382demo.sharepoint.com/sites/contoso/_catalogs/masterpage/Display%20Templates/mAdcOW/mAdcOW_Item_BlogPost_Body.html, Conversion successful.</mso:HtmlDesignStatusAndPreview>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+<body>
+    <div id="Item_CommonItem_Body">
+        <!--#_
+            var id = ctx.CurrentItem.csr_id;
+            var title = Srch.U.getHighlightedProperty(id, ctx.CurrentItem, "Title");
+            if ($isEmptyString(title)) {title = $htmlEncode(ctx.CurrentItem.Title)}
+
+            var useWACUrl = !$isEmptyString(ctx.CurrentItem.ServerRedirectedURL);
+            if(ctx.ScriptApplicationManager && ctx.ScriptApplicationManager.states){
+            useWACUrl = (useWACUrl && !ctx.ScriptApplicationManager.states.openDocumentsInClient);
+            }
+
+            var appAttribs = "";
+            if(!useWACUrl)
+            {
+            if (!$isEmptyString(ctx.CurrentItem.csr_OpenApp)) { appAttribs += "openApp=\"" + $htmlEncode(ctx.CurrentItem.csr_OpenApp) + "\"" }; 
+            if (!$isEmptyString(ctx.CurrentItem.csr_OpenControl)) { appAttribs += " openControl=\"" + $htmlEncode(ctx.CurrentItem.csr_OpenControl) + "\"" };
+            }
+
+            var showHoverPanelCallback = ctx.currentItem_ShowHoverPanelCallback;
+            if (Srch.U.n(showHoverPanelCallback)) {
+            var itemId = id + Srch.U.Ids.item;
+            var hoverId = id + Srch.U.Ids.hover;
+            var hoverUrl = "~sitecollection/_catalogs/masterpage/Display Templates/Search/Item_Default_HoverPanel.js";
+            showHoverPanelCallback = Srch.U.getShowHoverPanelCallback(itemId, hoverId, hoverUrl);
+            }
+            var displayPath = Srch.U.getHighlightedProperty(id, ctx.CurrentItem, "Path");
+            if ($isEmptyString(displayPath)) {displayPath = $htmlEncode(ctx.CurrentItem.Path)} 
+            var url = ctx.CurrentItem.csr_Path;
+            if($isEmptyString(url)){
+            if(useWACUrl)
+            {
+            url = ctx.CurrentItem.ServerRedirectedURL;
+            } else {
+            url = ctx.CurrentItem.Path;
+            }        
+            }
+            ctx.CurrentItem.csr_Path = url;
+            var pathLength = ctx.CurrentItem.csr_PathLength;
+            if(!pathLength) {pathLength = Srch.U.pathTruncationLength}
+
+            var maxTitleLengthInChars = Srch.U.titleTruncationLength;
+            var termsToUse = 2;
+            if(ctx.CurrentItem.csr_PreviewImage != null)
+            {
+            maxTitleLengthInChars = Srch.U.titleTruncationLengthWithPreview;
+            termsToUse = 1;
+            }
+    
+            var accountName = ctx.CurrentItem.EditorOWSUSER;
+            if(!$isNull(accountName) && !$isEmptyString(accountName)) {
+            var idx = accountName.lastIndexOf("|");
+            accountName = accountName.substr(idx+1);
+            }
+            
+            var likesCount = 0;
+            if(!$isNull(ctx.CurrentItem.LikesCount)) {
+                likesCount = ctx.CurrentItem.LikesCount;
+            }
+            var replyCount = 0;
+            if(!$isNull(ctx.CurrentItem.RefinableString01) && !$isEmptyString(ctx.CurrentItem.RefinableString01)) {
+                replyCount = ctx.CurrentItem.RefinableString01;
+            }
+
+            var clickType = ctx.CurrentItem.csr_ClickType;
+        if(!clickType) {clickType = "Result"}        
+_#-->				
+        <div id="_#= $htmlEncode(id + Srch.U.Ids.body) =#_" class="ms-srch-item-body" onclick="_#= showHoverPanelCallback =#_">
+<!--#_
+            if (!$isEmptyString(ctx.CurrentItem.csr_Icon)) {
+_#-->
+                <div class="ms-srch-item-icon">	
+                    <img id="_#= $htmlEncode(id + Srch.U.Ids.icon) =#_" onload="this.style.display='inline'" src="_#= $urlHtmlEncode(ctx.CurrentItem.csr_Icon) =#_" />
+                </div>
+<!--#_
+            }
+            var titleHtml = String.format('<a clicktype="{0}" id="{1}" href="{2}" class="ms-srch-item-link" title="{3}" onfocus="{4}" {5}>{6}</a>',
+                                          $htmlEncode(clickType), $htmlEncode(id + Srch.U.Ids.titleLink), $urlHtmlEncode(url), $htmlEncode(ctx.CurrentItem.Title), 
+                                          showHoverPanelCallback, appAttribs, Srch.U.trimTitle(title, maxTitleLengthInChars, termsToUse));
+_#-->       
+            <div id="_#= $htmlEncode(id + Srch.U.Ids.title) =#_" class="ms-srch-item-title"> 
+                <h3 class="ms-srch-ellipsis">
+                    _#= titleHtml =#_
+                </h3>
+            </div>
+<!--#_ 
+            if (!$isEmptyString(ctx.CurrentItem.HitHighlightedSummary)) { 
+_#-->
+            <div id="_#= $htmlEncode(id + Srch.U.Ids.summary) =#_" class="ms-srch-item-summary">
+                <div>
+                    <div style="float:left; width:75px">
+                        <img src="/_layouts/15/userphoto.aspx?size=M&accountname=_#= accountName =#_" style="max-height: 75px;max-width: 75px" />
+                    </div>
+                    <div style="margin-left: 80px">
+                        _#= Srch.U.processHHXML(ctx.CurrentItem.HitHighlightedSummary) =#_
+                    </div>
+                    <div style="margin-left: 80px">
+                        <img src="/_layouts/15/images/Like.11x11x32.png" /> _#= likesCount =#_
+                        <img src="/_layouts/15/images/Announcements.11x11x32.png" /> _#= replyCount =#_
+                    </div>
+                </div>
+            </div>
+            <div>
+                by _#= ctx.CurrentItem.Author =#_ - _#= ctx.CurrentItem.SiteTitle =#_ - _#= SP.DateTimeUtil.SPRelativeDateTime.getRelativeDateTimeString ( new Date(ctx.CurrentItem.PublishedDateOWSDATE), true , SP.DateTimeUtil.SPCalendarType.none, false ) =#_
+            </div>
+<!--#_ 
+            }
+            var truncatedUrl = Srch.U.truncateHighlightedUrl(displayPath, pathLength);
+_#-->
+            <!--
+                <div id="_#= $htmlEncode(id + Srch.U.Ids.path) =#_" tabindex="0" class="ms-srch-item-path" title="_#= $htmlEncode(ctx.CurrentItem.Path) =#_" onblur="Srch.U.restorePath(this, '_#= $scriptEncode(truncatedUrl) =#_', '_#= $scriptEncode(ctx.CurrentItem.Path) =#_')" onclick="Srch.U.selectPath('_#= $scriptEncode(ctx.CurrentItem.Path) =#_', this)" onkeydown="Srch.U.setPath(event, this, '_#= $scriptEncode(ctx.CurrentItem.Path) =#_', '_#= $scriptEncode(truncatedUrl) =#_')" >
+                    _#= truncatedUrl =#_
+                </div>
+                -->
+            </div>
+<!--#_
+        if (!$isEmptyString(ctx.CurrentItem.csr_PreviewImage)) 
+        {
+            var altText = Srch.Res.item_Alt_Preview;
+            if(!$isEmptyString(ctx.CurrentItem.csr_PreviewImageAltText)){
+                altText = ctx.CurrentItem.csr_PreviewImageAltText;
+            }
+
+            var onloadJS = "var container = $get('" + $scriptEncode(id + Srch.U.Ids.preview) + "'); if(container){container.style.display = 'inline-block';}" +
+                           "var path = $get('" + $scriptEncode(id + Srch.U.Ids.path) + "'); if (path) { Srch.U.ensureCSSClassNameExist(path, 'ms-srch-item-preview-path');}" +
+                           "var body = $get('" + $scriptEncode(id + Srch.U.Ids.body) + "'); if (body) { Srch.U.ensureCSSClassNameExist(body, 'ms-srch-item-summaryPreview');}";
+
+            var previewHtml = String.format('<a clicktype="{0}" href="{1}" class="ms-srch-item-previewLink" {2}><img class="ms-srch-item-preview" src="{3}" alt="{4}" onload="{5}" /></a>', 
+                                            $htmlEncode(clickType), $urlHtmlEncode(url), appAttribs, $urlHtmlEncode(ctx.CurrentItem.csr_PreviewImage), $htmlEncode(altText), onloadJS);
+_#-->       
+            <div id="_#= $htmlEncode(id + Srch.U.Ids.preview) =#_"  class="ms-srch-item-previewContainer"> 
+                _#= previewHtml =#_
+            </div>
+<!--#_
+        }
+_#-->
+    </div>
+</body>
+</html>

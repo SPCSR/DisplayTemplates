@@ -1,0 +1,337 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>mAdcOW Refine Result Type by Icon</title>
+<!-- Author: Mikael Svenson @mikaelsvenson http://techmikael.blogspot.com -->
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:CompatibleManagedProperties msdt:dt="string"></mso:CompatibleManagedProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:CompatibleSearchDataTypes msdt:dt="string">;#Text;#</mso:CompatibleSearchDataTypes>
+<mso:MasterPageDescription msdt:dt="string"></mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106604</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Refinement;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+<mso:HtmlDesignStatusAndPreview msdt:dt="string">https://13rock.sharepoint.com/sites/rocksearch/_catalogs/masterpage/Display%20Templates/Filters/mAdcOW_Filter_Icon.html, Conversion successful.</mso:HtmlDesignStatusAndPreview>
+<mso:HtmlDesignConversionSucceeded msdt:dt="string">True</mso:HtmlDesignConversionSucceeded>
+<mso:CrawlerXSLFile msdt:dt="string"></mso:CrawlerXSLFile>
+<mso:HtmlDesignPreviewUrl msdt:dt="string"></mso:HtmlDesignPreviewUrl>
+</mso:CustomDocumentProperties></xml><![endif]-->
+</head>
+<body>
+
+<script>
+//$includeCSS(this.url, "~sitecollection/_catalogs/masterpage/Display Templates/Filters/custom.css");
+</script>
+
+<div id="FileFormatFilter">
+
+<!--#_
+
+Type.registerNamespace('mAdcOW.Search');
+var allText = Srch.U.loadResource("rf_All");
+
+if( SP.ScriptUtility.isNullOrUndefined(mAdcOW.Search.prevValues) )
+{
+	mAdcOW.Search.prevValues = new Array();
+	mAdcOW.Search.initialEnabled = new Array();
+}
+
+var myfilters = new Array();
+myfilters[0] = {
+	"RefinementName": allText,
+	"RefinerName": "FileType",
+	"RefinementValues": [],
+	"Checked": false,
+	"Enabled": true,
+	"RefinementCount": 0
+}; 
+myfilters[1] = {
+	"RefinementName": "Word",
+	"RefinerName": "FileType",
+	"RefinementValues": ["docx", "doc", "docm", "dot", "nws", "dotx"],
+	"Checked": false,
+	"Enabled": false,
+	"RefinementCount": 0
+};
+myfilters[2] = {
+	"RefinementName": "PowerPoint",
+	"RefinerName": "FileType",
+	"RefinementValues": ["odp", "ppt", "pptm", "pptx", "potm", "potx", "ppam", "ppsm", "ppsx"],
+	"Checked": false,
+	"Enabled": false,
+	"RefinementCount": 0
+}; 
+myfilters[3] = {
+	"RefinementName": "Excel",
+	"RefinerName": "FileType",
+	"RefinementValues": ["odc", "ods", "xls", "xlsb", "xlsm", "xlsx", "xltm", "xltx", "xlam"],
+	"Checked": false,
+	"Enabled": false,
+	"RefinementCount": 0
+}; 
+myfilters[4] = {
+	"RefinementName": "PDF",
+	"RefinerName": "FileType",
+	"RefinementValues": ["pdf"],
+	"Checked": false,
+	"Enabled": false,
+	"RefinementCount": 0
+}; 
+
+mAdcOW.Search.mapResultType = function(listData){
+	if( $isNull(listData) ) return;
+	var map = { };
+	map[Srch.U.loadResource("rf_ResultTypeRefinerValue_AdobePDF")] = {
+		"RefinerName": "FileType",
+		"RefinementValues": ["pdf"]
+	}; 
+	map[Srch.U.loadResource("rf_ResultTypeRefinerValue_MSExcel")] = {
+		"RefinerName": "FileType",
+		"RefinementValues": ["odc", "ods", "xls", "xlsb", "xlsm", "xlsx", "xltm", "xltx", "xlam"]
+	}; 
+	map[Srch.U.loadResource("rf_ResultTypeRefinerValue_MSPowerPoint")] = {
+		"RefinerName": "FileType",
+		"RefinementValues": ["odp", "ppt", "pptm", "pptx", "potm", "potx", "ppam", "ppsm", "ppsx"]
+	}; 
+	map[Srch.U.loadResource("rf_ResultTypeRefinerValue_MSWord")] = {
+		"RefinerName": "FileType",
+		"RefinementValues": ["docx", "doc", "docm", "dot", "nws", "dotx"]
+	};
+
+	var retListData = new Array();
+	var assocListData = new Array();
+	for (var i = 0; i < listData.length; i++)
+	{
+		var filter = listData[i];
+        for(var j = 0; j < myfilters.length; j++) {
+            var my = myfilters[j];
+           
+            for(var k = 0; k < my.RefinementValues.length; k++) {
+                if(my.RefinementValues[k] == filter.RefinementName) {
+                    my.RefinementCount = filter.RefinementCount;
+                }
+            }
+        }
+		var mappedRefinementName = null;
+		for(var key in map)
+		{
+			if (map[key].RefinerName == filter.RefinerName)
+			{
+				for (var j = 0; j < map[key].RefinementValues.length; j++)
+				{
+					var actualValue = filter.RefinementValue.toLowerCase(), candidateValue = map[key].RefinementValues[j].toLowerCase();
+
+					if (actualValue == candidateValue ||
+						(filter.RefinerName.toLowerCase() == "contenttypeid" && actualValue.startsWith(candidateValue.substring(0, candidateValue.length - 1)))) 
+					{
+						mappedRefinementName = key;
+						break;
+					}
+				}
+				if (!$isNull(mappedRefinementName))
+				{
+					break;
+				}
+			}
+		}
+
+		var mappedFilter = new Object();
+		if (!$isNull(mappedRefinementName))
+		{
+			mappedFilter.RefinerName = map[mappedRefinementName].RefinerName;
+			mappedFilter.RefinementCount = filter.RefinementCount;
+			mappedFilter.RefinementName = mappedRefinementName;
+			mappedFilter.RefinementTokens = [];
+			var resultTypeTokenWrapper = (mappedFilter.RefinerName.toLowerCase() == "contenttypeid") ? function (x) {return x;} : 
+																									   Srch.RefinementUtil.stringValueToEqualsToken;
+			for (var j in map[mappedRefinementName].RefinementValues) {
+				mappedFilter.RefinementTokens.push(resultTypeTokenWrapper(map[mappedRefinementName].RefinementValues[j]));
+			}
+
+			if ($isNull(assocListData[mappedFilter.RefinementName]))
+			{
+				assocListData[mappedFilter.RefinementName] = mappedFilter;
+			}
+			else
+			{
+				assocListData[mappedFilter.RefinementName].RefinementCount += mappedFilter.RefinementCount;
+			}
+		}                
+	}
+
+	for (var key in assocListData)
+	{
+		retListData[retListData.length] = assocListData[key];
+	}
+
+	return retListData;
+}
+		
+function changeSelection() {
+	for (var i = 0; i < myfilters.length; i++){
+		var filter = myfilters[i];
+		filter.Checked = false;
+		if (ctx.ClientControl.hasAllRefinementFilters(filter.RefinerName, filter.RefinementValues)) {
+			filter.Checked = true;			
+			if(i > 0) {
+				myfilters[0].Checked = false; // All is always set
+			}			
+		}
+	}
+};
+
+mAdcOW.Search.updateRefinersJSON = function(scope,refinersJSON) {
+	$getClientControl(scope).updateRefiners((Srch.ParseJSONUtil.parseObjectFromJsonString(refinersJSON)), 'or', false, null);
+}
+
+_#-->
+
+<!--#_
+        var isExpanded = Srch.Refinement.getExpanded(ctx.RefinementControl.propertyName);
+        var iconClass = (isExpanded == "true"? "ms-ref-uparrow" : "ms-ref-downarrow");
+        var displayStyle = (isExpanded == "true"? "" : "none");
+        var refinerCatTitle = Srch.Refinement.getRefinementTitle(ctx.RefinementControl);
+_#-->
+
+
+<div id='FileFormatContainer'>
+
+        <!--#_
+        if(isExpanded) {
+            //$("#Container").attr("style", "width: 100%; height: 350px;");
+        }
+    _#-->
+
+ _#= Srch.U.collapsibleRefinerTitle(ctx.RefinementControl.propertyName, ctx.ClientControl.get_id(), refinerCatTitle, iconClass) =#_
+<ul>
+<!--#_
+	function outputFilter(refinement, refiners, method) {
+		var refinementName = refinement.RefinementName;
+		var refinementCount = refinement.RefinementCount;
+        var refinementDisplay = refinementName == allText ? "block" : (refinementCount == 0 ? "none" : "block");
+		var checked = refinement.Checked;
+		var disabled = !refinement.Enabled;
+		
+		var aOnClick = "mAdcOW.Search.updateRefinersJSON(this,'" + $scriptEncode(Sys.Serialization.JavaScriptSerializer.serialize(refiners)) + "');";
+		
+		//var aOnClick = "$getClientControl(this)." + method + "('" + $scriptEncode(Sys.Serialization.JavaScriptSerializer.serialize(refiners)) + "');";
+		var nameClass = "ms-ref-name";
+		var errorIcon = 'http://icons.iconarchive.com/icons/guillendesign/variations-3/16/Default-Icon-icon.png';	
+		
+		function createUrl(fileExt, iconType, useDefault) {
+            if(useDefault) {
+			    //return "/_layouts/15/images/ic" + fileExt + "." + iconType;
+            } else {
+				return _spPageContextInfo.webServerRelativeUrl + "/_catalogs/masterpage/Display Templates/mAdcOW/gfx/" + fileExt + "32.png";
+            }
+		}
+		function getIconUrl(docName) {
+		    switch(docName) 
+		    {
+                case allText:
+                return createUrl("all", "gif", false);
+			    break;
+			    case "Excel":
+			    return createUrl("xlsx", "gif", false);
+			    break;
+			    case "PowerPoint":
+			    return createUrl("pptx", "gif", false);
+			    break;
+			    case "PDF":
+			    return createUrl("pdf", "png", false);
+			    break;
+			    case "Word":
+			    return createUrl("docx", "gif", false);
+			    break;
+		    }
+	    }
+_#-->
+            <li>
+            <div style="display: _#= $htmlEncode(refinementDisplay) =#_">
+                <a id='_#= $htmlEncode(refinementName) =#_' onclick="_#= aOnClick =#_" class="imageIcon">	
+                    <div style="display: inline-block" class="imageIcon2">
+                        <img src="_#= getIconUrl($htmlEncode(refinementName)) =#_" onerror="this.src='_#= errorIcon =#_'" title="_#= $htmlEncode(refinementCount) =#_" />
+                    </div>
+                    <!--#_
+                        if(refinementName != allText) {
+                    _#-->
+                    <!--<div style="display: inline-block; padding-left: 5px;">
+                        <span style="font-family: 'Segoe UI Light', sans-serif; color: #666666 !important;">(_#= $htmlEncode(refinementCount) =#_)</span>
+                    </div>-->
+                    <!--#_
+                    }
+                    _#-->
+                </a>
+            </div>
+            </li>
+			
+<!--#_
+}
+_#-->
+</ul>
+
+<div class="ms-ref-unselSec" id="UnselectedSection">
+    <!--#_
+        changeSelection();
+
+        // start disable non-returned on searchbox query
+        var listData = mAdcOW.Search.mapResultType(ctx.ListData);
+        if( $isNull(listData) ) {
+            jQuery("#FileFormatContainer").hide();
+            return;
+        }
+	if( myfilters[0].Checked ) {
+		mAdcOW.Search.initialEnabled = [];
+		mAdcOW.Search.initialEnabled[0] = true;
+		for (var i = 0; i < listData.length; i++){
+			var filter = listData[i];
+			for( var j = 0; j < myfilters.length; j++){
+				if( filter.RefinementName.toLowerCase() == myfilters[j].RefinementName.toLowerCase() ) {
+					myfilters[j].Enabled = true;
+					mAdcOW.Search.initialEnabled[j] = myfilters[j].Enabled;
+					break;
+				}
+			}
+		}
+	} else {
+		for( var i = 0; i < myfilters.length; i++){
+			myfilters[i].Enabled = mAdcOW.Search.initialEnabled[i];
+		}			
+	}
+	// end disable non-returned on searchbox query
+	
+	/*
+	var listData = mAdcOW.Search.mapResultType(ctx.ListData);
+	if( myfilters[0].Checked ) {
+		for (var i = 0; i < listData.length; i++){
+			var filter = listData[i];
+			for( var j = 0; j < myfilters.length; j++){
+				if( filter.RefinementName.toLowerCase() == myfilters[j].RefinementName.toLowerCase() ) {
+					myfilters[j].RefinementCount = filter.RefinementCount;
+					mAdcOW.Search.prevValues[j] = filter.RefinementCount;
+					break;
+				}
+			}
+		}	
+	} else {
+		//have to adjust for new refiners
+		for( var i = 0; i < myfilters.length; i++){
+			myfilters[i].RefinementCount = mAdcOW.Search.prevValues[i];
+		}			
+	}
+	*/
+
+	for (var i = 0; i < myfilters.length; i++){	
+		var filter = myfilters[i];
+		var refiners = new Object();
+		refiners[filter.RefinerName] = filter.RefinementValues;
+		outputFilter(filter, refiners, "updateRefinersJSON");
+	}
+_#-->
+</div>
+
+
+</div>
+</div>
+</body>
+</html>
