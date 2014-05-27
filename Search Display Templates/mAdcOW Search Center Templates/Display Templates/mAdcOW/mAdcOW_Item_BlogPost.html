@@ -1,0 +1,46 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>mAdcOW Blog Post Item</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:MasterPageDescription msdt:dt="string">Displays a result tailored for a web page.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#SearchResults;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+<mso:ManagedPropertyMapping msdt:dt="string">'Title':'Title','Path':'Path','Description':'Description','EditorOWSUSER':'EditorOWSUSER','LastModifiedTime':'LastModifiedTime','CollapsingStatus':'CollapsingStatus','DocId':'DocId','HitHighlightedSummary':'HitHighlightedSummary','HitHighlightedProperties':'HitHighlightedProperties','FileExtension':'FileExtension','ViewsLifeTime':'ViewsLifeTime','ParentLink':'ParentLink','FileType':'FileType','IsContainer':'IsContainer','SecondaryFileExtension':'SecondaryFileExtension','DisplayAuthor':'DisplayAuthor','RefinableString01':'RefinableString01','LikesCount':'LikesCount','PublishedDateOWSDATE':'PublishedDateOWSDATE','SiteTitle':'SiteTitle'</mso:ManagedPropertyMapping>
+<mso:HtmlDesignConversionSucceeded msdt:dt="string">True</mso:HtmlDesignConversionSucceeded>
+<mso:HtmlDesignStatusAndPreview msdt:dt="string">https://spc382demo.sharepoint.com/sites/contoso/_catalogs/masterpage/Display%20Templates/mAdcOW/mAdcOW_Item_BlogPost.html, Conversion successful.</mso:HtmlDesignStatusAndPreview>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+    <body>        
+        <script>
+            //http://mike-green.net/blog/2013/6/20/how-render-an-inner-display-template-in-sharepoint
+            $includeScript(this.url, "~sitecollection/_catalogs/masterpage/Display Templates/mAdcOW/mAdcOW_Item_BlogPost_Body.js");
+            
+            //http://msscorner.de/2013/11/27/using-relative-datetime-format-within-an-sharepoint-2013-app/
+            $includeScript(this.url, "~sitecollection/_layouts/15/SP.dateTimeUtil.js");
+        </script>
+        <div id="Item_BlogPost">
+            <!--#_ 
+                if(!$isNull(ctx.CurrentItem) && !$isNull(ctx.ClientControl)){
+                var id = ctx.ClientControl.get_nextUniqueId();
+                var itemId = id + Srch.U.Ids.item;
+                var hoverId = id + Srch.U.Ids.hover;
+                var hoverUrl = "~sitecollection/_catalogs/masterpage/Display Templates/Search/Item_WebPage_HoverPanel.js";
+                $setResultItem(itemId, ctx.CurrentItem);
+                ctx.currentItem_ShowHoverPanelCallback = Srch.U.getShowHoverPanelCallback(itemId, hoverId, hoverUrl);
+                ctx.currentItem_HideHoverPanelCallback = Srch.U.getHideHoverPanelCallback();
+                _#-->
+            <div id="_#= $htmlEncode(itemId) =#_" name="Item" data-displaytemplate="WebPageItem" class="ms-srch-item" onmouseover="_#= ctx.currentItem_ShowHoverPanelCallback =#_" onmouseout="_#= ctx.currentItem_HideHoverPanelCallback =#_">							
+                _#= CoreRender(Srch.U.getRenderTemplateByName("~sitecollection/_catalogs/masterpage/Display Templates/mAdcOW/mAdcOW_Item_BlogPost_Body.js", ctx), ctx) =#_
+                <div id="_#= $htmlEncode(hoverId) =#_" class="ms-srch-hover-outerContainer"></div>
+            </div>
+            <!--#_ 
+                } 
+                _#-->
+        </div>
+    </body>
+</html>

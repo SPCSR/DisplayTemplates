@@ -1,0 +1,297 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+<head>
+    <title>Modified by Item</title>
+
+    <!--[if gte mso 9]><xml>
+    <mso:CustomDocumentProperties>
+    <mso:CompatibleManagedProperties msdt:dt="string"></mso:CompatibleManagedProperties>
+    <mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+    <mso:CompatibleSearchDataTypes msdt:dt="string"></mso:CompatibleSearchDataTypes>
+    <mso:MasterPageDescription msdt:dt="string"></mso:MasterPageDescription>
+    <mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106604</mso:ContentTypeId>
+    <mso:TargetControlType msdt:dt="string">;#Refinement;#</mso:TargetControlType>
+    <mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+    <mso:HtmlDesignConversionSucceeded msdt:dt="string">True</mso:HtmlDesignConversionSucceeded>
+    <mso:HtmlDesignStatusAndPreview msdt:dt="string">https://13rock.sharepoint.com/sites/rocksearch/_catalogs/masterpage/Display%20Templates/Filters/mAdcOW_Filter_Modified.html, Conversion successful.</mso:HtmlDesignStatusAndPreview>
+    </mso:CustomDocumentProperties></xml><![endif]-->
+</head>
+<body>
+    <script>
+        $includeScript(this.url, "~sitecollection/_layouts/15/SP.js");
+        $includeScript(this.url, "~sitecollection/_layouts/15/SP.UserProfiles.js");
+    </script>
+    <div id="4">
+        <div id="ModifiedByRefiner">
+            Loading Modified By
+            <img src="/_layouts/15/images/progress.gif" />
+            <!--#_
+                Type.registerNamespace('mAdcOW.Search');
+
+                mAdcOW.Search.updateRefinersJSON = function(scope,refinersJSON) {
+                    $getClientControl(scope).updateRefiners((Srch.ParseJSONUtil.parseObjectFromJsonString(refinersJSON)), 'or', false, null);
+                }
+
+                this.Options = {
+                    ShowClientPeoplePicker: false,
+                    ShowCounts: true
+                };
+                var personProperties = [];
+                var listData = ctx.ListData;
+                var hasControl = true;
+                var shortListSize = 5;
+
+                if ($isNull(ctx.RefinementControl) || $isNull(ctx.ClientControl)) hasControl = false;
+                var clientContext = new SP.ClientContext.get_current();
+                if (hasControl && !$isNull(listData)) {
+                    // rework the refiner
+                    // look up author against dept http://msdn.microsoft.com/en-us/library/jj920104.aspx
+                    
+                    var peopleManager = new SP.UserProfiles.PeopleManager(clientContext);
+
+                    for(var i in listData) {
+                        var accountName = listData[i].RefinementValue;
+
+                        if(!$isNull(accountName) && !$isEmptyString(accountName)) {
+                            var idx = accountName.lastIndexOf(" ");
+                            accountName = accountName.substr(idx+1);
+                        }
+
+                        if(accountName == "SHAREPOINT\\system" ) {
+                            listData[i].RefinementName = accountName;
+                        } else {
+                            if (mAdcOW.Search.AuthorMap.hasOwnProperty(accountName)) {
+                                listData[i].RefinementName = mAdcOW.Search.AuthorMap[accountName];
+                                listData[i].Replaced = true;
+                            } else {
+                                var pp = peopleManager.getPropertiesFor(accountName);
+                                personProperties.push(pp);
+                                clientContext.load(pp);
+                            }
+                        }
+
+                        listData[i].RefinementTokens = [listData[i].RefinementToken];
+                        listData[i].RefinementTokenWrappedValues = [Srch.RefinementUtil.stringValueToEqualsToken(listData[i].RefinementValue)];
+
+                    }
+                    clientContext.executeQueryAsync(onRequestSuccessModified, onRequestFail);
+                } else {
+                    clientContext.executeQueryAsync( function() {
+                        var element = $get("ModifiedByRefiner");
+                        element.innerHTML = '';
+                    });
+                }
+
+
+                function onRequestSuccessModified() {
+                    // Loop over the personProperties array which is returned
+                    for( var i in personProperties) {
+                        try {
+                            var userProperties = personProperties[i].get_userProfileProperties();
+                            var account = userProperties['AccountName'];
+                            var department = userProperties['Department'];
+                            var displayName = personProperties[i].get_displayName();
+
+                            for( var j in listData){
+                                if( listData[j].RefinementValue.indexOf(account) >= 0 ) {
+                                    // replace Name with Department name
+                                    //mAdcOW.Search.DepartmentMap[account] = department;
+                                    mAdcOW.Search.AuthorMap[account] = displayName;
+                                    listData[j].RefinementName = displayName;
+                                    break;
+                                }
+                            }
+                        } catch (e) {
+							listData[i].RefinementName = listData[i].RefinementName.split('|')[1];
+                            continue;
+                        }
+                    }
+                    // Render refiner with default logic
+                    RenderRefiner();
+                    // Output the HTML in our container
+                    var element = $get("ModifiedByRefiner");
+                    element.innerHTML = ms_outHtml.join('');
+                }
+
+                // This function runs if the executeQueryAsync call fails.
+                function onRequestFail(sender, args) {
+                    console.log(args.get_message());
+                }
+
+                function RenderRefiner() {
+                    ms_outHtml = [];
+                    if (hasControl)
+                    {
+                        if($isNull(listData) || $isEmptyArray(listData))
+                        {
+                            _#-->
+            <div id="EmptyContainer"></div>
+            <!--#_
+                        }
+                        else
+                        {
+                            var isExpanded = Srch.Refinement.getExpanded(ctx.RefinementControl.propertyName);
+                            var iconClass = (isExpanded == "true"? "ms-ref-uparrow" : "ms-ref-downarrow");
+                            var displayStyle = (isExpanded == "true"? "" : "none");
+                            var refinerCatTitle = Srch.Refinement.getRefinementTitle(ctx.RefinementControl);
+                            _#-->
+            <div id='Container'>
+                _#= Srch.U.collapsibleRefinerTitle(ctx.RefinementControl.propertyName, ctx.ClientControl.get_id(), refinerCatTitle, iconClass) =#_
+                <!--#_
+                            function outputFilter(refinementName, refinementCount, refiners, method, aClass, showCounts) {
+                                var aOnClick = "mAdcOW.Search.updateRefinersJSON(this,'" + $scriptEncode(Sys.Serialization.JavaScriptSerializer.serialize(refiners)) + "');";
+                                var nameClass = "ms-ref-name " + (showCounts ? "ms-displayInline" : "ms-displayInlineBlock ms-ref-ellipsis");
+                                _#-->
+                            <div id='Value' name='Item'>
+                                <a id='FilterLink' class='_#= $htmlEncode(aClass) =#_' onclick="_#= aOnClick =#_" href='javascript:{}' title='_#= $htmlEncode(String.format(Srch.U.loadResource("rf_RefineBy"), refinementName)) =#_'>
+                                    <div id='RefinementName' class='_#= nameClass =#_'> _#= $htmlEncode(refinementName) =#_ </div>
+                                    <!--#_
+                                if (showCounts) {
+                                    _#-->
+                                <div id='RefinementCount' class='ms-ref-count ms-textSmall'> (_#= $htmlEncode(Srch.U.toFormattedNumber(refinementCount)) =#_) </div>
+                                <!--#_
+                                }
+                                _#-->
+                            </a>
+                        </div>
+                        <!--#_
+                            };
+
+                            function SortAlphabetically(a, b)
+                            {
+                                return a.RefinementName.localeCompare(b.RefinementName);
+                            }
+                            function SortByCountDescending(a, b)
+                            {
+                                return b.RefinementCount - a.RefinementCount;
+                            }
+
+                            var unselectedFilters = new Array();
+                            var selectedFilters = new Array();
+
+                            var hasDiscreteIntervals = (!$isEmptyString(ctx.RefinementControl.spec) && ctx.RefinementControl.spec.startsWith('(discretize=manual'));
+
+                            var currentRefinementCategory = ctx.ClientControl.getCurrentRefinementCategory(ctx.RefinementControl.propertyName);
+                            var hasAnyFiltertokens = (!Srch.U.n(currentRefinementCategory) && currentRefinementCategory.get_tokenCount() > 0);
+                            for (var i = 0; i < listData.length; i++){
+                                var filter = listData[i];
+                                if(!$isNull(filter)){
+
+                                    var isEmptyDiscreteInterval = (hasDiscreteIntervals && filter.RefinementCount < 1);
+
+                                    if (ctx.ClientControl.hasAllRefinementFilters(filter.RefinerName, filter.RefinementTokens) ||
+                                    ctx.ClientControl.hasAllRefinementFilters(filter.RefinerName, filter.RefinementTokenWrappedValues)) {
+                                        selectedFilters.push(filter);
+                                    } else if(!isEmptyDiscreteInterval) {
+                                        unselectedFilters.push(filter);
+                                    }
+                                }
+                            }
+
+                            if (selectedFilters.length > 0 || hasAnyFiltertokens)
+                            {
+                                _#-->
+                        <div id='AllSection' class='ms-ref-allSec' style='display:_#= $htmlEncode(displayStyle) =#_'>
+                            <!--#_
+                                var refinersAll = new Object();
+                                refinersAll[ctx.RefinementControl.propertyName] = null;
+                                if (ctx.RefinementControl.propertyName == "FileType")
+                                {
+                                    refinersAll["contentclass"] = null;
+                                    refinersAll["ContentTypeId"] = null;
+                                    refinersAll["WebTemplate"] = null;
+                                }
+                                outputFilter(Srch.U.loadResource("rf_All"), null, refinersAll, "updateRefinersJSON", "ms-displayBlock", false);
+                                _#-->
+                    </div>
+                    <!--#_
+                            }
+                            _#-->
+                            <div id='SelectedSection' class='ms-ref-selSec'>
+                                <!--#_
+                            for (var i = 0; i < selectedFilters.length; i++){
+                                var filter = selectedFilters[i];
+                                if(!$isNull(filter)){
+                                    var refiners = new Object();
+                                    if (!$isNull(filter.RefinementTokenWrappedValues))
+                                        filter.RefinementTokens = filter.RefinementTokens.concat(filter.RefinementTokenWrappedValues);
+                                    refiners[filter.RefinerName] = filter.RefinementTokens;
+                                    outputFilter(filter.RefinementName, filter.RefinementCount, refiners, "removeRefinementFiltersJSON", "ms-core-listMenu-selected ms-ref-filterSel ms-displayBlock", this.Options.ShowCounts);
+                                }
+                            }
+                            _#-->
+                        </div>
+                        <div id='UnselectedSection' class='ms-ref-unselSec' style='display:_#= $htmlEncode(displayStyle) =#_'>
+                            <div id='unselShortList' class='ms-ref-unsel-shortList'>
+                                <!--#_
+                            var addMethod = "addRefinementFiltersJSON";
+                            if (ctx.RefinementControl.propertyName == "FileType")
+                            {
+                                addMethod = "addRefinementFiltersJSONWithOr";
+                            }
+
+                            var shortList = unselectedFilters;
+                            var numShortList = unselectedFilters.length;
+                            if (shortListSize < unselectedFilters.length) {
+                                numShortList = shortListSize;
+                                if (ctx.RefinementControl.propertyName == "FileType") {
+                                    shortList = unselectedFilters.slice(0, numShortList).sort(SortAlphabetically);
+                                }
+                            }
+                            for (var i = 0; i < numShortList; i++) {
+                                var filter = shortList[i];
+                                if(!$isNull(filter)) {
+                                    var refiners = new Object();
+                                    refiners[filter.RefinerName] = filter.RefinementTokens;
+                                    outputFilter(filter.RefinementName, filter.RefinementCount, refiners, addMethod, "ms-displayBlock", this.Options.ShowCounts);
+                                }
+                            }
+                            _#-->
+                        </div>
+                        <!--#_
+                            if (shortListSize < unselectedFilters.length || this.Options.ShowClientPeoplePicker) {
+                                _#-->
+                        <div id='unselLongList' class='ms-ref-unsel-longList' style='display:none'>
+                            <!--#_
+                                for (var i = 0; i < unselectedFilters.length; i++) {
+                                    var filter = unselectedFilters[i];
+                                    if(!$isNull(filter)) {
+                                        var refiners = new Object();
+                                        refiners[filter.RefinerName] = filter.RefinementTokens;
+                                        outputFilter(filter.RefinementName, filter.RefinementCount, refiners, addMethod, "ms-displayBlock", this.Options.ShowCounts);
+                                    }
+                                }
+
+                                var pplPickerIdParam = 'null';
+                                if (this.Options.ShowClientPeoplePicker) {
+                                    var pplPickerId = Srch.RefinementUtil.peoplePickerApplyIdPrefix(ctx.RefinementControl);
+                                    pplPickerIdParam = '&quot;' + pplPickerId + '&quot;';
+                                    Srch.RefinementUtil.peoplePickerPrep(pplPickerId, ctx.RefinementControl, ctx.ClientControl);
+                                    _#-->
+                        <div id='Value' name='Item'>
+                            <div id='_#= pplPickerId =#_' class='ms-ref-pplPicker ms-displayBlock'></div>
+                        </div>
+                        <!--#_
+                                }
+                                _#-->
+                            </div>
+                            <a id='unselToggle' class='ms-ref-unsel-toggle ms-commandLink' onclick='EnsureScriptParams("SearchUI.js", "Srch.SU.toggleRefShortLong", this.parentNode, _#= pplPickerIdParam =#_)' href='javascript: {}'>
+                                <div class="ms-displayInlineBlock">_#= $htmlEncode(Srch.U.loadResource("rf_RefinementLabel_More")) =#_</div>
+                            </a>
+                            <!--#_
+                            }
+                            _#-->
+                        </div>
+                    </div>
+                    <!--#_
+                        }
+                    }
+                } // end function RenderRefiner
+
+                _#-->
+
+            </div>
+
+        </div>
+
+    </body>
+    </html>

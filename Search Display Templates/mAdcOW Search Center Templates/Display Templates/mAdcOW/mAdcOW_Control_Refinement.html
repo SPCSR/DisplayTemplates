@@ -1,0 +1,68 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+<head>
+    <title>mAdcOW Refinement Control</title>
+	<!-- Author: Mikael Svenson @mikaelsvenson http://techmikael.blogspot.com -->
+	
+    <!--[if gte mso 9]><xml>
+    <mso:CustomDocumentProperties>
+    <mso:CompatibleManagedProperties msdt:dt="string"></mso:CompatibleManagedProperties>
+    <mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+    <mso:MasterPageDescription msdt:dt="string"></mso:MasterPageDescription>
+    <mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106601</mso:ContentTypeId>
+    <mso:TargetControlType msdt:dt="string">;#Refinement;#</mso:TargetControlType>
+    <mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+    <mso:HtmlDesignStatusAndPreview msdt:dt="string">https://spc382demo.sharepoint.com/sites/contoso/_catalogs/masterpage/Display%20Templates/mAdcOW/mAdcOW_Control_Refinement.html, Conversion successful.</mso:HtmlDesignStatusAndPreview>
+    <mso:HtmlDesignConversionSucceeded msdt:dt="string">True</mso:HtmlDesignConversionSucceeded>
+    </mso:CustomDocumentProperties>
+    </xml><![endif]-->
+</head>
+<body>
+    <div id="Control_Refinement">
+        <!--#_
+            Type.registerNamespace('mAdcOW.Search');
+            if (mAdcOW.Search.AuthorMap == null) {
+                mAdcOW.Search.AuthorMap = {};
+            }
+            if (mAdcOW.Search.DepartmentMap == null) {
+                mAdcOW.Search.DepartmentMap = {};
+            }
+
+            if(mAdcOW.Search.hideYammer == null) {
+                mAdcOW.Search.hideYammer = function() {
+                    jQuery("div[id=Container]").each(function() {
+                        if( jQuery(this).text().indexOf("Yammer") >= 0 ) {
+                            jQuery(this).remove();
+                        }
+                    });
+                }
+            }
+
+            ctx.OnPostRender = [];
+            ctx.OnPostRender.push(mAdcOW.Search.hideYammer);
+            ctx.ClientControl.alternateRenderer = function(container, cntxt) {};
+
+            var startTag = '<';
+            var closeTag = '>';
+            ms_outHtml.push(startTag,'style type="text/css"',closeTag,'.imageIcon { cursor: pointer; cursor: hand; } ',startTag,'/style',closeTag);
+            _#-->
+            <div class="ms-ref-ctrl" id="RefinementFileType" name="Control">
+                <!--#_
+            if(!$isNull(ctx.ClientControl)){
+                var rcs = ctx.ClientControl.get_selectedRefinementControls();
+                if(!$isEmptyArray(rcs)){
+                    for(var i = 0; i < rcs.length; i++){
+                        var rc = rcs[i];
+                        if(!$isNull(rc)){
+                            rc.containerId = ctx.ClientControl.get_nextUniqueId();
+                            _#-->
+                            <div class="ms-ref-refiner" id="_#= $htmlEncode(rc.containerId) =#_" name="Group" refinername="_#= $htmlEncode(rc.propertyName) =#_"></div>
+                            <!--#_
+                        }
+                    }
+                }
+            }
+            _#-->
+        </div>
+    </div>
+</body>
+</html>
