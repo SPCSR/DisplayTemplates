@@ -10,4 +10,5 @@ __Item_List_Item.html__ | This is the item template which creates a column for e
 
 
 **Usage**
+
 More information can be found on the following blog post: http://www.eliostruyf.com/table-layout-display-template-with-managed-property-sorting/
