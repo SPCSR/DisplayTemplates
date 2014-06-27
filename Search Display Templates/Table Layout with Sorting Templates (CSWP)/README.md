@@ -10,6 +10,4 @@ __Item_List_Item.html__ | This is the item template which creates a column for e
 
 
 **Usage**
-These files need to be uploaded to the master page gallery: **http://your-site/_catalogs/masterpage/**.
-
-More information can be found on the following blog post: http://www.eliostruyf.com/grouping-search-results-with-display-templates-for-the-cswp/
+More information can be found on the following blog post: http://www.eliostruyf.com/table-layout-display-template-with-managed-property-sorting/
