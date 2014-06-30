@@ -75,6 +75,28 @@ if (!Srch.U.n(cc)) {
 }
 
 AddPostRenderCallback(ctx, function() {
+    // Show the current sort option
+    var queryState = ctx.DataProvider.get_currentQueryState().o;
+    if (queryState !== null && queryState.length > 0) {
+        var sortName = queryState[0].p;
+        var sortDir = queryState[0].d;
+        if (!Srch.U.e(sortName)) {
+            var elm = document.getElementById(sortName.replace(/ /g, '-'));
+            if (elm !== null) {
+                elm.parentNode.style.fontWeight = "bold";
+                var sortElm = elm.getElementsByClassName('sortarrow')[0];
+                if (sortElm !== null) {
+                    if (sortDir === 0){
+                        sortElm.innerHTML = "<img src='/_layouts/15/images/spcommon.png' class='ms-sortarrowdown-icon'>";
+                    } else {
+                        sortElm.innerHTML = "<img src='/_layouts/15/images/spcommon.png' class='ms-sortarrowup-icon'>";
+                    }
+                }
+            }
+        }
+    }
+
+    // Show or hide the sort options
     if (!$isEmptyArray(properties)) {
         for (var key in properties) {
             if (!Srch.U.e(properties[key])) {
