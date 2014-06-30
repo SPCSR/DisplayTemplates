@@ -51,10 +51,11 @@ _#-->
                 _#= property.managedPropertyName =#_ 
 
                 <span id="_#= property.managedPropertyName.replace(/ /g, '-') =#_">
-                    <a href="#" title="Ascending" onclick="$getClientControl(this).sortOrRank('_#= property.managedPropertyName =#_ASC');return false;">
+                    <span style="" class="sortarrow ms-sortarrowup-iconouter" ></span>
+                    <a id="_#= property.managedPropertyName =#_ASC" href="#" title="Ascending" onclick="$getClientControl(this).sortOrRank('_#= property.managedPropertyName =#_ASC');return false;">
                         <img alt="Ascending" src="/_layouts/15/images/sortaz.gif">
                     </a>
-                    <a href="#" title="Descending" onclick="$getClientControl(this).sortOrRank('_#= property.managedPropertyName =#_DES');return false;">
+                    <a id="_#= property.managedPropertyName =#_DES" href="#" title="Descending" onclick="$getClientControl(this).sortOrRank('_#= property.managedPropertyName =#_DES');return false;">
                         <img alt="Descending" src="/_layouts/15/images/sortza.gif">
                     </a>
                 </span>
@@ -104,7 +105,6 @@ _#-->
             _#-->
         </tr>
 <!--#_
-// Check if it's the last row to close the tbody tag
 if (currentItemIdx === ctx.CurrentGroup.RowCount) {
 _#-->
     </tbody>
