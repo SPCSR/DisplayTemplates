@@ -1,6 +1,8 @@
 Render Single Group ListView Template
 ================
 
+##Note: This file has template has some issues currently with Groups that are expanded by default. This is in the process of being fixed ##
+
 This folder contains a single List view Display template that displays the selected List view in a single grouping level.
 
 * __csr_ovr_RenderGroup.js__             | This template renders custom items for a single grouping level, including item retrieval.
