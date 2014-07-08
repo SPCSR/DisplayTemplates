@@ -1,4 +1,4 @@
-Debugging ListView Template
+Render Single Group ListView Template
 ================
 
 This folder contains a single List view Display template that displays the selected List view in a single grouping level.
