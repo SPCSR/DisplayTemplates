@@ -27,7 +27,7 @@ _#-->
 <!--#_
     var managedProperties = 'ManagedProperties(filter=1000/0/*)'
     var itemID = ctx.CurrentItem.Path;
-    var query = 'path:' + itemID;
+    var query = String.format('path:"{0}"', itemID);
     var dataProvider = ctx.ClientControl.get_dataProvider();
     // Get the selected refiners. If empty, a new query needs to be done
     var selRefs = dataProvider.get_selectedRefiners();
