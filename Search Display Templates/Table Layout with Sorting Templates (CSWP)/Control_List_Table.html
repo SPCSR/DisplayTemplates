@@ -133,6 +133,24 @@ AddPostRenderCallback(ctx, function() {
             }
         }
     }
+
+	// Add a callout to each row
+    SP.SOD.executeFunc("callout.js", "Callout", function () {
+        var targetElement = document.getElementsByClassName('NotificationDiv');
+        if (targetElement.length > 0) {
+            for (var i = 0; i < targetElement.length; i++) {
+                var elm = targetElement[i];
+                var calloutOptions = new CalloutOptions();
+                calloutOptions.ID = 'notificationcallout-' + i;
+                calloutOptions.launchPoint = elm;
+                calloutOptions.beakOrientation = 'leftRight';
+                calloutOptions.content = String.format('<a href="{0}&PageType=4" title="View properties">View properties</a><br /><a href="{0}&PageType=6" title="Edit properties">Edit properties</a>', elm.getAttribute('rel'));
+                calloutOptions.title = elm.getAttribute('ref');
+
+                var displayedPopup = CalloutManager.createNew(calloutOptions);
+            }
+        }
+    });
 });
 
 ctx.ClientControl.set_showSortOptions(true);
