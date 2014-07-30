@@ -6,8 +6,7 @@ pfh.renderHeader = function(ctx) {
 	//Define any header content here.
 	//You can include JavaScript and CSS links here.
 	var cssLink = "<link rel='stylesheet' type='text/css' href='/_catalogs/masterpage/display templates/RenderGroup.css'>";
-
-	var headerHTML = cssLink + "<div class='groupWrapper'>";
+	var headerHTML = cssLink + "<div class='outerGroupWrapper'>";
 	return headerHTML;
 	}
 
@@ -53,7 +52,16 @@ pfh.renderFooter = function(ctx) {
 //All fields in the view can be access using ctx.CurrentItem.InternalFieldName
 //NB: The field must be included in the view for it to be available
 pfh.CustomItem = function(ctx) {
-	var itemHTML = "<div class='itemWrapper'>" + ctx.CurrentItem.Title + "</div>";    
+	//var groupId = ctx.ctxId + ctx.CurrentItem["Dept.groupindex"];
+	var itemHTML = "<div class='itemWrapper'>" + ctx.CurrentItem.Title + "</div>"; 
+	
+	//now check if this is the last item in the list, in which case we need to close
+	//the grouping div.
+	if (ctx.CurrentItemIdx == (ctx.ListData.LastRow -1))
+	{
+		itemHTML += "</div>";
+	}
+
 	return itemHTML;	
 }
 
@@ -62,12 +70,20 @@ pfh.CustomItem = function(ctx) {
 //This will be used to create the group header during the pages initial load.
 //Clicking on the gorup header will call the expand collapse function for the selected header value
 pfh.CustomGroup = function(ctx, group, groupId, listItem, ListSchema, level, expand) {
-	var htmlVal = "<div class='groupWrapper' id='grp" + groupId + "'><a onclick='pfh.expandCollapseGroup(this,\"" +
+	var htmlVal = ""
+	
+	//If this isn't the first group, then we need to close the previous grouping div.
+	if (groupId != ctx.ctxId + "1_")
+	{
+		htmlVal += "</div>";
+	}
+	
+	htmlVal += "<div class='groupWrapper' id='grp" + groupId + "' Expanded='" + expand + "' Loaded='" + expand + "' ><a onclick='pfh.expandCollapseGroup(this,\"" +
 		groupId + "\",\"" + ListSchema.HttpVDir + "\",\"" + ctx.listName + "\",\"" + listItem[group + ".urlencoded"] + "\", \"" + ListSchema.View + "\");return false;' href='javascript:'>"
 	htmlVal += "<span class='ms-commentexpand-iconouter'><img class='ms-commentexpand-icon' id='img_" + groupId + " alt='expand' src='/_layouts/15/images/spcommon.png?rev=31'/></span>";
 	htmlVal += listItem[group] + "</span>" + "<span style='font-weight:lighter; display:inline-block;'>&nbsp;(" + listItem[group + ".COUNT.group"] + ")</span>" ;
 	htmlVal += "</a></div>";
-	htmlVal += "<div class='groupExpandWrapper' id='expand" + groupId + "'></div>";	
+	htmlVal += "<div class='groupExpandWrapper' id='expand" + groupId + "'>";	
 	
 	return htmlVal;
 }
