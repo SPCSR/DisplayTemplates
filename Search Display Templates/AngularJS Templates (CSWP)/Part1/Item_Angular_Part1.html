@@ -1,0 +1,41 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>AngularJS Part1</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:ManagedPropertyMapping msdt:dt="string">'Link URL'{Link URL}:'Path','Line 1'{Line 1}:'Title','Line 2'{Line 2}:'','FileExtension','SecondaryFileExtension'</mso:ManagedPropertyMapping>
+<mso:MasterPageDescription msdt:dt="string">This Item Display Template will show a small thumbnail icon next to a hyperlink of the item title, with an additional line that is available for a custom managed property.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+<mso:HtmlDesignStatusAndPreview msdt:dt="string">http://sp2013app/_catalogs/masterpage/Tests/AngularJS/Item_Angular_Part1.html, Conversion successful.</mso:HtmlDesignStatusAndPreview>
+<mso:HtmlDesignConversionSucceeded msdt:dt="string">True</mso:HtmlDesignConversionSucceeded>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <div id="Angular_part1">
+<!--#_
+    AddPostRenderCallback(ctx, function(){
+        SP.SOD.executeFunc("angular", null, function() {
+            var elm = angular.element('#' + ctx.ElementId);
+            if (typeof elm !== "undefined") {
+                elm.removeAttr('style');
+            }
+
+	        var app = angular.module('DisplayApp', []);
+            app.controller('DisplayControl', function ($scope) { 
+                if (ctx.ListData.ResultTables[0] !== null) {
+                    $scope.ResultRows = ctx.ListData.ResultTables[0].ResultRows;
+                }
+            });
+            angular.bootstrap(document, ['DisplayApp']);
+        });
+    });
+_#-->
+    </div>
+</body>
+</html>
