@@ -139,15 +139,40 @@ AddPostRenderCallback(ctx, function() {
         var targetElement = document.getElementsByClassName('NotificationDiv');
         if (targetElement.length > 0) {
             for (var i = 0; i < targetElement.length; i++) {
-                var elm = targetElement[i];
-                var calloutOptions = new CalloutOptions();
-                calloutOptions.ID = 'notificationcallout-' + i;
-                calloutOptions.launchPoint = elm;
-                calloutOptions.beakOrientation = 'leftRight';
-                calloutOptions.content = String.format('<a href="{0}&PageType=4" title="View properties">View properties</a><br /><a href="{0}&PageType=6" title="Edit properties">Edit properties</a>', elm.getAttribute('rel'));
-                calloutOptions.title = elm.getAttribute('ref');
+                var element = targetElement[i]; 
+                // Do a query to retrieve the web url for each element
+                (function (element) {
+                    // Retrieve the path from the element
+                    var docPath = element.getAttribute('path');
+                    docPath = docPath.substring(0, docPath.lastIndexOf('/')) + "/_api/contextinfo";
 
-                var displayedPopup = CalloutManager.createNew(calloutOptions);
+                    var request = new XMLHttpRequest();
+                    request.open('POST', docPath, true);
+                    request.setRequestHeader('Accept', 'application/json; odata=verbose');
+                    request.onload = function (e) {
+                        if (request.readyState === 4) {
+                            if (!Srch.U.n(request.response)) {
+                                var data = JSON.parse(request.response);
+                                var webUrl = data.d.GetContextWebInformation.WebFullUrl;
+                                // Check if the web url that is retrieved is not null or empty
+                                if (!Srch.U.n(webUrl) && !Srch.U.e(webUrl)) { 
+                                    var calloutOptions = new CalloutOptions();
+                                    calloutOptions.ID = 'notificationcallout-' + i;
+                                    calloutOptions.launchPoint = element;
+                                    calloutOptions.beakOrientation = 'leftRight';
+                                    calloutOptions.content = String.format('<a href="{0}{1}&PageType=4" title="View properties">View properties</a><br /><a href="{0}{1}&PageType=6" title="Edit properties">Edit properties</a>', webUrl, element.getAttribute('rel'));
+                                    calloutOptions.title = element.getAttribute('ref');
+
+                                    var displayedPopup = CalloutManager.createNew(calloutOptions);
+                                }
+                            }
+                        }
+                    };
+                    request.onerror = function (e) {
+                        // Catching errors
+                    };
+                    request.send(null);
+                })(element);
             }
         }
     });
