@@ -7,8 +7,10 @@ File | Desciption
 --- | ---
 __Control_List_Table.html__ | This is the control template which needs to be used for the table layout.
 __Item_List_Item.html__ | This is the item template which creates a column for each managed property and its value.
+__table.redirection.js__ | This extra JavaScript file is needed to build to retrieve the web URL and redirect you to the correct property page.
 
+**Note: you will need to change the link to the table.redirection.js file in the Control_List_Table.html file.**
 
 **Usage**
 
-More information can be found on the following blog post: http://www.eliostruyf.com/table-layout-display-template-with-managed-property-sorting/
+More information can be found on the following blog post: [Table layout display template with managed property sorting](http://www.eliostruyf.com/table-layout-display-template-with-managed-property-sorting/ "Table layout display template with managed property sorting")
