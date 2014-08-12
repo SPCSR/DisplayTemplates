@@ -1,0 +1,98 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+<head>
+    <title>AngularJS Part4 Grouping</title>
+
+    <!--[if gte mso 9]><xml>
+        <mso:CustomDocumentProperties>
+            <mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+            <mso:MasterPageDescription msdt:dt="string">This is the control display template for AngularJS.</mso:MasterPageDescription>
+            <mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106601</mso:ContentTypeId>
+            <mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+        </mso:CustomDocumentProperties>
+    </xml><![endif]-->
+</head>
+
+<body>
+
+    <script>
+        SP.SOD.registerSod('angular', "//ajax.googleapis.com/ajax/libs/angularjs/1.2.20/angular.min.js");
+    </script>
+
+    <div id="Angular_part4_Grouping">
+        <!--#_
+                if (!$isNull(ctx.ClientControl) &&
+                    !$isNull(ctx.ClientControl.shouldRenderControl) &&
+                    !ctx.ClientControl.shouldRenderControl())
+                {
+                    return "";
+                }
+
+                var elementId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_Results");
+        _#-->
+        <div ng-controller="DisplayControl" id="_#= elementId =#_" style="display:none;">
+            <ul class="cbs-List">
+                <li ng-show="ResultRows.length" ng-repeat="ResultRow in ResultRows | orderBy:'Line2'">
+                    <h2 ng-show="CreateGroupHeader(ResultRow.Line2.value)">
+                        {{ ResultRow.Line2.value }}
+                    </h2>
+                    <div class="cbs-Item">
+                        <a class="cbs-ItemLink" title="{{ ResultRow.Line1.value }}">
+                            <img class="cbs-Thumbnail" ng-src="{{ ResultRow.DocIcon }}" alt="{{ ResultRow.Line1.value }}" />
+                        </a>
+                        <a class="cbs-Line1Link" href="{{ ResultRow.Path.value }}" title="{{ ResultRow.Line1.value }}">{{ ResultRow.Line1.value }}</a>
+                        <div ng-show="!ResultRow.Line2.isEmpty" class="cbs-Line2" title="{{ ResultRow.Line2.value }}">{{ ResultRow.Line2.value }}</div>
+                    </div>
+                </li>
+                <li ng-show="!ResultRows.length">
+                    _#= Srch.ContentBySearch.getControlTemplateEncodedNoResultsMessage(ctx.ClientControl) =#_
+                </li>
+            </ul>
+        </div>
+        <!--#_
+                SP.SOD.executeFunc("angular", null, function() {
+                    var elm = angular.element('#' + elementId);
+                    if (typeof elm !== "undefined") {
+                        elm.removeAttr('style');
+                    }
+
+                    var app = angular.module('DisplayApp', []);
+                    app.controller('DisplayControl', function ($scope) {
+                        if (ctx.ListData.ResultTables[0] !== null) {
+                            $scope.ResultRows = [];
+                            angular.forEach(ctx.ListData.ResultTables[0].ResultRows, function(row) {
+                                if (typeof ctx['DisplayTemplateData'] === "undefined") {
+                                    ctx['DisplayTemplateData'] = new Object();
+                                }
+                                if (typeof this.DisplayTemplateData.ManagedPropertyMapping === "undefined") {
+                                    // Retrieve the item template
+                                    var itemTemplate = Srch.U.resolveRenderTemplate(ctx, row, "Item");
+                                    // Execute the item template
+                                    CoreRender(itemTemplate, ctx);
+                                    // Set the display template property mappings
+                                    ctx['DisplayTemplateData']['ManagedPropertyMapping'] = this.DisplayTemplateData.ManagedPropertyMapping;
+                                }
+                                ctx['CurrentItem'] = row;
+
+                                var item = [];
+                                item.Path = $getItemValue(ctx, "Link URL");
+                                item.Line1 = $getItemValue(ctx, "Line 1");
+                                item.Line2 = $getItemValue(ctx, "Line 2");
+                                item.DocIcon = Srch.ContentBySearch.getIconSourceFromItem(row);
+                                $scope.ResultRows.push(item);
+                            });
+                        }
+
+                        // Grouping
+                        $scope.currentGroupHeader = '';
+                        $scope.CreateGroupHeader = function (value) {
+                            var showHeader = $scope.currentGroupHeader === value ? false : true;
+                            $scope.currentGroupHeader = value;
+                            return showHeader;
+                        }
+                    });
+                    angular.bootstrap(document, ['DisplayApp']);
+                });
+        _#-->
+    </div>
+</body>
+</html>
