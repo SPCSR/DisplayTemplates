@@ -1,0 +1,74 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+<head>
+    <title>Two lines intellisense</title>
+
+    <!--[if gte mso 9]><xml>
+    <mso:CustomDocumentProperties>
+    <mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+    <mso:ManagedPropertyMapping msdt:dt="string">'Link URL'{Link URL}:'Path','Line 1'{Line 1}:'Title','Line 2'{Line 2}:','FileExtension','SecondaryFileExtension'</mso:ManagedPropertyMapping>
+    <mso:MasterPageDescription msdt:dt="string">This Item Display Template with intellisense and syntax highlighting.</mso:MasterPageDescription>
+    <mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
+    <mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+    </mso:CustomDocumentProperties>
+    </xml><![endif]-->
+</head>
+
+<body>
+
+    <script>
+        Srch.U.registerRenderTemplateByName("getsearchdatafortwolines", getSearchDataForTwoLines);
+
+        function getSearchDataForTwoLines(ctx) {
+            var itemData = [];
+
+            var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_2lines_");
+            itemData["containerId"] = encodedId + "container";
+
+            var linkURL = $getItemValue(ctx, "Link URL");
+            linkURL.overrideValueRenderer($urlHtmlEncode);
+            itemData["linkURL"] = linkURL;
+
+            itemData["iconURL"] = Srch.ContentBySearch.getIconSourceFromItem(ctx.CurrentItem);
+
+            var line1 = $getItemValue(ctx, "Line 1");
+            var line2 = $getItemValue(ctx, "Line 2");
+            line1.overrideValueRenderer($contentLineText);
+            line2.overrideValueRenderer($contentLineText);
+
+            itemData["line1"] = line1;
+            itemData["line2"] = line2;
+
+            return itemData;
+        }
+    </script>
+
+    <div id="TwoLines">
+        <!--#_
+            var itemData = Srch.U.getRenderTemplateCollection().getsearchdatafortwolines(ctx);
+
+            var containerId, linkURL, iconURL, line1, line2;
+            containerId = itemData["encodedId"];
+            linkURL = itemData["linkURL"];
+            iconURL = itemData["iconURL"];
+            line1 = itemData["line1"];
+            line2 = itemData["line2"];
+        _#-->
+        <div class="cbs-Item" id="_#= containerId =#_" data-displaytemplate="Item2Lines">
+            <a class="cbs-ItemLink" title="_#= $htmlEncode(line1.defaultValueRenderer(line1)) =#_">
+                <img class="cbs-Thumbnail" src="_#= $urlHtmlEncode(iconURL) =#_" alt="_#= $htmlEncode(line1.defaultValueRenderer(line1)) =#_" />
+            </a>
+            <div class="cbs-Detail">
+                <a class="cbs-Line1Link ms-noWrap ms-displayBlock" href="_#= linkURL =#_" title="_#= $htmlEncode(line1.defaultValueRenderer(line1)) =#_">_#= line1 =#_</a>
+                <!--#_
+                if(!line2.isEmpty)
+                {
+                _#-->
+                <div class="cbs-Line2 ms-noWrap" title="_#= $htmlEncode(line2.defaultValueRenderer(line2)) =#_" style="display: inline-block; padding-left: 5px;">_#= line2 =#_</div>
+                <!--#_
+                }
+                _#-->
+            </div>
+        </div>
+    </div>
+</body>
+</html>
