@@ -20,6 +20,8 @@
 
     <div id="Control_List">
 <!--#_ 
+var tableId = ctx.ClientControl.get_nextUniqueId() + "_table";
+
 function AddSortableProperty (prop) {
     var availableSorts = ctx.DataProvider.get_availableSorts();
     availableSorts.push({"name":prop+"ASC","sorts":[{"p":prop,"d":0}]});
@@ -137,7 +139,8 @@ AddPostRenderCallback(ctx, function() {
 
 	// Add a callout to each row
     SP.SOD.executeFunc("callout.js", "Callout", function () {
-        var targetElement = document.getElementsByClassName('NotificationDiv');
+        var tableElement = document.getElementById(tableId);
+        var targetElement = tableElement.getElementsByClassName('NotificationDiv');
         if (targetElement.length > 0) {
             for (var i = 0; i < targetElement.length; i++) {
                 var elm = targetElement[i];
@@ -166,7 +169,7 @@ var ListRenderRenderWrapper = function(itemRenderResult, inCtx, tpl)
 }
 ctx['ItemRenderWrapper'] = ListRenderRenderWrapper;
 _#-->
-        <table id="" class="cbs-List">
+        <table id="_#= tableId =#_" class="cbs-List">
             _#= ctx.RenderGroups(ctx) =#_
         </table>
 
