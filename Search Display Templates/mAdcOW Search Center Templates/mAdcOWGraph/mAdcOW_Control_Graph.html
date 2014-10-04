@@ -1,0 +1,120 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>Graph Control</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:MasterPageDescription msdt:dt="string">This is the default Control Display Template that will list the items. It does not allow the user to page through items.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106601</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <script>
+        $includeLanguageScript(this.url, "~sitecollection/_catalogs/masterpage/Display Templates/Language Files/{Locale}/CustomStrings.js");
+		$includeLanguageScript(this.url, "~sitecollection/_catalogs/masterpage/Display Templates/mAdcOWGraph/masonry.pkgd.min.js");
+    </script>
+    <div id="Control_List">
+<!--#_ 
+Type.registerNamespace('mAdcOW.Search');
+
+mAdcOW.Search.Graph = function () {
+	var provider;
+	return {
+		setProvider: function(dp) {
+			provider = dp;
+		},
+		getProvider: function() {
+			return provider;
+		},
+		home: function() {
+			var properties = provider.get_properties();
+			properties["GraphQuery"] = "and(actor(me,action:1021),actor(me,or(action:1021,action:1036,action:1037,action:1039)))";
+			properties["GraphRankingModel"]  = "action:1021,weight:1,edgeFunc:weight,mergeFunc:max";
+			provider.set_fallbackRankingModelID("0c77ded8-c3ef-466d-929d-905670ea1d72");
+			provider.set_fallbackSort([]);
+			provider.set_queryTemplate("(FileExtension:doc OR FileExtension:docx OR FileExtension:ppt OR FileExtension:pptx OR FileExtension:xls OR FileExtension:xlsx OR FileExtension:pdf)");
+			provider.issueQuery()
+		},
+		myWork: function() {
+			var properties = provider.get_properties();
+			properties["GraphQuery"] = "and(actor(me,action:1003),actor(me,or(action:1003,action:1036,action:1037,action:1039)))";
+			delete properties.GraphRankingModel;
+			provider.set_fallbackRankingModelID("");
+			provider.set_fallbackSort([{"p":"LastModifiedTime","d":1}]);
+			provider.set_queryTemplate("FileExtension:doc OR FileExtension:docx OR FileExtension:ppt OR FileExtension:pptx OR FileExtension:xls OR FileExtension:xlsx OR FileExtension:pdf");
+			provider.issueQuery();			
+		},
+		shared: function() {
+			var properties = provider.get_properties();
+			delete properties.GraphQuery;
+			delete properties.GraphRankingModel;
+			provider.set_fallbackRankingModelID("");
+			provider.set_fallbackSort([{"p":"LastModifiedTime","d":1}]);
+			provider.set_queryTemplate("(FileExtension:doc OR FileExtension:docx OR FileExtension:ppt OR FileExtension:pptx OR FileExtension:xls OR FileExtension:xlsx OR FileExtension:pdf) AND (SharedWithUsersOWSUSER:{User.AccountName})");
+			provider.issueQuery();
+		}
+	}
+}()
+
+mAdcOW.Search.Graph.setProvider(ctx.DataProvider);
+
+if (!$isNull(ctx.ClientControl) &&
+    !$isNull(ctx.ClientControl.shouldRenderControl) &&
+    !ctx.ClientControl.shouldRenderControl())
+{
+    return "";
+}
+ctx.ListDataJSONGroupsKey = "ResultTables";
+var $noResults = Srch.ContentBySearch.getControlTemplateEncodedNoResultsMessage(ctx.ClientControl);
+
+var noResultsClassName = "ms-srch-result-noResults";
+
+var ListRenderRenderWrapper = function(itemRenderResult, inCtx, tpl)
+{
+    var iStr = [];
+	iStr.push('<div class="carditem">');
+    iStr.push(itemRenderResult);
+    iStr.push('</div>');
+    return iStr.join('');
+}
+ctx['ItemRenderWrapper'] = ListRenderRenderWrapper;
+_#-->
+	<div>
+		<div id="menu" style="font-size: larger;margin:bottom:10px">
+			<a href="#" onclick="mAdcOW.Search.Graph.home()">Home</a> | <a href="#" onclick="mAdcOW.Search.Graph.myWork()">My work</a> | <a href="#" onclick="mAdcOW.Search.Graph.shared()">Shared with me</a>
+		</div>
+		<div id="cardcontainer" class="card_container" style="visibility:hidden">
+			_#= ctx.RenderGroups(ctx) =#_
+		</div>
+	</div>
+<!--#_
+if (ctx.ClientControl.get_shouldShowNoResultMessage())
+{
+_#-->
+        <div class="_#= noResultsClassName =#_">_#= $noResults =#_</div>
+<!--#_
+}
+_#-->
+<!--#_
+var cardContainer;
+AddPostRenderCallback(ctx, function() {
+	cardContainer = jQuery('#cardcontainer');
+	cardContainer.masonry({
+		  gutter: 10,
+		  itemSelector: '.carditem'
+		});
+	cardContainer.css('visibility','visible').hide().fadeIn();
+	jQuery(window).on('load', function(){
+		cardContainer.masonry(); //reload to position properly
+	});
+});
+_#-->
+
+    </div>
+</body>
+</html>
