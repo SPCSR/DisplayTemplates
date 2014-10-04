@@ -1,0 +1,101 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>mAdcOW Graph Item</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:ManagedPropertyMapping msdt:dt="string">'Author'{Author}:'Author','Link URL'{Link URL}:'ServerRedirectedURL,path','Title'{Title}:'Title','Description'{Description}:'Description','SiteTitle'{SiteTitle}:'SiteTitle','LastModifiedTime':'LastModifiedTime','ViewsLifeTime':'ViewsLifeTime','ViewsRecent':'ViewsRecent','SecondaryFileExtension':'SecondaryFileExtension','DocId':'DocId','WebId':'WebId','UniqueId':'UniqueId','SiteID':'SiteID','EditorOWSUSER':'EditorOWSUSER','SiteName':'SiteName'</mso:ManagedPropertyMapping>
+<mso:MasterPageDescription msdt:dt="string">Office Graph Item</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+<mso:CrawlerXSLFile msdt:dt="string"></mso:CrawlerXSLFile>
+<mso:CompatibleManagedProperties msdt:dt="string"></mso:CompatibleManagedProperties>
+<mso:CompatibleSearchDataTypes msdt:dt="string"></mso:CompatibleSearchDataTypes>
+<mso:DisplayTemplateLevel msdt:dt="string"></mso:DisplayTemplateLevel>
+<mso:HtmlDesignStatusAndPreview msdt:dt="string">https://pzlcloud-my.sharepoint.com/_catalogs/masterpage/Display Templates/mAdcOWGraph/GraphItem.html, Conversion successful.</mso:HtmlDesignStatusAndPreview>
+<mso:HtmlDesignConversionSucceeded msdt:dt="string">True</mso:HtmlDesignConversionSucceeded>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <script>
+        $includeLanguageScript(this.url, "~sitecollection/_catalogs/masterpage/Display Templates/Language Files/{Locale}/CustomStrings.js");
+		$includeScript(this.url, "~sitecollection/_layouts/15/SP.dateTimeUtil.js");
+    </script>
+
+    <div id="Item_Graph">
+<!--#_
+
+var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_picture3Lines_");
+
+var linkURL = $getItemValue(ctx, "Link URL");
+linkURL.overrideValueRenderer($urlHtmlEncodeValueObject);
+
+var title = $getItemValue(ctx, "Title").value;
+var author = $getItemValue(ctx, "Author").value;
+var docId = $getItemValue(ctx, "DocId").value;
+var webId = $getItemValue(ctx, "WebId").value;
+var siteId = $getItemValue(ctx, "SiteID").value;
+var uniqueId = $getItemValue(ctx, "UniqueId").value;
+var siteTitle = $getItemValue(ctx, "SiteTitle").value;
+var siteUrl = $getItemValue(ctx, "SiteName").value;
+var account = $getItemValue(ctx,"EditorOWSUSER").inputValue;
+var views = $getItemValue(ctx,"ViewsLifeTime").inputValue;
+var accountName;
+var modifiedDate = $getItemValue(ctx,"LastModifiedTime").value;
+if(!$isNull(account) && !$isEmptyString(account)) {
+	var idx = account.lastIndexOf("|");
+	accountName = account.substr(idx+1);
+	
+	var idxNameStart = account.indexOf("|");
+	var idxNameEnd = account.indexOf("|", idxNameStart+1);
+	if(idxNameStart > 0 && idxNameEnd >0 ) {
+		author = account.substr(idxNameStart+1, idxNameEnd-(idxNameStart+1));
+	}
+	
+}
+var dateString = SP.DateTimeUtil.SPRelativeDateTime.getRelativeDateTimeString ( modifiedDate, true , SP.DateTimeUtil.SPCalendarType.none, false );
+
+ctx.CurrentItem['FileExtension'] = ctx.CurrentItem['SecondaryFileExtension'];
+var iconPath = Srch.U.getIconUrlByFileExtension(ctx.CurrentItem);
+var fileDisplayName = Srch.U.getFriendlyNameForFileExtension(ctx.CurrentItem['SecondaryFileExtension'].toString());
+fileDisplayName = fileDisplayName.substr(fileDisplayName.indexOf("_")+1);
+
+ _#-->
+        <div style="width: 300px;border: 1px solid #eee;padding:5px;margin-bottom:10px">
+			<div style="margin-left:10px;margin-right:10px;margin-bottom:10px; border-bottom: solid 1px #eee">
+				<div style="float:left">
+					<img src="/_layouts/15/userphoto.aspx?size=S&accountname=_#= accountName =#_" style="max-width:30px; max-height:30px" />
+                </div>
+				<div style="float:left;margin-left:5px">
+					<div>
+						_#= author =#_
+					</div>
+					<div style="font-size:smaller">
+						_#= dateString =#_
+					</div>
+				</div>
+				<div style="clear:both"></div>
+			</div>
+            <div style="margin: 0px 10px 10px 10px">
+                <a href="_#= linkURL =#_" title="_#= $htmlEncode(title) =#_">
+                    <h2 style="word-wrap:break-word">_#= title =#_</h2>
+                </a>
+            </div>
+			<div style="max-height:250px;overflow:hidden;margin-bottom:10px">
+				<img onerror="this.style.display='none'" src="/_layouts/15/getpreview.ashx?guidFile=_#= uniqueId =#_&guidSite=_#= siteId =#_&guidWeb=_#= webId =#_&docid=_#= docId =#_&ClientType=CodenameOsloWeb&size=small'" style="max-width:280px;display:block;margin:0 auto">
+			</div>
+			<div style="margin: 0px 10px 10px 10px;text-overflow: ellipsis;overflow:hidden;white-space:nowrap">
+				<img src="_#= iconPath =#_" style="vertical-align:bottom"> _#= fileDisplayName =#_ | <a href="_#= siteUrl =#_">_#= siteTitle =#_</a>
+			</div>
+			<div style="margin-left:10px;margin-right:10px;text-align:right">
+			_#= views =#_ views
+			</div>
+        </div>
+    </div>
+</body>
+</html>
+
