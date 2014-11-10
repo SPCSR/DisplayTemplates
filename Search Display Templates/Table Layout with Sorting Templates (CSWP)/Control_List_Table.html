@@ -99,6 +99,16 @@ AddPostRenderCallback(ctx, function() {
         }
     }
 
+    // Check if the properties array is empty. 
+    // This can happen if you do not override the managed properties in the web part.
+    if ($isEmptyArray(properties)) {
+        if (!Srch.U.n(this.DisplayTemplateData)) {
+            if (!Srch.U.n(this.DisplayTemplateData.ManagedPropertyMapping)) {
+                properties = this.DisplayTemplateData.ManagedPropertyMapping;
+            }
+        }
+    }
+
     // Show or hide the sort options
     if (!$isEmptyArray(properties)) {
         for (var key in properties) {
