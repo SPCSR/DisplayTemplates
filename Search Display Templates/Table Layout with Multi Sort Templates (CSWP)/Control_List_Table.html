@@ -1,0 +1,451 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>List Table Control</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:MasterPageDescription msdt:dt="string">This is the table layout control template.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106601</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <script>
+        Type.registerNamespace('estruyf.Table');
+
+        /*********************************
+         * Show property sorting options *
+         *********************************/
+        estruyf.Table.Layout = function() {
+            var currentCtx, clientControl, properties;
+            return {
+                setContext: function (ctx, cc) {
+                    estruyf.Table.Layout.setCurrentCtx(ctx);
+                    estruyf.Table.Layout.setClientControl(cc);
+                    estruyf.Table.Layout.setProperties(cc);
+                },
+                setCurrentCtx: function (ctx) {
+                    currentCtx = ctx;
+                },
+                setClientControl: function (cc) {
+                    clientControl = cc;
+                },
+                setProperties: function (cc) {
+                    if (!Srch.U.n(cc)) {
+                        var propertyMappings = cc.get_propertyMappings();
+                        if (!Srch.U.n(propertyMappings) && !Srch.U.w(propertyMappings)) {
+                            properties = Srch.Result.parsePropertyMappingsString(propertyMappings);
+                        }
+                    }
+                },
+                // Add the sortable properties to your search context
+                addSortableProperty: function (property) {
+                    var availableSorts = currentCtx.DataProvider.get_availableSorts();
+                    availableSorts.push({ "name": property + "ASC", "sorts": [{ "p": property, "d": 0 }] });
+                    availableSorts.push({ "name": property + "DES", "sorts": [{ "p": property, "d": 1 }] });
+                    currentCtx.DataProvider.set_availableSorts(availableSorts);
+                },
+                // Keep a list of all the unsortable properties
+                addUnsortableProperty: function (property) {
+                    if (typeof currentCtx.DataProvider.Unsortable === "undefined") {
+                        // Create an empty unsortable array
+                        currentCtx.DataProvider.Unsortable = [];
+                    }
+                    currentCtx.DataProvider.Unsortable.push(property);
+                },
+                // Check if a property is sortable
+                checkSortableProperty: function (property) {
+                    var availableSorts = currentCtx.DataProvider.get_availableSorts();
+                    var indexArray = availableSorts.map(function(o){return o.name;});
+                    var currentPropIdx = indexArray.indexOf(property+"ASC");
+                    return currentPropIdx === -1 ? true : false;
+                },
+                // Check if a property is not sortable
+                checkUnsortableProperty: function (property) {
+                    if (typeof currentCtx.DataProvider.Unsortable !== "undefined") {
+                        var unsortableProps = currentCtx.DataProvider.Unsortable;
+                        return unsortableProps.indexOf(property) === -1 ? true : false;
+                    } else {
+                        return true;
+                    }
+                },
+                // Hide the property options which are not sortable
+                hideSortableOptions: function (property) {
+                    var elm = document.getElementById(property.replace(/ /g, '-'));
+                    if (elm !== null) {
+                        elm.style.display = 'none';
+                    }
+                },
+                // Highlight the properties that are currently sorted
+                setCurrentSorting: function () {
+                    var queryState = currentCtx.DataProvider.get_currentQueryState().o;
+                    if (queryState !== null && queryState.length > 0) {
+                        for (var i = 0; i < queryState.length; i++) {
+                            var sortName = queryState[i].p;
+                            var sortDir = queryState[i].d;
+                            if (!Srch.U.e(sortName)) {
+                                var elm = document.getElementById(sortName.replace(/ /g, '-'));
+                                if (elm !== null) {
+                                    elm.parentNode.style.fontWeight = "bold";
+                                    var sortElm = elm.getElementsByClassName('sortarrow')[0];
+                                    if (sortElm !== null) {
+                                        if (sortDir === 0){
+                                            sortElm.innerHTML = "<img src='/_layouts/15/images/spcommon.png' class='ms-sortarrowdown-icon'>";
+                                        } else {
+                                            sortElm.innerHTML = "<img src='/_layouts/15/images/spcommon.png' class='ms-sortarrowup-icon'>";
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                // Show the property sorting options
+                showPropertySorting: function () {
+                    // Check if the properties array is empty. 
+                    // This can happen if you do not override the managed properties in the web part.
+                    if ($isEmptyArray(properties)) {
+                        if (!Srch.U.n(DisplayTemplateData)) {
+                            if (!Srch.U.n(DisplayTemplateData.ManagedPropertyMapping)) {
+                                properties = DisplayTemplateData.ManagedPropertyMapping;
+                            }
+                        }
+                    }
+                    
+                    if (!$isEmptyArray(properties)) {
+                        for (var key in properties) {
+                            if (!Srch.U.e(properties[key])) {
+                                var prop = properties[key].toString();
+                                if (estruyf.Table.Layout.checkSortableProperty(prop)) {
+                                    if (estruyf.Table.Layout.checkUnsortableProperty(prop)) {
+                                        (function (prop) {
+                                            // Do a Ajax call for each property to check if it is sortable
+                                            var request = new XMLHttpRequest();
+                                            var restUrl = _spPageContextInfo.webAbsoluteUrl + "/_api/search/query?querytext='" + clientControl.get_dataProvider().get_queryTemplate() + "'&sortlist='" + properties[key] +":ascending'&RowLimit=1&selectproperties='Path'";
+                                            request.open('GET', restUrl, true);
+                                            request.onload = function (e) {
+                                                if (request.readyState === 4) {
+                                                    // Check if the get was successful
+                                                    if (request.status === 200) {
+                                                        estruyf.Table.Layout.addSortableProperty(prop);
+                                                    } else {
+                                                        estruyf.Table.Layout.addUnsortableProperty(prop);
+                                                        // Hide the sorting options
+                                                        estruyf.Table.Layout.hideSortableOptions(prop);
+                                                    }
+                                                }
+                                            };
+                                            request.onerror = function (e) {
+                                                // Catching errors
+                                            };
+                                            request.send(null);
+                                        })(prop);
+                                    } else {
+                                        // Hide the sorting options
+                                        estruyf.Table.Layout.hideSortableOptions(prop);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+        }();
+
+
+        /******************************************
+         * Sorting functions / Multi sort enabled *
+         ******************************************/
+        estruyf.Table.Sort = function () {
+            return {
+                sortProperty: function (sortName, clientControl) {
+                    if (Srch.U.e(sortName)) {
+                        return;
+                    }
+                    var dataProvider = clientControl.get_dataProvider();
+                    if (Srch.U.n(dataProvider)) {
+                        return;
+                    }
+
+                    // Retrieve the available sorts
+                    var availableSorts = dataProvider.get_availableSorts();
+                    // Retrieve the current sorts
+                    var currentSorts = clientControl.get_dataProvider().get_currentQueryState().o;
+
+                    if (!Srch.U.n(availableSorts) && availableSorts.length > 0) {
+                        var clickedSort;
+                        // Loop over each of the available sortings
+                        for (var i = 0; i < availableSorts.length; i++) {
+                            var sort = availableSorts[i];
+                            // Check if the sorting has been selected
+                            if (!Srch.U.n(sort) && sort.name === sortName) {
+                                // Store the current sorting
+                                clickedSort = sort.sorts;
+                            }
+                        }
+
+                        var sortarray = [];
+                        var processed = false;
+                        // Check if there was already sorting in place
+                        if (!Srch.U.n(currentSorts) && currentSorts.length > 0) {
+                            // Loop over the current sorts
+                            for (var i = 0; i < currentSorts.length; i++) {
+                                var currentSort = currentSorts[i];
+                                // Check if the current sort is equal to the clicked sort
+                                if (currentSort.p === clickedSort[0].p) {
+                                    // Push the new sorting option on the array
+                                    sortarray.push(clickedSort[0]);
+                                    processed = true;
+                                } else {
+                                    // Push the unchanged sort on the array
+                                    var sortObj = { p: currentSort.p, d: currentSort.d };
+                                    sortarray.push(sortObj);
+                                }
+                            }
+                            // Check if the clicked sorting was processed.
+                            // If it is not processed, push it on the array.
+                            if (!processed) {
+                                sortarray.push(clickedSort[0]);
+                            }
+                        } else {
+                            // If the results were not yet sorted, use the clicked sort option
+                            sortarray = clickedSort;
+                        }
+
+                        // Do a new query with the sort information
+                        var queryState = new Srch.QueryState();
+                        queryState.o = sortarray;
+                        queryState.s = 1;
+                        var queryEvent = new Srch.QueryEventArgs(queryState);
+                        queryEvent.userAction = 4;
+                        clientControl.raiseQueryReadyEvent(queryEvent);
+                        return;
+                    }
+                },
+                removeSortProperty: function (property, clientControl) {
+                    if (Srch.U.e(property)) {
+                        return;
+                    }
+                    var dataProvider = clientControl.get_dataProvider();
+                    if (Srch.U.n(dataProvider)) {
+                        return;
+                    }
+
+                    // Retrieve the current sorts
+                    var currentSorts = clientControl.get_dataProvider().get_currentQueryState().o;
+
+                    // Check if the results are already sorted, otherwise the property cannot be removed
+                    if (!Srch.U.n(currentSorts) && currentSorts.length > 0) {
+                        var sortarray = [];
+                        var processed = false;
+                        // Loop over the current sorts
+                        for (var i = 0; i < currentSorts.length; i++) {
+                            var currentSort = currentSorts[i];
+                            // Check if the current sort is equal to the clicked sort
+                            if (currentSort.p !== property) {
+                                // Push the unchanged sort on the array
+                                var sortObj = { p: currentSort.p, d: currentSort.d };
+                                sortarray.push(sortObj);
+                            } else {
+                                processed = true;
+                            }
+                        }
+
+                        // Check if the sort option was removed from the sorting array
+                        if (processed) {
+                            // Do a new query with the sort information
+                            var queryState = new Srch.QueryState();
+                            queryState.o = sortarray;
+                            queryState.s = 1;
+                            var queryEvent = new Srch.QueryEventArgs(queryState);
+                            queryEvent.userAction = 4;
+                            clientControl.raiseQueryReadyEvent(queryEvent);
+                            return;
+                        }
+                    }
+                }
+            };
+        }();
+
+
+        /************************************************
+         * Callout functions to view or edit properties *
+         ************************************************/
+        estruyf.Table.Callout = function () {
+            return {
+                setCallouts: function (tableId) {
+                    SP.SOD.executeFunc("callout.js", "Callout", function () {
+                        var tableElement = document.getElementById(tableId);
+                        var targetElement = tableElement.getElementsByClassName('NotificationDiv');
+                        if (targetElement.length > 0) {
+                            for (var i = 0; i < targetElement.length; i++) {
+                                var elm = targetElement[i];
+                                var calloutOptions = new CalloutOptions();
+                                calloutOptions.ID = 'notificationcallout-' + i;
+                                calloutOptions.launchPoint = elm;
+                                calloutOptions.beakOrientation = 'leftRight';
+                                calloutOptions.content = String.format('<a href="{0}&PageType=4" onclick="Srch.U.getRenderTemplateCollection().redirecttopropertiesurl(this, \'{1}\');return false;" title="View properties">View properties</a><br /><a href="{0}&PageType=6" onclick="Srch.U.getRenderTemplateCollection().redirecttopropertiesurl(this, \'{1}\');return false;" title="Edit properties">Edit properties</a>', elm.getAttribute('rel'), elm.getAttribute('path'));
+                                calloutOptions.title = elm.getAttribute('ref');
+
+                                var displayedPopup = CalloutManager.createNew(calloutOptions);
+                            }
+                        }
+                    });
+                },
+                redirectToPropertiesUrl: function (element, docPath) {
+                    docPath = docPath.substring(0, docPath.lastIndexOf('/')) + "/_api/contextinfo";
+                    var request = new XMLHttpRequest();
+                    request.open('POST', docPath, true);
+                    request.setRequestHeader('Accept', 'application/json; odata=verbose');
+                    request.onload = function (e) {
+                        if (request.readyState === 4) {
+                            if (!Srch.U.n(request.response)) {
+                                var data = JSON.parse(request.response);
+                                var webUrl = data.d.GetContextWebInformation.WebFullUrl;
+                                // Check if the web url that is retrieved is not null or empty
+                                if (!Srch.U.n(webUrl) && !Srch.U.e(webUrl)) {
+                                    GoToPage(String.format('{0}{1}', webUrl, element.getAttribute('href')));
+                                }
+                            }
+                        }
+                    };
+                    request.onerror = function (e) {
+                        // Catching errors
+                    };
+                    request.send(null);
+                    return false;
+                }
+            };
+        }();
+
+
+        // Register the table functions
+        Srch.U.registerRenderTemplateByName("setcontext", estruyf.Table.Layout.setContext);
+        Srch.U.registerRenderTemplateByName("setcurrentsorting", estruyf.Table.Layout.setCurrentSorting);
+        Srch.U.registerRenderTemplateByName("showpropertysorting", estruyf.Table.Layout.showPropertySorting);
+
+        Srch.U.registerRenderTemplateByName("sortproperty", estruyf.Table.Sort.sortProperty);
+        Srch.U.registerRenderTemplateByName("removesortproperty", estruyf.Table.Sort.removeSortProperty);
+
+        Srch.U.registerRenderTemplateByName("setcallouts", estruyf.Table.Callout.setCallouts);
+        Srch.U.registerRenderTemplateByName("redirecttopropertiesurl", estruyf.Table.Callout.redirectToPropertiesUrl);
+    </script>
+
+    <div id="Control_Table">
+<!--#_ 
+var tableId = ctx.ClientControl.get_nextUniqueId() + "_table";
+
+if (!$isNull(ctx.ClientControl) && !$isNull(ctx.ClientControl.shouldRenderControl) && !ctx.ClientControl.shouldRenderControl()) {
+    return "";
+}
+
+// Get the client control
+var clientControl = ctx.ClientControl;
+
+// Set the current context
+Srch.U.getRenderTemplateCollection().setcontext(ctx, clientControl);
+
+AddPostRenderCallback(ctx, function() {
+    // Show the current sort option
+    Srch.U.getRenderTemplateCollection().showpropertysorting();
+
+    // Show or hide the sort options
+    Srch.U.getRenderTemplateCollection().setcurrentsorting();
+
+    // Add a callout to each row
+    Srch.U.getRenderTemplateCollection().setcallouts(tableId);
+});
+
+ctx.ClientControl.set_showSortOptions(true);
+
+ctx.ListDataJSONGroupsKey = "ResultTables";
+
+var ListRenderRenderWrapper = function(itemRenderResult, inCtx, tpl)
+{
+    var iStr = [];
+    iStr.push(itemRenderResult);
+    return iStr.join('');
+}
+ctx['ItemRenderWrapper'] = ListRenderRenderWrapper;
+_#-->
+        <table id="_#= tableId =#_" class="cbs-List">
+            _#= ctx.RenderGroups(ctx) =#_
+        </table>
+
+<!--#_
+    var showPaging = ctx.ClientControl.get_showPaging();
+    if(showPaging)
+    {
+        var pagingInfo = ctx.ClientControl.get_pagingInfo();
+        showPaging = !$isEmptyArray(pagingInfo);
+        if(showPaging)
+        {
+            var currentPage = null;
+            var firstPage = pagingInfo[0];
+            var lastPage = pagingInfo[pagingInfo.length - 1];
+
+            for (var i = 0; i< pagingInfo.length; i++)
+            {
+                var pl = pagingInfo[i];
+                if (!$isNull(pl))
+                {
+                    if (pl.startItem == -1)
+                    {
+                        currentPage = pl;
+                    }
+                }
+            }
+
+            var getPagingImageClassName = function(buttonClassNamePrefix, isNext, isEnabled)
+            {
+                var className = buttonClassNamePrefix;
+                className += (isNext && !Srch.U.isRTL()) || (!isNext && Srch.U.isRTL()) ? "right" : "left";
+                if(!$isNull(isEnabled) && isEnabled == false)
+                {
+                    className += "-disabled";
+                }
+                return className;
+            }
+
+            var getPagingContainerClassName = function(buttonClassNamePrefix, isEnabled)
+            {
+                var className = buttonClassNamePrefix;
+                className += isEnabled ? "enabled" : "disabled";
+                return className;
+            }
+
+            var hasNextPage = lastPage.pageNumber == -2;
+            var hasPreviousPage = firstPage.pageNumber == -1;
+            var buttonClassNamePrefix = "ms-promlink-button-";
+            var nextPageContainerClassName = getPagingContainerClassName(buttonClassNamePrefix, hasNextPage);
+            var previousPageContainerClassName = getPagingContainerClassName(buttonClassNamePrefix, hasPreviousPage);
+            var nextPageImageClassName = getPagingImageClassName(buttonClassNamePrefix, true, hasNextPage);
+            var previousPageImageClassName = getPagingImageClassName(buttonClassNamePrefix, false, hasPreviousPage);
+    _#-->
+        <div class="ms-promlink-header">
+            <span class="ms-promlink-headerNav">
+                <a class="ms-commandLink ms-promlink-button _#= $htmlEncode(previousPageContainerClassName) =#_" title="_#= $htmlEncode(firstPage.title) =#_" href="#" onclick='$getClientControl(this).page(_#= $htmlEncode(firstPage.startItem) =#_);return Srch.U.cancelEvent(event);'>
+                    <span class="ms-promlink-button-image">
+                        <img class="_#= $htmlEncode(previousPageImageClassName) =#_" alt="_#= $htmlEncode(firstPage.title) =#_" src="_#= $urlHtmlEncode(GetThemedImageUrl('spcommon.png')) =#_">
+                    </span>
+                </a>
+                <span class="ms-promlink-button-inner"></span>
+                <a class="ms-commandLink ms-promlink-button _#= $htmlEncode(nextPageContainerClassName) =#_" title="_#= $htmlEncode(lastPage.title) =#_" href="#" onclick='$getClientControl(this).page(_#= $htmlEncode(lastPage.startItem) =#_);return Srch.U.cancelEvent(event);'>
+                    <span class="ms-promlink-button-image">
+                        <img class="_#= $htmlEncode(nextPageImageClassName) =#_" alt="_#= $htmlEncode(lastPage.title) =#_" src="_#= $urlHtmlEncode(GetThemedImageUrl('spcommon.png')) =#_">
+                    </span>
+                </a>
+            </span>
+        </div>
+        <!--#_
+        }
+    }
+    _#-->
+
+    </div>
+</body>
+</html>
