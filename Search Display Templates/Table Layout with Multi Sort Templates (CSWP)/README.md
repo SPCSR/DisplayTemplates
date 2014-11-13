@@ -18,4 +18,5 @@ __Item_List_Item.html__ | This is the item template which creates a column for e
 
 **Usage**
 
-More information can be found on the following blog post: [Table layout display template with managed property sorting](http://www.eliostruyf.com/table-layout-display-template-with-managed-property-sorting/ "Table layout display template with managed property sorting")
+More information can be found on the following blog posts: 
+*   [Table layout display template with managed property sorting](http://www.eliostruyf.com/table-layout-display-template-with-managed-property-sorting/ "Table layout display template with managed property sorting")
