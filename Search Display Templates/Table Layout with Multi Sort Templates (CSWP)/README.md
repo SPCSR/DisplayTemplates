@@ -21,3 +21,6 @@ __Item_List_Item.html__ | This is the item template which creates a column for e
 More information can be found on the following blog posts: 
 *   [Table layout display template with managed property sorting](http://www.eliostruyf.com/table-layout-display-template-with-managed-property-sorting/ "Table layout display template with managed property sorting")
 *   [How to add multi-sorting of managed properties in your display templates](http://www.eliostruyf.com/add-multi-sorting-managed-properties-display-templates/ "How to add multi-sorting of managed properties in your display templates")
+
+**Example**
+![Multi sort example](http://i0.wp.com/www.eliostruyf.com/wp-content/uploads/2014/11/111314_0939_Howtoaddmul2.png)
