@@ -14,12 +14,55 @@
 </head>
 
 <body>
+	<script>
+        Type.registerNamespace('search.Grouping');
+
+        search.Grouping = function() {
+            var currentCtx;
+            return {
+                init: function (currentContext, encodedId) {
+                    currentCtx = currentContext;
+
+                    // Creating a new grouping object
+                    currentCtx.Grouping = {};
+
+                    // Add an on post render callback, this will be excuted when all the results are rendered
+                    AddPostRenderCallback(currentContext, function() {
+                        var groupElm = document.getElementById(encodedId);
+                        search.Grouping.show(groupElm);
+                    });
+                },
+                push: function (grouping, content) {
+                    // Add the markup to the grouping array 
+                    if (typeof currentCtx.Grouping[grouping] !== "undefined") {
+                        currentCtx.Grouping[grouping] += content;
+                    } else {
+                        currentCtx.Grouping[grouping] = content;
+                    }
+                },
+                show: function (groupElm) {
+                    var groups = currentCtx.Grouping
+                    // Add the content to the page
+                    for (var key in groups) {
+                        groupElm.innerHTML += String.format("<div class='group'><h2 style='color:#000'>{0}</h2>{1}</div>", key, groups[key]);
+                    }
+                }
+            }
+        }();
+
+        Srch.U.registerRenderTemplateByName("group_init", search.Grouping.init);
+        Srch.U.registerRenderTemplateByName("group_push", search.Grouping.push);
+        Srch.U.registerRenderTemplateByName("group_show", search.Grouping.show);
+    </script>
+
+
     <div id="Control_List">
 
 <!--#_
-// Creating a new grouping array
-ctx.Grouping = [];
 var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_Grouping");
+
+// Grouping init
+Srch.U.getRenderTemplateCollection().group_init(ctx, encodedId);
 
 if (!$isNull(ctx.ClientControl) &&
     !$isNull(ctx.ClientControl.shouldRenderControl) &&
@@ -28,28 +71,10 @@ if (!$isNull(ctx.ClientControl) &&
     return "";
 }
 ctx.ListDataJSONGroupsKey = "ResultTables";
-
-var ListRenderRenderWrapper = function(itemRenderResult, inCtx, tpl)
-{
-    var iStr = [];
-    iStr.push(itemRenderResult);
-    return iStr.join('');
-}
-ctx['ItemRenderWrapper'] = ListRenderRenderWrapper;
 _#-->
         <div id="_#= encodedId =#_">
             _#= ctx.RenderGroups(ctx) =#_
         </div>
-
-<!--#_
-AddPostRenderCallback(ctx, function() {
-    var groupElm = document.getElementById(encodedId);
-    for (var key in ctx.Grouping) {
-        groupElm.innerHTML += String.format("<div class='group'><h2>{0}</h2>{1}</div>", key, ctx.Grouping[key]);
-    }
-});
-_#-->
-
     </div>
 </body>
 </html>

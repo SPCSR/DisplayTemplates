@@ -17,17 +17,15 @@
 <body>
     <div id="TwoLines">
 <!--#_
-var line1 = $getItemValue(ctx, "Line 1");
-var grouping = $getItemValue(ctx, "Grouping");
-var linkURL = $getItemValue(ctx, "Link");
-
-var content = String.format('<div class="cbs-Item"><a class="cbs-Line1Link ms-noWrap ms-displayBlock" href="{0}" title="{1}">{1}</a></div>', linkURL, line1);
-
-if (typeof ctx.Grouping[grouping] !== "undefined") {
-    ctx.Grouping[grouping] += content;
-} else {
-    ctx.Grouping[grouping] = content;
-}
+            var line1 = $getItemValue(ctx, "Line 1");
+            var grouping = $getItemValue(ctx, "Grouping");
+            var linkURL = $getItemValue(ctx, "Link");
+    
+            // HTML Markup
+            var content = String.format('<div class="cbs-Item"><a class="cbs-Line1Link ms-noWrap ms-displayBlock" href="{0}" title="{1}">{1}</a></div>', linkURL, line1);
+            
+            // Push the content to the grouping object
+            Srch.U.getRenderTemplateCollection().group_push(grouping, content);
 _#-->
     </div>
 </body>
