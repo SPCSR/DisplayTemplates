@@ -54,7 +54,7 @@ function CheckUnsortableProperty (prop) {
 }
 
 function HideSortableOptions (prop) {
-    var elm = document.getElementById(prop.replace(/ /g, '-'));
+    var elm = document.querySelector('#' + tableId + ' #' + prop.replace(/ /g, '-'));
     if (elm !== null) {
         elm.style.display = 'none';
     }
@@ -84,15 +84,15 @@ AddPostRenderCallback(ctx, function() {
         var sortName = queryState[0].p;
         var sortDir = queryState[0].d;
         if (!Srch.U.e(sortName)) {
-            var elm = document.getElementById(sortName.replace(/ /g, '-'));
+            var elm = document.querySelector('#' + tableId + ' #' + sortName.replace(/ /g, '-'));
             if (elm !== null) {
                 elm.parentNode.style.fontWeight = "bold";
                 var sortElm = elm.getElementsByClassName('sortarrow')[0];
                 if (sortElm !== null) {
                     if (sortDir === 0){
-                        sortElm.innerHTML = "<img src='/_layouts/15/images/spcommon.png' class='ms-sortarrowdown-icon'>";
-                    } else {
                         sortElm.innerHTML = "<img src='/_layouts/15/images/spcommon.png' class='ms-sortarrowup-icon'>";
+                    } else {
+                        sortElm.innerHTML = "<img src='/_layouts/15/images/spcommon.png' class='ms-sortarrowdown-icon'>";
                     }
                 }
             }
@@ -147,7 +147,7 @@ AddPostRenderCallback(ctx, function() {
         }
     }
 
-	// Add a callout to each row
+    // Add a callout to each row
     SP.SOD.executeFunc("callout.js", "Callout", function () {
         var tableElement = document.getElementById(tableId);
         var targetElement = tableElement.getElementsByClassName('NotificationDiv');
