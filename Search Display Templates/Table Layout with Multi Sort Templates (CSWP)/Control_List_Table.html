@@ -21,74 +21,77 @@
          * Show property sorting options *
          *********************************/
         estruyf.Table.Layout = function() {
-            var currentCtx, clientControl, properties;
+            var tableContext = {};
             return {
-                setContext: function (ctx, cc) {
-                    estruyf.Table.Layout.setCurrentCtx(ctx);
-                    estruyf.Table.Layout.setClientControl(cc);
-                    estruyf.Table.Layout.setProperties(cc);
+                setContext: function (context, cc, tableId) {
+                    tableContext[tableId] = {};
+                    estruyf.Table.Layout.setCurrentCtx(context, tableId);
+                    estruyf.Table.Layout.setClientControl(cc, tableId);
+                    estruyf.Table.Layout.setProperties(cc, tableId);
                 },
-                setCurrentCtx: function (ctx) {
-                    currentCtx = ctx;
+                setCurrentCtx: function (context, tableId) {
+                    tableContext[tableId]["currentCtx"] = context;
                 },
-                setClientControl: function (cc) {
-                    clientControl = cc;
+                setClientControl: function (cc, tableId) {
+                    tableContext[tableId]["clientControl"] = cc;
                 },
-                setProperties: function (cc) {
+                setProperties: function (cc, tableId) {
                     if (!Srch.U.n(cc)) {
                         var propertyMappings = cc.get_propertyMappings();
                         if (!Srch.U.n(propertyMappings) && !Srch.U.w(propertyMappings)) {
-                            properties = Srch.Result.parsePropertyMappingsString(propertyMappings);
+                            tableContext[tableId]["properties"] = Srch.Result.parsePropertyMappingsString(propertyMappings);
                         }
                     }
                 },
                 // Add the sortable properties to your search context
-                addSortableProperty: function (property) {
-                    var availableSorts = currentCtx.DataProvider.get_availableSorts();
+                addSortableProperty: function (property, tableId) {
+                    var availableSorts = tableContext[tableId].currentCtx.DataProvider.get_availableSorts();
                     availableSorts.push({ "name": property + "ASC", "sorts": [{ "p": property, "d": 0 }] });
                     availableSorts.push({ "name": property + "DES", "sorts": [{ "p": property, "d": 1 }] });
-                    currentCtx.DataProvider.set_availableSorts(availableSorts);
+                    tableContext[tableId].currentCtx.DataProvider.set_availableSorts(availableSorts);
                 },
                 // Keep a list of all the unsortable properties
-                addUnsortableProperty: function (property) {
-                    if (typeof currentCtx.DataProvider.Unsortable === "undefined") {
+                addUnsortableProperty: function (property, tableId) {
+                    if (typeof tableContext[tableId].currentCtx.DataProvider.Unsortable === "undefined") {
                         // Create an empty unsortable array
-                        currentCtx.DataProvider.Unsortable = [];
+                        tableContext[tableId].currentCtx.DataProvider.Unsortable = [];
                     }
-                    currentCtx.DataProvider.Unsortable.push(property);
+                    tableContext[tableId].currentCtx.DataProvider.Unsortable.push(property);
                 },
                 // Check if a property is sortable
-                checkSortableProperty: function (property) {
-                    var availableSorts = currentCtx.DataProvider.get_availableSorts();
+                checkSortableProperty: function (property, tableId) {
+                    var availableSorts = tableContext[tableId].currentCtx.DataProvider.get_availableSorts();
                     var indexArray = availableSorts.map(function(o){return o.name;});
                     var currentPropIdx = indexArray.indexOf(property+"ASC");
                     return currentPropIdx === -1 ? true : false;
                 },
                 // Check if a property is not sortable
-                checkUnsortableProperty: function (property) {
-                    if (typeof currentCtx.DataProvider.Unsortable !== "undefined") {
-                        var unsortableProps = currentCtx.DataProvider.Unsortable;
+                checkUnsortableProperty: function (property, tableId) {
+                    if (typeof tableContext[tableId].currentCtx.DataProvider.Unsortable !== "undefined") {
+                        var unsortableProps = tableContext[tableId].currentCtx.DataProvider.Unsortable;
                         return unsortableProps.indexOf(property) === -1 ? true : false;
                     } else {
                         return true;
                     }
                 },
                 // Hide the property options which are not sortable
-                hideSortableOptions: function (property) {
-                    var elm = document.getElementById(property.replace(/ /g, '-'));
+                hideSortableOptions: function (property, tableId) {
+                    var elm = document.querySelector('#' + tableId + ' #' + property.replace(/ /g, '-'));
                     if (elm !== null) {
                         elm.style.display = 'none';
                     }
                 },
                 // Highlight the properties that are currently sorted
-                setCurrentSorting: function () {
-                    var queryState = currentCtx.DataProvider.get_currentQueryState().o;
+                setCurrentSorting: function (tableId) {
+                    console.log(tableContext);
+                    console.log(tableContext[tableId]);
+                    var queryState = tableContext[tableId].currentCtx.DataProvider.get_currentQueryState().o;
                     if (queryState !== null && queryState.length > 0) {
                         for (var i = 0; i < queryState.length; i++) {
                             var sortName = queryState[i].p;
                             var sortDir = queryState[i].d;
                             if (!Srch.U.e(sortName)) {
-                                var elm = document.getElementById(sortName.replace(/ /g, '-'));
+                                var elm = document.querySelector('#' + tableId + ' #' + sortName.replace(/ /g, '-'));
                                 if (elm !== null) {
                                     elm.parentNode.style.fontWeight = "bold";
                                     var sortElm = elm.getElementsByClassName('sortarrow')[0];
@@ -105,37 +108,37 @@
                     }
                 },
                 // Show the property sorting options
-                showPropertySorting: function () {
+                showPropertySorting: function (tableId) {
                     // Check if the properties array is empty. 
                     // This can happen if you do not override the managed properties in the web part.
-                    if ($isEmptyArray(properties)) {
+                    if ($isEmptyArray(tableContext[tableId].properties)) {
                         if (!Srch.U.n(DisplayTemplateData)) {
                             if (!Srch.U.n(DisplayTemplateData.ManagedPropertyMapping)) {
-                                properties = DisplayTemplateData.ManagedPropertyMapping;
+                                tableContext[tableId].properties = DisplayTemplateData.ManagedPropertyMapping;
                             }
                         }
                     }
                     
-                    if (!$isEmptyArray(properties)) {
-                        for (var key in properties) {
-                            if (!Srch.U.e(properties[key])) {
-                                var prop = properties[key].toString();
-                                if (estruyf.Table.Layout.checkSortableProperty(prop)) {
-                                    if (estruyf.Table.Layout.checkUnsortableProperty(prop)) {
-                                        (function (prop) {
+                    if (!$isEmptyArray(tableContext[tableId].properties)) {
+                        for (var key in tableContext[tableId].properties) {
+                            if (!Srch.U.e(tableContext[tableId].properties[key])) {
+                                var prop = tableContext[tableId].properties[key].toString();
+                                if (estruyf.Table.Layout.checkSortableProperty(prop, tableId)) {
+                                    if (estruyf.Table.Layout.checkUnsortableProperty(prop, tableId)) {
+                                        (function (prop, tableId) {
                                             // Do a Ajax call for each property to check if it is sortable
                                             var request = new XMLHttpRequest();
-                                            var restUrl = _spPageContextInfo.webAbsoluteUrl + "/_api/search/query?querytext='" + clientControl.get_dataProvider().get_queryTemplate() + "'&sortlist='" + properties[key] +":ascending'&RowLimit=1&selectproperties='Path'";
+                                            var restUrl = _spPageContextInfo.webAbsoluteUrl + "/_api/search/query?querytext='" + tableContext[tableId].clientControl.get_dataProvider().get_queryTemplate() + "'&sortlist='" + tableContext[tableId].properties[key] +":ascending'&RowLimit=1&selectproperties='Path'";
                                             request.open('GET', restUrl, true);
                                             request.onload = function (e) {
                                                 if (request.readyState === 4) {
                                                     // Check if the get was successful
                                                     if (request.status === 200) {
-                                                        estruyf.Table.Layout.addSortableProperty(prop);
+                                                        estruyf.Table.Layout.addSortableProperty(prop, tableId);
                                                     } else {
-                                                        estruyf.Table.Layout.addUnsortableProperty(prop);
+                                                        estruyf.Table.Layout.addUnsortableProperty(prop, tableId);
                                                         // Hide the sorting options
-                                                        estruyf.Table.Layout.hideSortableOptions(prop);
+                                                        estruyf.Table.Layout.hideSortableOptions(prop, tableId);
                                                     }
                                                 }
                                             };
@@ -143,10 +146,10 @@
                                                 // Catching errors
                                             };
                                             request.send(null);
-                                        })(prop);
+                                        })(prop, tableId);
                                     } else {
                                         // Hide the sorting options
-                                        estruyf.Table.Layout.hideSortableOptions(prop);
+                                        estruyf.Table.Layout.hideSortableOptions(prop, tableId);
                                     }
                                 }
                             }
@@ -347,14 +350,14 @@ if (!$isNull(ctx.ClientControl) && !$isNull(ctx.ClientControl.shouldRenderContro
 var clientControl = ctx.ClientControl;
 
 // Set the current context
-Srch.U.getRenderTemplateCollection().setcontext(ctx, clientControl);
+Srch.U.getRenderTemplateCollection().setcontext(ctx, clientControl, tableId);
 
 AddPostRenderCallback(ctx, function() {
     // Show the current sort option
-    Srch.U.getRenderTemplateCollection().showpropertysorting();
+    Srch.U.getRenderTemplateCollection().showpropertysorting(tableId);
 
     // Show or hide the sort options
-    Srch.U.getRenderTemplateCollection().setcurrentsorting();
+    Srch.U.getRenderTemplateCollection().setcurrentsorting(tableId);
 
     // Add a callout to each row
     Srch.U.getRenderTemplateCollection().setcallouts(tableId);
