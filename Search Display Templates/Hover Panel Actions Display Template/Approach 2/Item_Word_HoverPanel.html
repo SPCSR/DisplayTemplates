@@ -1,0 +1,146 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>Word Hover Panel</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:MasterPageDescription msdt:dt="string">Displays a result hover panel tailored for a Microsoft Word document.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#SearchHoverPanel;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+<mso:ManagedPropertyMapping msdt:dt="string">'Title':'Title','Path':'Path','Description':'Description','EditorOWSUSER':'EditorOWSUSER','LastModifiedTime':'LastModifiedTime','CollapsingStatus':'CollapsingStatus','DocId':'DocId','HitHighlightedSummary':'HitHighlightedSummary','HitHighlightedProperties':'HitHighlightedProperties','FileExtension':'FileExtension','ViewsLifeTime':'ViewsLifeTime','ParentLink':'ParentLink','FileType':'FileType','IsContainer':'IsContainer','SecondaryFileExtension':'SecondaryFileExtension','DisplayAuthor':'DisplayAuthor','ServerRedirectedURL':'ServerRedirectedURL','SectionNames':'SectionNames','SectionIndexes':'SectionIndexes','ServerRedirectedEmbedURL':'ServerRedirectedEmbedURL','ServerRedirectedPreviewURL':'ServerRedirectedPreviewURL'</mso:ManagedPropertyMapping>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+<body>
+    <div id="Item_Word_HoverPanel">
+<!--#_
+        var i = 0;
+        var wacurlExist = !Srch.U.e(ctx.CurrentItem.ServerRedirectedURL) && !Srch.U.e(ctx.CurrentItem.ServerRedirectedEmbedURL);
+        var id = ctx.CurrentItem.csr_id;
+        ctx.CurrentItem.csr_FileType = Srch.Res.file_Word;
+        ctx.CurrentItem.csr_ShowFollowLink = true;
+        ctx.CurrentItem.csr_ShowViewLibrary = true;
+        ctx.currentItem_IsOfficeDocument = true;
+_#-->
+        <div class="ms-srch-hover-innerContainer ms-srch-hover-wacSize" id="_#= $htmlEncode(id + HP.ids.inner) =#_">
+            <div class="ms-srch-hover-arrowBorder" id="_#= $htmlEncode(id + HP.ids.arrowBorder) =#_"></div>
+            <div class="ms-srch-hover-arrow" id="_#= $htmlEncode(id + HP.ids.arrow) =#_"></div>
+            <div class="ms-srch-hover-content" id="_#= $htmlEncode(id + HP.ids.content) =#_" data-displaytemplate="WordHoverPanel">
+                <div id="_#= $htmlEncode(id + HP.ids.header) =#_" class="ms-srch-hover-header">
+                    _#= ctx.RenderHeader(ctx) =#_
+                </div>
+                <div id="_#= $htmlEncode(id + HP.ids.body) =#_" class="ms-srch-hover-body">
+<!--#_
+                    if(!Srch.U.n(ctx.CurrentItem.ServerRedirectedEmbedURL))
+                    {
+                        ctx.CurrentItem.csr_DataShown = true;
+                        ctx.currentItem_ShowChangedBySnippet = true;
+_#-->
+                        <div class="ms-srch-hover-viewerContainer">
+                            <iframe id="_#= $htmlEncode(id + HP.ids.viewer) =#_" src="_#= $urlHtmlEncodeString(ctx.CurrentItem.ServerRedirectedEmbedURL) =#_" scrolling="no" frameborder="0px" class="ms-srch-hover-viewer"></iframe>
+                        </div>
+                        <div class="ms-srch-hover-wacImageContainer">
+                            <img id="_#= $htmlEncode(id + HP.ids.preview) =#_" alt="_#= $htmlEncode(Srch.Res.item_Alt_Preview) =#_" onload="this.parentNode.style.display='block';" />
+                        </div>
+<!--#_
+                    }
+                    else
+                    {
+                        ctx.CurrentItem.csr_ShowLastModifiedTime = true;
+                        ctx.CurrentItem.csr_ShowAuthors = true; 
+                    }
+
+                    if(!Srch.U.e(ctx.CurrentItem.SectionNames))
+                    {
+                        ctx.CurrentItem.csr_DataShown = true;
+_#-->
+                        <div class="ms-srch-hover-subTitle"><h3 class="ms-soften">_#= $htmlEncode(Srch.Res.hp_SectionHeadings) =#_</h3></div>
+<!--#_
+                        var sectionNames = Srch.U.getArray(ctx.CurrentItem.SectionNames);
+
+                        var sectionIndexes = Srch.U.getArray(ctx.CurrentItem.SectionIndexes);
+                        if(!Srch.U.n(sectionIndexes) && sectionIndexes.length != sectionNames.length)
+                        {
+                            sectionIndexes = null;
+                        }
+
+                        var hitHighlightedSectionNames = Srch.U.getHighlightedProperty(id, ctx.CurrentItem, "sectionnames");
+                        if(!Srch.U.n(hitHighlightedSectionNames) && hitHighlightedSectionNames.length != sectionNames.length)
+                        {
+                            hitHighlightedSectionNames = null;
+                        }
+
+                        var numberOfSectionsToDisplay = Math.min(Srch.SU.maxLinesForMultiValuedProperty, sectionNames.length);
+                        var sectionsToDisplay = new Array();
+
+                        var usingHitHighlightedSectionNames = Srch.SU.getSectionsForDisplay(
+                            hitHighlightedSectionNames,
+                            numberOfSectionsToDisplay,
+                            sectionsToDisplay);
+
+                        for(i = 0; i < sectionsToDisplay.length; ++i)
+                        {
+                            var index = sectionsToDisplay[i];
+                            if(Srch.U.n(index))
+                            {
+                                continue;
+                            }
+
+                            var tooltipEncoded = $htmlEncode(sectionNames[index]);
+
+                            var htmlEncodedSectionName = "";
+                            if(usingHitHighlightedSectionNames)
+                            {
+                                htmlEncodedSectionName = hitHighlightedSectionNames[index];
+                            }
+                            else
+                            {
+                                htmlEncodedSectionName = tooltipEncoded;
+                            }
+_#-->
+                            <div class="ms-srch-hover-text ms-srch-ellipsis" id="_#= $htmlEncode(id + HP.ids.sectionName + i) =#_" title="_#= tooltipEncoded =#_">
+<!--#_
+                                if(!Srch.U.n(sectionIndexes) && sectionIndexes.length >= i && !Srch.U.e(sectionIndexes[index]) && wacurlExist)
+                                {
+                                    var encodedSectionIndex = "&wdparaid=" + $urlKeyValueEncode(sectionIndexes[index]);
+_#-->
+                                    <a clicktype="HoverSection" linkIndex="_#= $htmlEncode(i) =#_" href="_#= $urlHtmlEncodeString(ctx.CurrentItem.ServerRedirectedURL + encodedSectionIndex) =#_" target="_blank">
+                                        _#= htmlEncodedSectionName =#_
+                                    </a>
+<!--#_
+                                }
+                                else
+                                {
+_#-->
+                                    _#= htmlEncodedSectionName =#_
+<!--#_
+                                }
+_#-->
+                            </div>
+<!--#_
+                        }
+                    }
+_#-->
+                    _#= ctx.RenderBody(ctx) =#_
+                </div>
+                <div id="_#= $htmlEncode(id + HP.ids.actions) =#_" class="ms-srch-hover-actions">
+                    <div class="ms-srch-hover-action">
+                        <a href="#" title="Custom action" class="ms-calloutLink ms-uppercase">Custom action</a>
+                    </div>
+                
+                    _#= ctx.RenderFooter(ctx) =#_
+                </div>
+            </div>
+<!--#_
+            if(!Srch.U.n(ctx.CurrentItem.ServerRedirectedEmbedURL)){
+                AddPostRenderCallback(ctx, function(){
+                    HP.loadViewer(ctx.CurrentItem.id, ctx.CurrentItem.id + HP.ids.inner, ctx.CurrentItem.id + HP.ids.viewer, ctx.CurrentItem.id + HP.ids.preview, ctx.CurrentItem.ServerRedirectedEmbedURL, ctx.CurrentItem.ServerRedirectedPreviewURL);
+                });
+            }
+_#-->
+        </div>
+    </div>
+</body>
+</html>
