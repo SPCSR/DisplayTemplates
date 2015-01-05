@@ -8,7 +8,7 @@
 <mso:ManagedPropertyMapping msdt:dt="string">'Path'</mso:ManagedPropertyMapping>
 <mso:MasterPageDescription msdt:dt="string">Display all the managed properties for the result.</mso:MasterPageDescription>
 <mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
-<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+<mso:TargetControlType msdt:dt="string">;#SearchResults;#Content Web Parts;#</mso:TargetControlType>
 <mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
 <mso:HtmlDesignStatusAndPreview msdt:dt="string">http://sp2013app/brand/SPSBE/_catalogs/masterpage/SPSBE/Item_Ultimate_Diagnostic.html, Conversion successful.</mso:HtmlDesignStatusAndPreview>
 <mso:HtmlDesignConversionSucceeded msdt:dt="string">True</mso:HtmlDesignConversionSucceeded>
@@ -31,7 +31,7 @@ _#-->
     var dataProvider = ctx.ClientControl.get_dataProvider();
     // Get the selected refiners. If empty, a new query needs to be done
     var selRefs = dataProvider.get_selectedRefiners();
-    if (selRefs.length <= 0) {
+    if ($isEmptyArray(selRefs)) {
         // Retrieve all the properties for the item
         retrieveAllProperties(dataProvider);
     } else {
@@ -44,44 +44,46 @@ _#-->
         // Retrieve the array of properties
         var properties = refinementInfo['ManagedProperties'];
 
-        EnsureScript('sp.search.js', TypeofFullName('Microsoft.SharePoint.Client.Search.Query.KeywordQuery'), function () {
-            var crc = Srch.ScriptApplicationManager.get_clientRuntimeContext();
-            if (!Srch.U.n(crc) && !Srch.U.n(itemID)) {
-                // Do a new keyword query to retrieve the information from the current item
-                var keywordQuery = Microsoft.SharePoint.Client.Search.Query.KeywordQuery.newObject(crc);
-                keywordQuery.set_queryText(query);
-                keywordQuery.get_sortList().clear();
-                keywordQuery.get_refinementFilters().clear();
-                keywordQuery.set_rowsPerPage(1);
-                keywordQuery.set_rowLimit(1);
-                // Local SharePoint Results source ID
-                keywordQuery.set_sourceId(new SP.Guid('8413CD39-2156-4E00-B54D-11EFD9ABDB89'));
-                keywordQuery.set_refiners('');
-                keywordQuery.get_selectProperties().clear();
+        if (!$isEmptyArray(properties)) {
+            EnsureScript('sp.search.js', TypeofFullName('Microsoft.SharePoint.Client.Search.Query.KeywordQuery'), function () {
+                var crc = Srch.ScriptApplicationManager.get_clientRuntimeContext();
+                if (!Srch.U.n(crc) && !Srch.U.n(itemID)) {
+                    // Do a new keyword query to retrieve the information from the current item
+                    var keywordQuery = Microsoft.SharePoint.Client.Search.Query.KeywordQuery.newObject(crc);
+                    keywordQuery.set_queryText(query);
+                    keywordQuery.get_sortList().clear();
+                    keywordQuery.get_refinementFilters().clear();
+                    keywordQuery.set_rowsPerPage(1);
+                    keywordQuery.set_rowLimit(1);
+                    // Local SharePoint Results source ID
+                    keywordQuery.set_sourceId(new SP.Guid('8413CD39-2156-4E00-B54D-11EFD9ABDB89'));
+                    keywordQuery.set_refiners('');
+                    keywordQuery.get_selectProperties().clear();
 
-                // Add all the properties to be retrieved with the query
-                for (var i = 0; i < properties.length; i++) {
-                    var property = properties[i];
-                    var propertyValue = property['RefinementValue'];
-                    keywordQuery.get_selectProperties().add(propertyValue);
-                }
-
-                var searchExecutor = Microsoft.SharePoint.Client.Search.Query.SearchExecutor.newObject(crc);
-                var executeQuery = searchExecutor.executeQuery(keywordQuery);
-
-                crc.executeQueryAsync(function(sender, args) {
-                    var resultValue = executeQuery.get_value();
-                    if (!Srch.U.n(resultValue)) {
-                        // Retrieve the element to write all the results in
-                        var elm = $get(encodedId);
-                        // Render all the results
-                        renderResults(resultValue, elm);
+                    // Add all the properties to be retrieved with the query
+                    for (var i = 0; i < properties.length; i++) {
+                        var property = properties[i];
+                        var propertyValue = property['RefinementValue'];
+                        keywordQuery.get_selectProperties().add(propertyValue);
                     }
-                }, function(sender, args) {
-                    console.log('Request failed. ' + args.get_message() + ' ' + args.get_stackTrace());
-                });
-            }
-        });
+
+                    var searchExecutor = Microsoft.SharePoint.Client.Search.Query.SearchExecutor.newObject(crc);
+                    var executeQuery = searchExecutor.executeQuery(keywordQuery);
+
+                    crc.executeQueryAsync(function(sender, args) {
+                        var resultValue = executeQuery.get_value();
+                        if (!Srch.U.n(resultValue)) {
+                            // Retrieve the element to write all the results in
+                            var elm = $get(encodedId);
+                            // Render all the results
+                            renderResults(resultValue, elm);
+                        }
+                    }, function(sender, args) {
+                        console.log('Request failed. ' + args.get_message() + ' ' + args.get_stackTrace());
+                    });
+                }
+            });
+        }
     }
 
     function renderResults (resultTableCollection, resultSection) {
@@ -89,16 +91,15 @@ _#-->
             return;
         }
         var resultTables = resultTableCollection['ResultTables'];
-        if (!Srch.U.n(resultTables) && resultTables.length > 0) {
+        if (!Srch.U.n(resultTables) && !$isEmptyArray(resultTables)) {
             for (var i = 0; i < resultTables.length; i++) {
                 var resultTable = resultTables[i];
                 if (!Srch.U.n(resultTable) && Srch.U.isTableTypeof(resultTable, Microsoft.SharePoint.Client.Search.Query.KnownTableTypes.relevantResults)) {
                     var resultRows = resultTable['ResultRows'];
-                    if (resultRows.length <= 0) {
+                    if ($isEmptyArray(resultRows)) {
                         console.log('No info was returned');
                         break;
-                    }
-                    if (resultRows.length > 1) {
+                    } else if (resultRows.length > 1) {
                         console.log('More than 1 result was returned. Only the first one will be used');
                     }
 
@@ -127,7 +128,13 @@ _#-->
                             htmlContent += String.format(propRow, key, "<strong>NULL</strong>", "<strong>NULL</strong>");
                         }
                     }
-                    var totalProperties = ctx.ClientControl.get_dataProvider().get_refinementInfo().ManagedProperties.length;
+                    
+                    var mp = ctx.ClientControl.get_dataProvider().get_refinementInfo().ManagedProperties;
+                    var totalProperties = 0;
+                    if (!Srch.U.n(mp) && !$isEmptyArray(mp)) {
+                        totalProperties = mp.length;
+                    }
+                    
                     var heading = totalFilled + ' from the ' + totalProperties + ' properties contained a value';
                     var resultSectionContent = '<h2>' + heading + '</h2><table style="word-break:break-all"><tr><th style="min-width:200px;">Property</th><th style="min-width:100px;">Type</th><th>Value</th></tr>' + htmlContent + '</table>';
                     resultSection.innerHTML = resultSectionContent;
