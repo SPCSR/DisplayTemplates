@@ -83,6 +83,8 @@ _#-->
                     });
                 }
             });
+        } else {
+			console.log('Properties array is empty');
         }
     }
 
@@ -149,13 +151,11 @@ _#-->
 
     function retrieveAllProperties(dataProvider) {
         // Retrieve all the managed properties for the item
-        var queryState = new Srch.QueryState();
-        queryState.k = "contentclass:sts_ListItem";
         dataProvider.set_selectedRefiners([ managedProperties ]);
-        // Do a new query
-        var queryStateArgs = new Srch.QueryEventArgs(queryState);
-        queryStateArgs.userAction = 0;
-        ctx.ClientControl.raiseQueryReadyEvent(queryStateArgs);
+
+        // Do a new search query
+        dataProvider.issueQuery();
+
         return;
     }
 _#-->
