@@ -7,14 +7,23 @@
 <mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
 <mso:MasterPageDescription msdt:dt="string">This is the default Control Display Template that will list the items. It does not allow the user to page through items.</mso:MasterPageDescription>
 <mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106601</mso:ContentTypeId>
-<mso:TargetControlType msdt:dt="string">;#SearchResults;#Content Web Parts;#</mso:TargetControlType>
+<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
 <mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+<mso:HtmlDesignStatusAndPreview msdt:dt="string">https://estruyfd1.sharepoint.com/_catalogs/masterpage/SPSUK/Grouping/Control_Group.html, Conversion successful.</mso:HtmlDesignStatusAndPreview>
+<mso:HtmlDesignConversionSucceeded msdt:dt="string">True</mso:HtmlDesignConversionSucceeded>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
 
 <body>
-	<script>
+    <script>
+        RegisterSod('jquery-1.10.2.js', 'https://code.jquery.com/jquery-1.10.2.min.js');
+        RegisterSod('jquery-ui.min.js', 'https://code.jquery.com/ui/1.11.2/jquery-ui.min.js');
+
+        RegisterSodDep('jquery-ui.min.js', 'jquery-1.10.2.js');
+
+        $includeCSS(this.url, 'https://code.jquery.com/ui/1.11.2/themes/Smoothness/jquery-ui.css');
+
         Type.registerNamespace('search.Grouping');
 
         search.Grouping = function() {
@@ -41,11 +50,23 @@
                     }
                 },
                 show: function (groupElm) {
-                    var groups = currentCtx.Grouping
-                    // Add the content to the page
-                    for (var key in groups) {
-                        groupElm.innerHTML += String.format("<div class='group'><h2 style='color:#000'>{0}</h2>{1}</div>", key, groups[key]);
-                    }
+                    EnsureScriptFunc('jquery-ui.min.js', null, function () {
+                        var groups = currentCtx.Grouping
+
+                        var elm = $(groupElm);
+                        elm.append('<ul />');
+
+                        var listElm = elm.find('ul');
+
+                        // Add the content to the page
+                        for (var key in groups) {
+                            listElm.append(String.format('<li><a href="#{0}">{1}</a></li>', key.trim().replace(/ /g, '-'), key));
+                            elm.append(String.format('<div id="{0}">{1}</div>', key.trim().replace(/ /g, '-'), groups[key]));
+                        }
+
+                        // Start tabbing
+                        elm.tabs();
+                    });
                 }
             }
         }();
