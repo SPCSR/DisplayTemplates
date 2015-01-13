@@ -1,0 +1,153 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>Grouping Template Paging</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:MasterPageDescription msdt:dt="string">This is the default Control Display Template that will list the items. It does not allow the user to page through items.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106601</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#SearchResults;#Content Web Parts;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+	<script>
+        Type.registerNamespace('search.Grouping');
+
+        search.Grouping = function() {
+            var currentCtx;
+            return {
+                init: function (currentContext, encodedId) {
+                    currentCtx = currentContext;
+
+                    // Creating a new grouping object
+                    currentCtx.Grouping = {};
+
+                    // Add an on post render callback, this will be excuted when all the results are rendered
+                    AddPostRenderCallback(currentContext, function() {
+                        var groupElm = document.getElementById(encodedId);
+                        search.Grouping.show(groupElm);
+                    });
+                },
+                push: function (grouping, content) {
+                    // Add the markup to the grouping array 
+                    if (typeof currentCtx.Grouping[grouping] !== "undefined") {
+                        currentCtx.Grouping[grouping] += content;
+                    } else {
+                        currentCtx.Grouping[grouping] = content;
+                    }
+                },
+                show: function (groupElm) {
+                    var groups = currentCtx.Grouping
+                    // Add the content to the page
+                    for (var key in groups) {
+                        groupElm.innerHTML += String.format("<div class='group'><h2 style='color:#000'>{0}</h2>{1}</div>", key, groups[key]);
+                    }
+                }
+            }
+        }();
+
+        Srch.U.registerRenderTemplateByName("group_init", search.Grouping.init);
+        Srch.U.registerRenderTemplateByName("group_push", search.Grouping.push);
+        Srch.U.registerRenderTemplateByName("group_show", search.Grouping.show);
+    </script>
+
+
+    <div id="Control_List">
+
+<!--#_
+var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_Grouping");
+
+// Grouping init
+Srch.U.getRenderTemplateCollection().group_init(ctx, encodedId);
+
+if (!$isNull(ctx.ClientControl) &&
+    !$isNull(ctx.ClientControl.shouldRenderControl) &&
+    !ctx.ClientControl.shouldRenderControl())
+{
+    return "";
+}
+ctx.ListDataJSONGroupsKey = "ResultTables";
+_#-->
+        <div id="_#= encodedId =#_">
+            _#= ctx.RenderGroups(ctx) =#_
+
+<!--#_
+var showPaging = ctx.ClientControl.get_showPaging();
+if(showPaging)
+{
+    var pagingInfo = ctx.ClientControl.get_pagingInfo();
+    showPaging = !$isEmptyArray(pagingInfo);
+    if(showPaging)
+    {
+        var currentPage = null;
+        var firstPage = pagingInfo[0];
+        var lastPage = pagingInfo[pagingInfo.length - 1];
+
+        for (var i = 0; i< pagingInfo.length; i++)
+        {
+            var pl = pagingInfo[i];
+            if (!$isNull(pl))
+            {
+                if (pl.startItem == -1)
+                {
+                    currentPage = pl;
+                }
+            }
+        }
+
+        var getPagingImageClassName = function(buttonClassNamePrefix, isNext, isEnabled)
+        {
+            var className = buttonClassNamePrefix;
+            className += (isNext && !Srch.U.isRTL()) || (!isNext && Srch.U.isRTL()) ? "right" : "left";
+            if(!$isNull(isEnabled) && isEnabled == false)
+            {
+                className += "-disabled";
+            }
+            return className;
+        }
+
+        var getPagingContainerClassName = function(buttonClassNamePrefix, isEnabled)
+        {
+            var className = buttonClassNamePrefix;
+            className += isEnabled ? "enabled" : "disabled";
+            return className;
+        }
+
+        var hasNextPage = lastPage.pageNumber == -2;
+        var hasPreviousPage = firstPage.pageNumber == -1;
+        var buttonClassNamePrefix = "ms-promlink-button-";
+        var nextPageContainerClassName = getPagingContainerClassName(buttonClassNamePrefix, hasNextPage);
+        var previousPageContainerClassName = getPagingContainerClassName(buttonClassNamePrefix, hasPreviousPage);
+        var nextPageImageClassName = getPagingImageClassName(buttonClassNamePrefix, true, hasNextPage);
+        var previousPageImageClassName = getPagingImageClassName(buttonClassNamePrefix, false, hasPreviousPage);
+_#-->
+        <ul>
+            <li class="ms-promlink-header">
+                <span class="ms-promlink-headerNav">
+                    <a class="ms-commandLink ms-promlink-button _#= $htmlEncode(previousPageContainerClassName) =#_" title="_#= $htmlEncode(firstPage.title) =#_" href="#" onclick='$getClientControl(this).page(_#= $htmlEncode(firstPage.startItem) =#_);return Srch.U.cancelEvent(event);'>
+                        <span class="ms-promlink-button-image">
+                            <img class="_#= $htmlEncode(previousPageImageClassName) =#_" alt="_#= $htmlEncode(firstPage.title) =#_" src="_#= $urlHtmlEncode(GetThemedImageUrl('spcommon.png')) =#_">
+                        </span>
+                    </a>
+                    <span class="ms-promlink-button-inner"></span>
+                    <a class="ms-commandLink ms-promlink-button _#= $htmlEncode(nextPageContainerClassName) =#_" title="_#= $htmlEncode(lastPage.title) =#_" href="#" onclick='$getClientControl(this).page(_#= $htmlEncode(lastPage.startItem) =#_);return Srch.U.cancelEvent(event);'>
+                        <span class="ms-promlink-button-image">
+                            <img class="_#= $htmlEncode(nextPageImageClassName) =#_" alt="_#= $htmlEncode(lastPage.title) =#_" src="_#= $urlHtmlEncode(GetThemedImageUrl('spcommon.png')) =#_">
+                        </span>
+                    </a>
+                </span>
+            </li>
+        </ul>
+<!--#_
+    }
+}
+_#-->
+
+        </div>
+    </div>
+</body>
+</html>
