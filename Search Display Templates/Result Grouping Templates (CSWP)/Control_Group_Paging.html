@@ -87,18 +87,6 @@ if(showPaging)
         var firstPage = pagingInfo[0];
         var lastPage = pagingInfo[pagingInfo.length - 1];
 
-        for (var i = 0; i< pagingInfo.length; i++)
-        {
-            var pl = pagingInfo[i];
-            if (!$isNull(pl))
-            {
-                if (pl.startItem == -1)
-                {
-                    currentPage = pl;
-                }
-            }
-        }
-
         var getPagingImageClassName = function(buttonClassNamePrefix, isNext, isEnabled)
         {
             var className = buttonClassNamePrefix;
