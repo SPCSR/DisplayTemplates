@@ -7,6 +7,7 @@ File | Desciption
 --- | ---
 __Control_Group.html__ | This is the control template for the grouping.
 __Item_Group.html__ | This is the item template for the grouping.
+__Control_Group_Paging.html__ | This is the control template for the grouping with paging.
 
 
 **Usage**
