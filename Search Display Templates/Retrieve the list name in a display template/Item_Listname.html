@@ -1,0 +1,180 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>Two lines - Listname</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:ManagedPropertyMapping msdt:dt="string">'Link URL'{Link URL}:'Path','Line 1'{Line 1}:'Title','Line 2'{Line 2}:'','FileExtension','SecondaryFileExtension','SPWebURL','ListID'</mso:ManagedPropertyMapping>
+<mso:MasterPageDescription msdt:dt="string">This template shows the list / library name.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <script>
+        Type.registerNamespace('search.listname');
+
+        search.listname = function () {
+            var itemInfo = {};
+            var listInfo = {};
+
+            var init = function (context, elmId) {
+                // Store item info
+                itemInfo[elmId] = {};
+                itemInfo[elmId]["webUrl"] = context.CurrentItem.SPWebURL;
+                itemInfo[elmId]["listId"] = context.CurrentItem.ListID;
+
+                // Add an on post render callback, this will be excuted when all the results are rendered
+                AddPostRenderCallback(context, function() {
+                    get(elmId);
+                });
+            },
+            get = function (elmId) {
+                // Retrieve the item information
+                var webUrl = itemInfo[elmId].webUrl;
+                var listId = itemInfo[elmId].listId;
+
+                if ($isEmptyString(webUrl) || $isEmptyString(listId)) {
+                    return;
+                }
+
+                // Remove brackets from guid
+                listId = listId.substring(listId.indexOf('{') + 1, listId.indexOf('}'));
+
+                // Check if the list object exists, if it exists, an Ajax call is already initiated or performed
+                if (typeof listInfo[listId] !== "undefined") {
+                    // Check if the list name is retrieved
+                    if (typeof listInfo[listId]["Title"] !== "undefined") {
+                        // Write the list name to the listname element on the page
+                        quickRender(elmId, listId);
+                    } else {
+                        // List name was not yet retrieved, set the list ID as class on the element
+                        setClass(elmId, listId);
+                    }
+                    return;
+                } else {
+                    // Ajax call not yet initiated, create a new object for the list ID
+                    listInfo[listId] = {};
+                    setClass(elmId, listId);
+                }
+
+                // Do a Ajax call to retrieve the list / library title
+                (function (elmId, listId) {
+                    var request = new XMLHttpRequest();
+                    var restUrl = String.format("{0}/_api/Web/Lists(guid'{1}')?$select=Title'", webUrl, listId);
+                    request.open('GET', restUrl, true);
+                    request.setRequestHeader('Accept', 'application/json;odata=nometadata');
+                    request.setRequestHeader('Content-Type', 'application/json;odata=nometadata');
+                    request.onload = function (e) {
+                        if (request.readyState === 4) {
+                            // Check if the get call was successful
+                            if (request.status === 200) {
+                                // List retrieved
+                                var data = JSON.parse(request.response);
+                                if ($isEmptyString(data.Title)) {
+                                    return;
+                                }
+                                // Store the list name
+                                listInfo[listId]["Title"] = data.Title;
+                                // Render the list name
+                                render(elmId, listId);
+                            } else {
+                                // No list found
+                            }
+                        }
+                    };
+                    request.onerror = function (e) {
+                        // Catching errors
+                    };
+                    request.send(null);
+                })(elmId, listId);
+            },
+            // Set the list ID as class name to the SPAN element
+            setClass = function (elmId, listId) { 
+                var elm = document.getElementById(elmId);
+                if (!$isNull(elm)) {
+                    var listElm = elm.getElementsByClassName('listname')[0];
+                    if (!$isNull(listElm)) {
+                        // Write the list name to the page
+                        listElm.className = String.format('{0} {1}',listElm.className, listId);
+                    }
+                }
+            },
+            // Write the document title to all elements with the same list ID
+            render = function (elmId, listId) {
+                var elms = document.getElementsByClassName(listId);
+                if (!$isNull(elms)) {
+                    for (var i = 0; i < elms.length; i++) {
+                        elms[i].innerHTML = listInfo[listId].Title;
+                    }
+                }
+            },
+            // Write the list name to the element
+            quickRender = function (elmId, listId) {
+                var elm = document.getElementById(elmId);
+                if (!$isNull(elm)) {
+                    var listElm = elm.getElementsByClassName('listname')[0];
+                    if (!$isNull(listElm)) {
+                        // Write the list name to the page
+                        listElm.innerHTML = listInfo[listId].Title;
+                    }
+                }
+            };
+
+            return {
+                init: init
+            };
+        }();
+
+        Srch.U.registerRenderTemplateByName("listname_init", search.listname.init);
+    </script>
+
+    <div id="Listname">
+<!--#_
+var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_listname_");
+var containerId = encodedId + "container";
+
+// Listname init
+Srch.U.getRenderTemplateCollection().listname_init(ctx, containerId);
+
+var linkURL = $getItemValue(ctx, "Link URL");
+linkURL.overrideValueRenderer($urlHtmlEncode);
+var iconURL = Srch.ContentBySearch.getIconSourceFromItem(ctx.CurrentItem);
+
+var line1 = $getItemValue(ctx, "Line 1");
+var line2 = $getItemValue(ctx, "Line 2");
+line1.overrideValueRenderer($contentLineText);
+line2.overrideValueRenderer($contentLineText);
+
+var pictureLinkId = encodedId + "pictureLink";
+var pictureId = encodedId + "picture";
+var dataContainerId = encodedId + "dataContainer";
+var line1LinkId = encodedId + "line1Link";
+var line1Id = encodedId + "line1";
+var line2Id = encodedId + "line2";
+_#-->
+        <div class="cbs-Item" id="_#= containerId =#_" data-displaytemplate="Item2Lines">
+            <a class="cbs-ItemLink" title="_#= $htmlEncode(line1.defaultValueRenderer(line1)) =#_" id="_#= pictureLinkId =#_">
+                <img class="cbs-Thumbnail" src="_#= $urlHtmlEncode(iconURL) =#_" alt="_#= $htmlEncode(line1.defaultValueRenderer(line1)) =#_" id="_#= pictureId =#_" />
+            </a>
+            <div class="cbs-Detail" id="_#= dataContainerId =#_">
+                <a class="cbs-Line1Link ms-noWrap ms-displayBlock" href="_#= linkURL =#_" title="_#= $htmlEncode(line1.defaultValueRenderer(line1)) =#_" id="_#= line1LinkId =#_">_#= line1 =#_</a>
+
+                <strong>List / Library name:</strong> <span class="listname"></span>
+<!--#_
+if(!line2.isEmpty)
+{
+_#-->
+                <div class="cbs-Line2 ms-noWrap" title="_#= $htmlEncode(line2.defaultValueRenderer(line2)) =#_" id="_#= line2Id =#_">_#= line2 =#_</div>
+<!--#_
+}
+_#-->
+                </div>
+        </div>
+    </div>
+</body>
+</html>
