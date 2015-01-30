@@ -8,6 +8,6 @@ __csr_ovr_RenderListTemplateWithPaging.js__   | This template is similar, howeve
 
 JAN 2015 Update
 
-There was an issue with the MDS registration on all of these that required you to inject the site collection location into the display template. As we always know that the MDS URL includes _Layouts/15/start.aspx, we can use that to extract the Display Templates location.
+There was an issue with the MDS registration on all of these that required you to inject the site collection location into the display template. The _spPageContextInfo.siteAbsoluteUrl object gives us the absolutle URL of the site collection, so we'll use that. (Thanks to Elio Struyf for the pointer!)
 
 If we're not using MDS on the site, then we don't care and the registration is ignored.
