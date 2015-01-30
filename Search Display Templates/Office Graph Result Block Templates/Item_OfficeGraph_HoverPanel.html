@@ -1,0 +1,92 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>Office Graph Hover Panel</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:MasterPageDescription msdt:dt="string">Displays the Office Graph search result hover panel.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#SearchHoverPanel;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+<body>
+    <div id="Item_OfficeGraph_HoverPanel">
+<!--#_
+        var id = ctx.CurrentItem.csr_id;
+        var uniqueId = ctx.CurrentItem.uniqueID;
+        var siteId = ctx.CurrentItem.siteID;
+        var webId = ctx.CurrentItem.webID;
+        var docId = ctx.CurrentItem.DocId;
+        
+        var author = ctx.CurrentItem.Author;
+        var account = ctx.CurrentItem.EditorOwsUser;
+        var accountName;
+        if(!$isNull(account) && !$isEmptyString(account)) {
+            var idx = account.lastIndexOf("|");
+            accountName = account.substr(idx+1);
+            
+            var idxNameStart = account.indexOf("|");
+            var idxNameEnd = account.indexOf("|", idxNameStart+1);
+            if(idxNameStart > 0 && idxNameEnd >0 ) {
+                author = account.substr(idxNameStart+1, idxNameEnd-(idxNameStart+1));
+            }
+        }
+
+        var modifiedDate = ctx.CurrentItem.LastModifiedTime;
+        modifiedDate = new Date(modifiedDate);
+
+        var fileDisplayName = Srch.U.getFriendlyNameForFileExtension(ctx.CurrentItem.SecondaryFileExtension.toString());
+        fileDisplayName = fileDisplayName.substr(fileDisplayName.indexOf("_") + 1);
+
+        var iconPath = Srch.U.getIconUrlByFileExtension(ctx.CurrentItem);
+_#-->
+        <div class="ms-srch-hover-innerContainer ms-srch-hover-standardSize" id="_#= $htmlEncode(id + HP.ids.inner) =#_">
+            <div class="ms-srch-hover-arrowBorder" id="_#= $htmlEncode(id + HP.ids.arrowBorder) =#_"></div>
+            <div class="ms-srch-hover-arrow" id="_#= $htmlEncode(id + HP.ids.arrow) =#_"></div>
+            <div class="ms-srch-hover-content" id="_#= $htmlEncode(id + HP.ids.content) =#_" data-displaytemplate="DefaultHoverPanel" style="text-align:center;">
+                <div id="_#= $htmlEncode(id + HP.ids.body) =#_" class="ms-srch-hover-body" style="padding:10px;">
+                    <div id="_#= $htmlEncode(id + Srch.U.Ids.body) =#_" class="ms-srch-item-body" style="display:block">
+                        <div style="padding-bottom: 10px; border-bottom: solid 1px #eee">
+                            <div style="float:left">
+                                <img src="/_layouts/15/userphoto.aspx?size=S&accountname=_#= accountName =#_" style="max-width:30px; max-height:30px" />
+                            </div>
+                            <div style="float:left;margin-left:5px;text-align:left;">
+                                <div>
+                                    _#= author =#_
+                                </div>
+                                <div style="font-size:smaller">
+                                    _#= modifiedDate.format("MMMM dd, yyyy") =#_
+                                </div>
+                            </div>
+                            <div style="clear:both"></div>
+                        </div>
+                        <div style="margin:0 0 10px;text-align:left;">
+                            <a href="_#= ctx.CurrentItem.Path =#_" title="_#= $htmlEncode(ctx.CurrentItem.Title) =#_">
+                                <h2 style="word-wrap:break-word">_#= ctx.CurrentItem.Title =#_</h2>
+                            </a>
+                        </div>
+                        <div style="border:solid 1px #eee;overflow:hidden;margin:0 auto 10px;max-height:250px;width:280px;">
+                            <img onerror="this.style.display='none'" src="/_layouts/15/getpreview.ashx?guidFile=_#= uniqueId =#_&guidSite=_#= siteId =#_&guidWeb=_#= webId =#_&docid=_#= docId =#_&ClientType=CodenameOsloWeb&size=small'" style="max-width:280px;">
+                        </div> 
+                        <div style="margin:0 0 10px;text-align:left;text-overflow: ellipsis;overflow:hidden;white-space:nowrap">
+                            <img src="_#= iconPath =#_" style="vertical-align:bottom"> _#= fileDisplayName =#_ <span style="width:4px;height:4px;border-radius:2px;content:'';display:inline-block;margin-right:5px;position:relative;top:-2px;background-color:#ccc;"></span><a href="_#= ctx.CurrentItem.SPWebUrl =#_">_#= ctx.CurrentItem.SiteTitle =#_</a>
+                        </div>
+<!--#_
+                        if (!$isEmptyString(ctx.CurrentItem.ViewCountLifetime)) {
+_#-->
+                        <div style="margin-left:10px;margin-right:10px;text-align:right">
+                            _#= ctx.CurrentItem.ViewCountLifetime =#_ views
+                        </div>
+<!--#_
+                        }
+_#-->
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+</body>
+</html>
