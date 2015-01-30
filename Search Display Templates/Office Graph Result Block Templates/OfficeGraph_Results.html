@@ -1,0 +1,179 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>Office Graph Results</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:MasterPageDescription msdt:dt="string">Display templates which retrieves seach results from Office Graph.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#SearchResults;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+<mso:ManagedPropertyMapping msdt:dt="string"></mso:ManagedPropertyMapping>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+<body>
+    <script>
+        Type.registerNamespace('search.OfficeGraph');
+
+        search.OfficeGraph = function() {
+            var currentCtx, templateFunc, keywords, refinement, elmId;
+            var processCount = 0;
+
+            /*********************************************************
+             * Check if the location is the same in your environment *
+             *********************************************************/
+            var templateUrl = "~sitecollection/_catalogs/masterpage/OfficeGraph/Item_OfficeGraph_Result.js";
+
+            var init = function (currentContext, encodedId) {
+                currentCtx = currentContext;
+                elmId = encodedId;
+
+                // Increment process count
+                processCount++;
+
+                // Get number of items to show in the Result Block
+                resultCount = currentCtx.CurrentGroup.RowCount;
+
+                // Get results from Office Graph
+                if (processCount === 1) {
+                    // Get the current keyword
+                    keywords = currentCtx.DataProvider.get_currentQueryState().k;
+
+                    // Check if the results are refined
+                    if (!$isNull(currentCtx.DataProvider.get_currentQueryState().r)) {
+                        var refiners = currentCtx.DataProvider.get_currentQueryState().r;
+                        // Check if multiple refiners are in place
+                        if (refiners.length === 1) {
+                            refinement = String.format("&refinementfilters='{0}'", refiners.toString());
+                        } else {
+                            refinement = String.format("&refinementfilters='and({0})'", refiners.toString());
+                        }
+                    } else {
+                        refinement = "";
+                    }
+
+                    // Load the display template for the Office Graph results
+                    RegisterSod('Item_OfficeGraph_Result.js', Srch.U.replaceUrlTokens(templateUrl));
+
+                    EnsureScriptFunc("Item_OfficeGraph_Result.js", null, function() {
+                        templateFunc = Srch.U.getRenderTemplateByName(templateUrl, null);
+                    });
+
+                    AddPostRenderCallback(currentCtx, function() {
+                        get();
+                    });
+                } else {
+                    // Reset the process count when the last item is loaded
+                    processCount = processCount === resultCount ? 0 : processCount;
+                }
+            },
+            get = function () {
+                // Check if the keywords string is not empty
+                if (!$isEmptyString(keywords)) {
+                    // Build the REST URL for Office Graph
+                    var restUrl = String.format("{0}/_api/search/query?QueryText='({1}) AND (FileExtension:doc OR FileExtension:docx OR FileExtension:ppt OR FileExtension:pptx OR FileExtension:xls OR FileExtension:xlsx OR FileExtension:pdf)'&Properties='TitleBasedSummaries:true,GraphQuery:and(actor(me\\,action\\:1021)\\,actor(me\\,or(action\\:1021\\,action\\:1036\\,action\\:1037\\,action\\:1039))),GraphRankingModel:action\\:1021\\,weight\\:1\\,edgeFunc\\:weight\\,mergeFunc\\:max'&SelectProperties='Author,AuthorOwsUser,DocId,EditorOwsUser,FileExtension,FileType,HitHighlightedProperties,HitHighlightedSummary,LastModifiedTime,LikeCountLifetime,ListID,ListItemID,OriginalPath,Path,Rank,SPWebUrl,SiteTitle,Title,ViewCountLifetime,siteID,uniqueID,webID,SecondaryFileExtension'&hithighlightedproperties='Title,Path'&RankingModelId='0c77ded8-c3ef-466d-929d-905670ea1d72'&RowLimit={2}&StartRow=0&BypassResultTypes=true{3}&ClientType='OfficeGraphTemplate'", _spPageContextInfo.webAbsoluteUrl, keywords, resultCount, refinement);
+
+                    // Do an Ajax call to retrieve the Office Graph information
+                    var request = new XMLHttpRequest();
+                    request.open('GET', restUrl, true);
+                    request.setRequestHeader('Accept', 'application/json;odata=nometadata');
+                    request.setRequestHeader('Content-Type', 'application/json;odata=nometadata');
+                    request.onload = function (e) {
+                        if (request.readyState === 4) {
+                            // Check if the get call was successful
+                            if (request.status === 200) {
+                                // List retrieved
+                                var data = JSON.parse(request.response);
+                                process(data);
+                            } else {
+                                // Sorry, something went wrong
+                                hide();
+                            }
+                        }
+                    };
+                    request.onerror = function (e) {
+                        // Sorry, something went wrong
+                        hide();
+                    };
+                    request.send(null);
+                } else {
+                    hide();
+                }
+            },
+            process = function(data) {
+                // Check if results are retrieved
+                if (!$isNull(data.PrimaryQueryResult.RelevantResults)) {
+                    var results = data.PrimaryQueryResult.RelevantResults.Table.Rows;
+                    if (results.length > 0) {
+                        var resultsMarkup = [];
+                        // Process results
+                        var i = results.length;
+                        while (i--) {
+                            // Current result to process
+                            var result = results[i];
+                            if (result.Cells.length > 0) {
+                                // Create current item object
+                                var currentItem = {};
+                                currentItem = setFields(currentItem, result.Cells);
+
+                                // Write the HTML to a variable
+                                currentCtx["CurrentItem"] = currentItem;
+                                resultsMarkup.unshift(CoreRender(templateFunc, currentCtx));
+                            }
+                        }
+
+                        // Render the results on the page
+                        render(resultsMarkup.join(''));
+                    } else {
+                        // Render no results
+                        render("<p>No Office Graph results</p>");
+                    }
+                }
+            },
+            // Render the results
+            render = function (markup) {
+                var elm = document.getElementById(elmId);
+                if (!$isNull(elm)) {
+                    elm.innerHTML = markup;
+                }
+            },
+            // Hide the Result Block
+            hide = function () {
+                var elm = document.getElementById(elmId);
+                if (!$isNull(elm)) {
+                    elm.parentNode.parentNode.style.display = 'none';
+                }
+            },
+            // Create CurrentItem object
+            setFields = function (item, cells) {
+                var i = cells.length;
+                while (i--) {
+                    var cell = cells[i];
+                    item[cell.Key] = cell.Value;
+                }
+                return item;
+            };
+
+            return {
+                init: init
+            };
+        }();
+
+        Srch.U.registerRenderTemplateByName("officegraph_init", search.OfficeGraph.init);
+    </script>
+
+    <div id="OfficeGraph_Results">
+<!--#_
+        var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_OfficeGraphResults");
+
+        if (!$isNull(ctx.DataProvider)) {
+            Srch.U.getRenderTemplateCollection().officegraph_init(ctx, encodedId);
+        }
+_#-->
+        <div id="_#= encodedId =#_">
+        </div>
+    </div>
+</body>
+</html>
