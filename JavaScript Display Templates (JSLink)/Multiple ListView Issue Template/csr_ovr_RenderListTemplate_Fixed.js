@@ -100,6 +100,9 @@ ExecuteOrDelayUntilScriptLoaded(function(){
 
 
 //Register for MDS enabled site otherwise the display template doesn't work on refresh
-//Note: The ~sitecollection tokens cannot be used here so we use _spPageContextInfo.siteAbsoluteUrl instead
-RegisterModuleInit(_spPageContextInfo.siteAbsoluteUrl + "/_catalogs/masterpage/Display Templates/csr_ovr_RenderListTemplate_Fixed.js", pfh.RegisterTemplateOverride); // CSR-override for MDS enabled site
+//Note: The ~sitecollection tokens cannot be used here!
+//PH Jan 2015 - As we know what the URL is on MDS enabled sites, we can safely extract the site colleciton URL
+//For none MDS sites, we don't care if RegisterModuleInit works or not...
+pfh.sitecolpath = window.location.pathname.substring(0,window.location.pathname.indexOf("/_layouts/15/start.aspx"))
+RegisterModuleInit(pfh.sitecolpath + "/_catalogs/masterpage/Display Templates/csr_ovr_RenderListTemplate_Fixed.js", pfh.RegisterTemplateOverride); // CSR-override for MDS enabled site
 pfh.RegisterTemplateOverride(); //CSR-override for MDS disabled site (because we need to call the entry point function in this case whereas it is not needed for anonymous functions)
