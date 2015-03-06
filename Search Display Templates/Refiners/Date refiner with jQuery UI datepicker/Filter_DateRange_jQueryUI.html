@@ -1,0 +1,158 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882">
+<head>
+    <title>Range Filter with datepicker (jQuery UI)</title>
+    <!--[if gte mso 9]>
+    <xml>
+        <mso:CustomDocumentProperties>
+            <mso:CompatibleManagedProperties msdt:dt="string"></mso:CompatibleManagedProperties>
+            <mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+            <mso:CompatibleSearchDataTypes msdt:dt="string">;#DateTime;#</mso:CompatibleSearchDataTypes>
+            <mso:MasterPageDescription msdt:dt="string"></mso:MasterPageDescription>
+            <mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106604</mso:ContentTypeId>
+            <mso:TargetControlType msdt:dt="string">;#Refinement;#</mso:TargetControlType>
+            <mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+            <mso:CrawlerXSLFile msdt:dt="string"></mso:CrawlerXSLFile>
+            <mso:HtmlDesignPreviewUrl msdt:dt="string"></mso:HtmlDesignPreviewUrl>
+    </xml>
+    <![endif]-->
+</head>
+<body>
+    <script>
+        $includeCSS(this.url, 'https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css');
+
+        RegisterSod('jquery-1.11.0.min.js', "//code.jquery.com/jquery-1.11.0.min.js");
+        RegisterSod('jquery-ui.min.js', '//code.jquery.com/ui/1.11.1/jquery-ui.min.js');
+        RegisterSodDep('jquery-ui.min.js', 'jquery-1.11.0.min.js');
+
+        Type.registerNamespace('estruyf.range');
+
+        estruyf.range.datepicker = function() {
+            var container = {};
+            var format = "yy-mm-dd";
+
+            var init = function (controlID, fromInput, toInput) {
+                    // Store the IDs in a container variable
+                    container[controlID] = {};
+                    container[controlID]["from"] = fromInput;
+                    container[controlID]["to"] = toInput;
+
+                    // Check if jQuery and jQuery UI is loaded
+                    if (typeof jQuery !== 'undefined' && typeof jQuery.ui !== 'undefined') {
+                        show(controlID);
+                    } else {
+                        // Load jQuery and jQuery UI
+                        EnsureScriptFunc("jquery-ui.min.js", null, function() {
+                            show(controlID);
+                        });
+                    }
+                },
+                show = function (controlID) {
+                    $('#' + container[controlID].from).datepicker({ dateFormat: format });
+                    $('#' + container[controlID].to).datepicker({ dateFormat: format });
+                };
+
+            return {
+                init: init
+            };
+        }();
+
+        Srch.U.registerRenderTemplateByName("daterange_init", estruyf.range.datepicker.init);
+    </script>
+
+    <div id="RangeFilter">
+<!--#_          
+        var listData = ctx.ListData;
+        var hasControl = true;
+
+        // Check if the current Refinement Control exists
+        if ($isNull(ctx.RefinementControl) || $isNull(ctx.ClientControl)) hasControl = false;
+        
+        if (hasControl) {
+            // Check if listdata contains data
+            if(!$isNull(listData) && !$isEmptyArray(listData)) {
+                // Element IDs
+                var controlID = ctx.RefinementControl.containerId + "_" + ctx.RefinementControl.propertyName;
+                var fromInput = controlID + "_from";
+                var toInput = controlID + "_to";
+                var refineLink = controlID + "_refine";
+                var clearLink = controlID + "_clear";
+
+                // Show the refinement title
+                var isExpanded = Srch.Refinement.getExpanded(ctx.RefinementControl.propertyName);
+                var iconClass = (isExpanded == "true"? "ms-ref-uparrow" : "ms-ref-downarrow");
+                var refinerCatTitle = Srch.Refinement.getRefinementTitle(ctx.RefinementControl);
+                // Display style > needed to hide the refinement list when collapsed
+                var displayStyle = (isExpanded == "true"? "" : "none");
+
+                // Set input form values
+                var from = "";
+                var to = "";
+                var currentRefinementCategory = ctx.ClientControl.getCurrentRefinementCategory(ctx.RefinementControl.propertyName);
+                // Check if the current control refinement is in use
+                if(!Srch.U.n(currentRefinementCategory) && currentRefinementCategory.get_tokenCount() == 1) {
+                    // Parse the current filter token to find the current range condition
+                    var matchResults = Srch.U.parseTypedRangeToken(currentRefinementCategory.t[0], null);
+                    // check for a range token match with corresponding min and max
+                    if (matchResults != null && matchResults.length > 2) {
+                        var from = matchResults[1] === "min" ? "" : matchResults[1];
+                        var to = matchResults[2] === "max" ? "" : matchResults[2];
+                    }
+                }
+_#-->
+                <div id='Container' data-intro="With this control you could filter your results based on a date range (From -> To). It is not required to specify the two values." data-step="6">
+                    _#= Srch.U.collapsibleRefinerTitle(ctx.RefinementControl.propertyName, ctx.ClientControl.get_id(), refinerCatTitle, iconClass) =#_
+
+                    <div class='ms-ref-unselSec' style='display:_#= $htmlEncode(displayStyle) =#_'>
+                        <label for='_#= fromInput =#_'>From</label>
+                        <input type='text' id='_#= fromInput =#_' name='from' value='_#= from =#_' />
+                        <label for='_#= toInput =#_'>To</label>
+                        <input type='text' id='_#= toInput =#_' name='to' value='_#= to =#_' />
+                        <a href='javascript:{}' id="_#= refineLink =#_">Refine</a>
+                        <a href='javascript:{}' id="_#= clearLink =#_">Clear</a>
+                    </div>
+                </div>
+<!--#_
+                AddPostRenderCallback(ctx, function() {
+                    // Retrieve the two hyperlinks 
+                    var refineLinkElm = document.getElementById(refineLink);
+                    var clearLinkElm = document.getElementById(clearLink);
+
+                    // Create an onclick event for the refinement link
+                    refineLinkElm.onclick = function () {
+                        // Retrieve the two input fields
+                        var fromInputElm = document.getElementById(fromInput);
+                        var toInputElm = document.getElementById(toInput);
+
+                        // Check if the two input fields contains a value, otherwise nothing needs to be done
+                        if (fromInputElm.value.trim() !== "" || toInputElm.value.trim() !== "") {
+                            // Retrieve the input values
+                            var fromValue = fromInputElm.value.trim() === "" ? "min" : fromInputElm.value.trim();
+                            var toValue = toInputElm.value.trim() === "" ? "max" : toInputElm.value.trim();
+                            
+                            // Refinement value
+                            if (ctx.ListData[0].filterTokenType === "decimal") {
+                                fromValue = fromValue === "min" ? fromValue : 'decimal(' + fromValue + ')';
+                                toValue = toValue === "max" ? toValue : 'decimal(' + toValue + ')';
+                            }
+                            // Create the refinement JSON value string
+                            var refinement = '{"'+ ctx.RefinementControl.propertyName +'":["range('+fromValue+','+toValue+')"]}';
+                            $getClientControl(this).updateRefinersJSON(refinement);
+                        }
+                    };
+                    
+                    // Create a onclick event to remove the refinement
+                    clearLinkElm.onclick = function () {
+                        // NULL Refinement value to remove the refinement
+                        var refinement = '{"'+ ctx.RefinementControl.propertyName +'":null}';
+                        $getClientControl(this).updateRefinersJSON(refinement);
+                    };
+
+                    
+                    Srch.U.getRenderTemplateCollection().daterange_init(controlID, fromInput, toInput);
+                });
+            }
+        }
+_#-->
+    </div>
+</body>
+</html>
