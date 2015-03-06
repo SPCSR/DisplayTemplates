@@ -1,0 +1,124 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>RSS Picture on left, 3 lines on right</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:ManagedPropertyMapping msdt:dt="string">'Picture URL'{Picture URL}:'PublishingImage;PictureURL;PictureThumbnailURL','Link URL'{Link URL}:'Path','Line 1'{Line 1}:'Title','Line 2'{Line 2}:'Description','Line 3'{Line 3}:'','SecondaryFileExtension','ContentTypeId'</mso:ManagedPropertyMapping>
+<mso:MasterPageDescription msdt:dt="string">This Item Display Template will show a 100x100 picture of the item on the left. The title and the default item description will display to the right of the picture with an additional line that is available for a custom managed property.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+<mso:CrawlerXSLFile msdt:dt="string"></mso:CrawlerXSLFile>
+<mso:HtmlDesignPreviewUrl msdt:dt="string"></mso:HtmlDesignPreviewUrl>
+<mso:HtmlDesignConversionSucceeded msdt:dt="string">True</mso:HtmlDesignConversionSucceeded>
+<mso:HtmlDesignStatusAndPreview msdt:dt="string">https://pzlcloud-my.sharepoint.com/personal/mikael_svenson_puzzlepart_com/_catalogs/masterpage/Display Templates/Content Web Parts/Item_RSSPicture3Lines.html, Conversion successful.</mso:HtmlDesignStatusAndPreview>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+
+    <!--
+            Warning: Do not try to add HTML to this section. Only the contents of the first <div>
+            inside the <body> tag will be used while executing Display Template code. Any HTML that
+            you add to this section will NOT become part of your Display Template.
+    -->
+    <script>
+        $includeLanguageScript(this.url, "~sitecollection/_catalogs/masterpage/Display Templates/Language Files/{Locale}/CustomStrings.js");
+    </script>
+
+    <!--
+        Use the div below to author your Display Template. Here are some things to keep in mind:
+        * Surround any JavaScript logic as shown below using a "pound underscore" (#_ ... _#) token
+        inside a comment.
+
+        * Use the values assigned to your variables using an "underscore pound equals"
+        (_#= ... =#_) token.
+    -->
+
+    <div id="Item_Picture3Lines">
+
+<!--#_
+
+var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_picture3Lines_");
+
+var itemXml = STSHtmlDecode($getItemValue(ctx, "OpenSearchSingleResultXML").value);
+var doc = Srch.U.createXMLDocument(itemXml);
+
+var line1 = $getItemValue(ctx, "Line 1");
+var line2 =  Srch.U.getSingleHHXMLNodeValue(doc,"description");
+var line3 = Srch.U.getSingleHHXMLNodeValue(doc,"pubDate");
+
+var linkURL = Srch.U.getSingleHHXMLNodeValue(doc,"description");
+var pictureURL = doc.getElementsByTagName("media:thumbnail")[0].attributes["url"].value;
+
+var imageValue = new Srch.ValueInfo(ctx.CurrentItem.Path, "PictureURL");
+imageValue.value = pictureURL
+
+var pictureId = encodedId + "picture";
+var pictureMarkup = Srch.ContentBySearch.getPictureMarkup(imageValue, 100, 100, ctx.CurrentItem, "cbs-picture3LinesImg", line1, pictureId);
+
+var containerId = encodedId + "container";
+var pictureLinkId = encodedId + "pictureLink";
+var pictureContainerId = encodedId + "pictureContainer";
+var dataContainerId = encodedId + "dataContainer";
+var line1LinkId = encodedId + "line1Link";
+var line1Id = encodedId + "line1";
+var line2Id = encodedId + "line2";
+var line3Id = encodedId + "line3";
+
+var dataDisplayTemplateTitle = "ItemPicture3Lines";
+
+ _#-->
+        <div class="cbs-picture3LinesContainer" id="_#= containerId =#_" data-displaytemplate="_#= $htmlEncode(dataDisplayTemplateTitle) =#_">
+            <div class="cbs-picture3LinesImageContainer" id="_#= pictureContainerId =#_">
+<!--#_
+if(!$isEmptyString(linkURL))
+{
+_#-->
+
+                <a class="cbs-pictureImgLink" href="_#= linkURL =#_" title="_#= $htmlEncode(line1.defaultValueRenderer(line1)) =#_" id="_#= pictureLinkId =#_"
+
+                  >
+<!--#_
+}
+_#-->
+                    _#= pictureMarkup =#_
+<!--#_
+if(!$isEmptyString(linkURL))
+{
+_#-->
+                </a>
+<!--#_
+}
+_#-->
+            </div>
+            <div class="cbs-picture3LinesDataContainer" id="_#= dataContainerId =#_">
+
+                <a class="cbs-picture3LinesLine1Link" href="_#= linkURL =#_" title="_#= $htmlEncode(line1) =#_" id="_#= line1LinkId =#_"
+
+                  >
+                    <h2 class="cbs-picture3LinesLine1 ms-accentText2 ms-noWrap" id="_#= line1Id =#_"> _#= line1 =#_</h2>
+                </a>
+<!--#_
+if(!$isEmptyString(line2))
+{
+_#-->
+                <div class="cbs-picture3LinesLine2 ms-noWrap" title="_#= $htmlEncode(line2) =#_" id="_#= line2Id =#_" > _#= line2 =#_</div>
+<!--#_
+}
+if(!$isEmptyString(line3))
+{
+_#-->
+                <div class="cbs-pictureLine3 ms-textSmall ms-noWrap" id="_#= line3Id =#_" title="_#= $htmlEncode(line3) =#_">_#= line3 =#_</div>
+<!--#_
+}
+_#-->
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
