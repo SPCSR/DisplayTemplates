@@ -1,0 +1,144 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>List Refine</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:MasterPageDescription msdt:dt="string">This template can be used to refine the results based on the display template property settings in the Item Display Template.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106601</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <script>
+        Type.registerNamespace('search.refine');
+
+        search.refine = function() {
+            var currentCtx;
+            var managedProperty = 'FileExtension';
+            var operator = 'or';
+
+            var init = function (context) {
+                    currentCtx = context;
+                },
+                click = function (cc, value) {
+                    // Create a new querystate
+                    var queryState = new Srch.QueryState();
+                    queryState.s = 1;
+
+                    // Get the current refinement
+                    queryState.r = checkRefinement();
+                    
+                    // Add the clicked refinement value
+                    var refiner = { key: managedProperty, value: [value] };
+                    var rc = new Srch.RefinementCategory(refiner.key);
+                    rc.t = refiner.value;
+                    if (!Srch.U.e(operator)) {
+                        rc.o = operator;
+                    }
+                    Srch.U.appendArray(queryState.r, rc);
+
+                    // Do the refinement
+                    var queryEventArgs = new Srch.QueryEventArgs(queryState);
+                    queryEventArgs.userAction = Srch.UserActionType.refine;
+                    cc.raiseQueryReadyEvent(queryEventArgs);
+                },
+                checkRefinement = function (cc) {
+                    var currentRefinement = [];
+                    if (!Srch.U.n(cc)) {
+                        var refiners = cc.get_dataProvider().get_currentQueryState().r;
+                        if (!Srch.U.n(refiners) && refiners.length > 0) {
+                            for (var i = 0; i < refiners.length; i++) {
+                                var refVal = refiners[i];
+                                if (!Srch.U.n(refVal)) {
+                                    Srch.U.appendArray(currentRefinement, refVal);
+                                }
+                            }
+                        }
+                    }
+                    return currentRefinement;
+                },
+                all = function (cc) {
+                    var queryState = new Srch.QueryState();
+                    // Clear the refinement object
+                    queryState.r = [];
+                    // Do a new query
+                    var queryEventArgs = new Srch.QueryEventArgs(queryState);
+                    cc.raiseQueryReadyEvent(queryEventArgs);
+                },
+                display = function () {
+                    var refiners = checkRefinement(currentCtx.ClientControl);
+                    if (refiners.length > 0) {
+                        for (var ref in refiners) {
+                            if (refiners[ref].n === managedProperty) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                };
+
+
+            return {
+                init: init,
+                click: click,
+                all: all,
+                display: display
+            };
+        }();
+
+        Srch.U.registerRenderTemplateByName("refine_init", search.refine.init);
+        Srch.U.registerRenderTemplateByName("refine_click", search.refine.click);
+        Srch.U.registerRenderTemplateByName("refine_all", search.refine.all);
+        Srch.U.registerRenderTemplateByName("refine_display", search.refine.display);
+    </script>
+
+    <div id="Control_List">
+<!--#_ 
+if (!$isNull(ctx.ClientControl) &&
+    !$isNull(ctx.ClientControl.shouldRenderControl) &&
+    !ctx.ClientControl.shouldRenderControl())
+{
+    return "";
+}
+
+Srch.U.getRenderTemplateCollection().refine_init(ctx);
+
+var displayStyle = Srch.U.getRenderTemplateCollection().refine_display() === true ? "" : "none";
+
+ctx.ListDataJSONGroupsKey = "ResultTables";
+var $noResults = Srch.ContentBySearch.getControlTemplateEncodedNoResultsMessage(ctx.ClientControl);
+
+var noResultsClassName = "ms-srch-result-noResults";
+
+var ListRenderRenderWrapper = function(itemRenderResult, inCtx, tpl)
+{
+    var iStr = [];
+    iStr.push('<li>');
+    iStr.push(itemRenderResult);
+    iStr.push('</li>');
+    return iStr.join('');
+}
+ctx['ItemRenderWrapper'] = ListRenderRenderWrapper;
+_#-->
+        <a href="#" onclick="Srch.U.getRenderTemplateCollection().refine_click($getClientControl(this), 'docx');return false;" title="Refine on 'docx'">Refine on 'docx'</a> - 
+        <a href="#" onclick="Srch.U.getRenderTemplateCollection().refine_click($getClientControl(this), 'pdf');return false;" title="Refine on 'pdf'">Refine on 'pdf'</a><span style='display:_#= $htmlEncode(displayStyle) =#_'> - </span>
+        <a href="#" style='display:_#= $htmlEncode(displayStyle) =#_' onclick="Srch.U.getRenderTemplateCollection().refine_all($getClientControl(this));return false;" title="Refine results">All results</a>
+        <ul class="cbs-List">
+            _#= ctx.RenderGroups(ctx) =#_
+        </ul>
+<!--#_
+if (ctx.ClientControl.get_shouldShowNoResultMessage())
+{
+_#-->
+        <div class="_#= noResultsClassName =#_">_#= $noResults =#_</div>
+<!--#_
+}
+_#-->
+
+    </div>
+</body>
+</html>
