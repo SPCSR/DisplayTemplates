@@ -128,6 +128,65 @@ _#-->
         <a href="#" onclick="Srch.U.getRenderTemplateCollection().refine_click($getClientControl(this), 'pdf');return false;" title="Refine on 'pdf'">Refine on 'pdf'</a><span style='display:_#= $htmlEncode(displayStyle) =#_'> - </span>
         <a href="#" style='display:_#= $htmlEncode(displayStyle) =#_' onclick="Srch.U.getRenderTemplateCollection().refine_all($getClientControl(this));return false;" title="Refine results">All results</a>
         <ul class="cbs-List">
+
+<!--#_
+var showPaging = ctx.ClientControl.get_showPaging();
+if(showPaging)
+{
+    var pagingInfo = ctx.ClientControl.get_pagingInfo();
+    showPaging = !$isEmptyArray(pagingInfo);
+    if(showPaging)
+    {
+        var currentPage = null;
+        var firstPage = pagingInfo[0];
+        var lastPage = pagingInfo[pagingInfo.length - 1];
+
+        var getPagingImageClassName = function(buttonClassNamePrefix, isNext, isEnabled)
+        {
+            var className = buttonClassNamePrefix;
+            className += (isNext && !Srch.U.isRTL()) || (!isNext && Srch.U.isRTL()) ? "right" : "left";
+            if(!$isNull(isEnabled) && isEnabled == false)
+            {
+                className += "-disabled";
+            }
+            return className;
+        }
+
+        var getPagingContainerClassName = function(buttonClassNamePrefix, isEnabled)
+        {
+            var className = buttonClassNamePrefix;
+            className += isEnabled ? "enabled" : "disabled";
+            return className;
+        }
+
+        var hasNextPage = lastPage.pageNumber == -2;
+        var hasPreviousPage = firstPage.pageNumber == -1;
+        var buttonClassNamePrefix = "ms-promlink-button-";
+        var nextPageContainerClassName = getPagingContainerClassName(buttonClassNamePrefix, hasNextPage);
+        var previousPageContainerClassName = getPagingContainerClassName(buttonClassNamePrefix, hasPreviousPage);
+        var nextPageImageClassName = getPagingImageClassName(buttonClassNamePrefix, true, hasNextPage);
+        var previousPageImageClassName = getPagingImageClassName(buttonClassNamePrefix, false, hasPreviousPage);
+_#-->
+            <li class="ms-promlink-header">
+                <span class="ms-promlink-headerNav">
+                    <a class="ms-commandLink ms-promlink-button _#= $htmlEncode(previousPageContainerClassName) =#_" title="_#= $htmlEncode(firstPage.title) =#_" href="#" onclick='$getClientControl(this).page(_#= $htmlEncode(firstPage.startItem) =#_);return Srch.U.cancelEvent(event);'>
+                        <span class="ms-promlink-button-image">
+                            <img class="_#= $htmlEncode(previousPageImageClassName) =#_" alt="_#= $htmlEncode(firstPage.title) =#_" src="_#= $urlHtmlEncode(GetThemedImageUrl('spcommon.png')) =#_">
+                        </span>
+                    </a>
+                    <span class="ms-promlink-button-inner"></span>
+                    <a class="ms-commandLink ms-promlink-button _#= $htmlEncode(nextPageContainerClassName) =#_" title="_#= $htmlEncode(lastPage.title) =#_" href="#" onclick='$getClientControl(this).page(_#= $htmlEncode(lastPage.startItem) =#_);return Srch.U.cancelEvent(event);'>
+                        <span class="ms-promlink-button-image">
+                            <img class="_#= $htmlEncode(nextPageImageClassName) =#_" alt="_#= $htmlEncode(lastPage.title) =#_" src="_#= $urlHtmlEncode(GetThemedImageUrl('spcommon.png')) =#_">
+                        </span>
+                    </a>
+                </span>
+            </li>
+<!--#_
+    }
+}
+_#-->
+
             _#= ctx.RenderGroups(ctx) =#_
         </ul>
 <!--#_
