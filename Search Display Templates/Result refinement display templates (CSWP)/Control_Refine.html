@@ -1,0 +1,189 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>List Refine</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:MasterPageDescription msdt:dt="string">This template can be used to refine the results based on the display template property settings in the Item Display Template.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106601</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <script>
+        Type.registerNamespace('search.refine');
+
+        search.refine = function() {
+            var currentCtx;
+            var managedProperty;
+            var operator = 'or';
+
+            var init = function (context) {
+                    currentCtx = context;
+                },
+                click = function (cc, value) {
+                    // Create a new querystate
+                    var queryState = new Srch.QueryState();
+                    queryState.s = 1;
+
+                    // Get the current refinement
+                    queryState.r = checkRefinement();
+                    
+                    // Add the clicked refinement value
+                    var refiner = { key: managedProperty, value: [value] };
+                    var rc = new Srch.RefinementCategory(refiner.key);
+                    rc.t = refiner.value;
+                    if (!Srch.U.e(operator)) {
+                        rc.o = operator;
+                    }
+                    Srch.U.appendArray(queryState.r, rc);
+
+                    // Do the refinement
+                    var queryEventArgs = new Srch.QueryEventArgs(queryState);
+                    queryEventArgs.userAction = Srch.UserActionType.refine;
+                    cc.raiseQueryReadyEvent(queryEventArgs);
+                },
+                checkRefinement = function (cc) {
+                    var currentRefinement = [];
+                    // Check if client control is not null
+                    if (!Srch.U.n(cc)) {
+                        // Retrieve the current refiners
+                        var refiners = cc.get_dataProvider().get_currentQueryState().r;
+                        // Check there is refinement in place
+                        if (!Srch.U.n(refiners) && refiners.length > 0) {
+                            for (var i = 0; i < refiners.length; i++) {
+                                var refVal = refiners[i];
+                                if (!Srch.U.n(refVal)) {
+                                    Srch.U.appendArray(currentRefinement, refVal);
+                                }
+                            }
+                        }
+                    }
+                    return currentRefinement;
+                },
+                all = function (cc) {
+                    // Retrieve all results
+                    var queryState = new Srch.QueryState();
+                    // Clear the refinement object
+                    queryState.r = [];
+                    // Do a new query
+                    var queryEventArgs = new Srch.QueryEventArgs(queryState);
+                    cc.raiseQueryReadyEvent(queryEventArgs);
+                },
+                display = function () {
+                    // Check if the All Results link should be displayed
+                    var refiners = checkRefinement(currentCtx.ClientControl);
+                    if (refiners.length > 0) {
+                        for (var ref in refiners) {
+                            if (refiners[ref].n === managedProperty) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                },
+                settings = function (ctx) {
+                    var properties = "";
+                    // Retrieve the properties from the display template data variable
+                    var dtd = ctx['DisplayTemplateData'];
+                    if (!Srch.U.n(dtd) && !Srch.U.n(dtd['ManagedPropertyMapping'])) {
+                        properties = (dtd['ManagedPropertyMapping']);
+                    }
+                    // Retrieve the properties from the client control
+                    var cc = ctx['ClientControl'];
+                    if (!Srch.U.n(cc)) {
+                        if (!Srch.U.n(cc.get_propertyMappings)) {
+                            var mappings = cc.get_propertyMappings();
+                            if (!Srch.U.n(mappings) && !Srch.U.w(mappings)) {
+                                properties = Srch.Result.parsePropertyMappingsString(mappings);
+                            }
+                        }
+                    }
+
+                    // Store the managed property name for the refinement
+                    managedProperty = properties['setting_MP'].toString();
+                    // Retrieve the filter values
+                    return properties['setting_Filter'];
+                };
+
+
+            return {
+                init: init,
+                click: click,
+                all: all,
+                display: display,
+                settings: settings
+            };
+        }();
+
+        Srch.U.registerRenderTemplateByName("refine_init", search.refine.init);
+        Srch.U.registerRenderTemplateByName("refine_click", search.refine.click);
+        Srch.U.registerRenderTemplateByName("refine_all", search.refine.all);
+        Srch.U.registerRenderTemplateByName("refine_display", search.refine.display);
+        Srch.U.registerRenderTemplateByName("refine_settings", search.refine.settings);
+    </script>
+
+    <div id="Control_List">
+<!--#_ 
+if (!$isNull(ctx.ClientControl) &&
+    !$isNull(ctx.ClientControl.shouldRenderControl) &&
+    !ctx.ClientControl.shouldRenderControl())
+{
+    return "";
+}
+
+Srch.U.getRenderTemplateCollection().refine_init(ctx);
+
+var displayStyle = Srch.U.getRenderTemplateCollection().refine_display() === true ? "" : "none";
+
+ctx.ListDataJSONGroupsKey = "ResultTables";
+var $noResults = Srch.ContentBySearch.getControlTemplateEncodedNoResultsMessage(ctx.ClientControl);
+
+var noResultsClassName = "ms-srch-result-noResults";
+
+var ListRenderRenderWrapper = function(itemRenderResult, inCtx, tpl)
+{
+    var iStr = [];
+    iStr.push('<li>');
+    iStr.push(itemRenderResult);
+    iStr.push('</li>');
+    return iStr.join('');
+}
+ctx['ItemRenderWrapper'] = ListRenderRenderWrapper;
+
+// Retrieve the filter values set in the Item Display Template
+var filterValues = Srch.U.getRenderTemplateCollection().refine_settings(ctx);
+// Show a link for each filter value
+var total = filterValues.length;
+for (var i = 0; i < total; i++) {
+    var val = filterValues[i];
+_#-->
+        <a href="#" onclick="Srch.U.getRenderTemplateCollection().refine_click($getClientControl(this), '_#= val =#_');return false;" title="Refine on '_#= val =#_'">Refine on '_#= val =#_'</a>
+<!--#_
+    if (i < (total - 1)) {
+_#-->
+        <span> - </span>
+<!--#_    
+    }
+}
+_#-->
+        <span style='display:_#= $htmlEncode(displayStyle) =#_'> - </span>
+        <a href="#" style='display:_#= $htmlEncode(displayStyle) =#_' onclick="Srch.U.getRenderTemplateCollection().refine_all($getClientControl(this));return false;" title="Refine results">All results</a>
+        <ul class="cbs-List">
+            _#= ctx.RenderGroups(ctx) =#_
+        </ul>
+<!--#_
+if (ctx.ClientControl.get_shouldShowNoResultMessage())
+{
+_#-->
+        <div class="_#= noResultsClassName =#_">_#= $noResults =#_</div>
+<!--#_
+}
+_#-->
+
+    </div>
+</body>
+</html>
