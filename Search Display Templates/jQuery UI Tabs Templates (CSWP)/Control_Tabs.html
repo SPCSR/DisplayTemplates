@@ -38,10 +38,21 @@
                     // Add an on post render callback, this will be excuted when all the results are rendered
                     AddPostRenderCallback(currentContext, function() {
                         var groupElm = document.getElementById(encodedId);
-                        search.Tabs.show(groupElm);
+
+                        if (typeof jQuery === "undefined") {
+                            EnsureScriptFunc('jquery-ui.min.js', null, function () {
+                                search.Tabs.show(groupElm);
+                            });
+                        } else {
+                            search.Tabs.show(groupElm);
+                        }
                     });
                 },
                 push: function (grouping, content) {
+                    // If grouping value is empty, group the items under a "Unkown" tab
+                    if (grouping.isEmpty) {
+                        grouping = "Unknown";
+                    }
                     // Add the markup to the grouping array 
                     if (typeof currentCtx.Grouping[grouping] !== "undefined") {
                         currentCtx.Grouping[grouping] += content;
@@ -50,23 +61,21 @@
                     }
                 },
                 show: function (groupElm) {
-                    EnsureScriptFunc('jquery-ui.min.js', null, function () {
-                        var groups = currentCtx.Grouping;
+                    var groups = currentCtx.Grouping;
 
-                        var elm = $(groupElm);
-                        elm.append('<ul />');
+                    var elm = $(groupElm);
+                    elm.append('<ul />');
 
-                        var listElm = elm.find('ul');
+                    var listElm = elm.find('ul');
 
-                        // Add the content to the page
-                        for (var key in groups) {
-                            listElm.append(String.format('<li><a href="#{0}">{1}</a></li>', key.trim().replace(/ /g, '-'), key));
-                            elm.append(String.format('<div id="{0}">{1}</div>', key.trim().replace(/ /g, '-'), groups[key]));
-                        }
+                    // Add the content to the page
+                    for (var key in groups) {
+                        listElm.append(String.format('<li><a href="#{0}">{1}</a></li>', key.trim().replace(/ /g, '-'), key));
+                        elm.append(String.format('<div id="{0}">{1}</div>', key.trim().replace(/ /g, '-'), groups[key]));
+                    }
 
-                        // Start tabbing
-                        elm.tabs();
-                    });
+                    // Start tabbing
+                    elm.tabs();
                 }
             }
         }();

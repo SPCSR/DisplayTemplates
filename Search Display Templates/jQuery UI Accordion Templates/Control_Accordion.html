@@ -38,10 +38,21 @@
                     // Add an on post render callback, this will be excuted when all the results are rendered
                     AddPostRenderCallback(currentContext, function() {
                         var groupElm = document.getElementById(encodedId);
-                        search.Accordion.show(groupElm);
+
+                        if (typeof jQuery === "undefined") {
+                            EnsureScriptFunc('jquery-ui.min.js', null, function () {
+                                search.Accordion.show(groupElm);
+                            });
+                        } else {
+                            search.Accordion.show(groupElm);
+                        }
                     });
                 },
                 push: function (grouping, content) {
+                    // If grouping value is empty, group the items under a "Unkown" tab
+                    if (grouping.isEmpty) {
+                        grouping = "Unknown";
+                    }
                     // Add the markup to the grouping array 
                     if (typeof currentCtx.Grouping[grouping] !== "undefined") {
                         currentCtx.Grouping[grouping] += content;
@@ -50,19 +61,17 @@
                     }
                 },
                 show: function (groupElm) {
-                    EnsureScriptFunc('jquery-ui.min.js', null, function () {
-                        var groups = currentCtx.Grouping;
+                    var groups = currentCtx.Grouping;
 
-                        var elm = $(groupElm);
+                    var elm = $(groupElm);
 
-                        // Add the content to the page
-                        for (var key in groups) {
-                            elm.append(String.format('<h3>{0}</h3><div>{1}</div>', key, groups[key]));
-                        }
+                    // Add the content to the page
+                    for (var key in groups) {
+                        elm.append(String.format('<h3>{0}</h3><div>{1}</div>', key, groups[key]));
+                    }
 
-                        // Start tabbing
-                        elm.accordion();
-                    });
+                    // Start tabbing
+                    elm.accordion();
                 }
             }
         }();
