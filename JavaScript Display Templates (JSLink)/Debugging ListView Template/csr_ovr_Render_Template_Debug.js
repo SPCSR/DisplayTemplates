@@ -176,7 +176,7 @@ pfh.RegisterTemplateOverride = function () {
 
 //	And finally we add our PostRender function.
 //  This expects a JavaScript array, so we pass the function in []
-	overrideCtx.onPostRender = [pfh.PostRenderCallback(ctx)];
+	overrideCtx.OnPostRender = [pfh.PostRenderCallback(ctx)];
 
 
 //	Register this Display Template against views with matching BaseViewID and ListTemplateType
