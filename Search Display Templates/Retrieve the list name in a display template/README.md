@@ -6,6 +6,7 @@ By default you do not have a managed property which contains the list name. This
 File | Desciption
 --- | ---
 __Item_Listname.html__ | This is the item template which can be used to add the list names to the search results.
+__Item_Listname-OnPremises.html__ | Use this template if you are working on an on-premises environment.
 
 ## Result ##
 ![Result](http://www.eliostruyf.com/wp-content/uploads/2015/01/011615_1224_Retrievingt4.png)
