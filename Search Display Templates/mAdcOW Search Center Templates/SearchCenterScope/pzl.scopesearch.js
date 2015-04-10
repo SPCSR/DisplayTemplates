@@ -56,7 +56,7 @@ var Pzl;
     }
 
     // If u= scope param is available, then hide the navigation - if not u= is carried over to verticals
-    function hideNav() {
+    function hideNavIfScopeQuery() {
         var uParam = getParameterByName("u");
         if (!Srch.U.e(uParam)) {
             console.log("Hiding nav for scope search");
@@ -82,9 +82,10 @@ var Pzl;
 
     jQuery(document).ready(function () {
         SP.SOD.executeFunc("Search.ClientControls.js", "Srch.ScriptApplicationManager", function () {
-            hideNav();
+            hideNavIfScopeQuery();
             console.log("Hooking post render for scope hint");
             var dp = Srch.ScriptApplicationManager.get_current().queryGroups.Default.dataProvider;
+            // Add event to be called after results are ready
             dp.add_resultReady(showScopeHint);
         });
     });
