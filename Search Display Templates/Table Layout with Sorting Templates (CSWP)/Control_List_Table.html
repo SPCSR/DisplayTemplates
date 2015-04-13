@@ -119,7 +119,7 @@ AddPostRenderCallback(ctx, function() {
                         (function (prop) {
                             // Do a Ajax call for each property to check if it is sortable
                             var request = new XMLHttpRequest();
-                            var restUrl = _spPageContextInfo.webAbsoluteUrl + "/_api/search/query?querytext='" + cc.get_dataProvider().get_queryTemplate() + "'&sortlist='" + properties[key] +":ascending'&RowLimit=1&selectproperties='Path'";
+                            var restUrl = _spPageContextInfo.webAbsoluteUrl + "/_api/search/query?querytext='*'&sortlist='" + properties[key] +":ascending'&RowLimit=1&selectproperties='Path'";
                             request.open('GET', restUrl, true);
                             request.onload = function (e) {
                                 if (request.readyState === 4) {
