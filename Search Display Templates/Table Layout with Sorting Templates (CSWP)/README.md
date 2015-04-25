@@ -7,6 +7,8 @@ File | Desciption
 --- | ---
 __Control_List_Table.html__ | This is the control template which needs to be used for the table layout.
 __Item_List_Item.html__ | This is the item template which creates a column for each managed property and its value.
+__Control_List_Table_Without_Sorting.html__ | You can use this control template if you do not want the sorting options to be available.
+__Item_List_Item_Without_Sorting.html__ | You can use this item template if you do not want the sorting options to be available.
 __table.redirection.js__ | This extra JavaScript file is needed to build to retrieve the web URL and redirect you to the correct property page.
 
 **Note: you will need to change the link to the table.redirection.js file in the Control_List_Table.html file.**
