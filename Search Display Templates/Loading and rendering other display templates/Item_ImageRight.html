@@ -1,0 +1,26 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>Two lines</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:ManagedPropertyMapping msdt:dt="string">'Path','Title':'Title'</mso:ManagedPropertyMapping>
+<mso:MasterPageDescription msdt:dt="string">Image on the right</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <div id="ImageRight">
+<!--#_
+var title = $getItemValue(ctx, "Title");
+_#-->
+        <div class="image-right">
+            <div style="display:inline-block;width:10px;height:10px;background-color:dodgerblue;margin-right:10px;"></div><strong>Item_ImageRight.js:</strong> _#= title =#_
+        </div>
+    </div>
+</body>
+</html>
