@@ -84,28 +84,30 @@ _#-->
             // Show the properties that aren't empty
             for(var i = 1; i <= 10; i++) { 
                 var property = $getItemValue(ctx, String.format("Property {0}", i));
+                if (property.managedPropertyName !== String.format("Property {0}", i)) {
             _#-->
                 <td class="ms-cellstyle ms-vb2">
             <!--#_
-                if(!property.isEmpty)
-                {
-                    var value = i === 1 ? String.format("<a href='{0}' class='ms-listlink'>{1}</a>", linkURL, property) : property;
+                    if(!property.isEmpty)
+                    {
+                        var value = i === 1 ? String.format("<a href='{0}' class='ms-listlink'>{1}</a>", linkURL, property) : property;
             _#-->
-                _#= value =#_
+                    _#= value =#_
             <!--#_
-                    if (i === 1 && !listID.isEmpty && !listItemID.isEmpty && !ContentTypeId.isEmpty) {
-                        var viewPropUrl = String.format('/_layouts/15/listform.aspx?ListId={0}&ID={1}&ContentTypeID={2}&Source={3}', listID, listItemID, ContentTypeId, window.location.href.split('#')[0]);
+                        if (i === 1 && !listID.isEmpty && !listItemID.isEmpty && !ContentTypeId.isEmpty) {
+                            var viewPropUrl = String.format('/_layouts/15/listform.aspx?ListId={0}&ID={1}&ContentTypeID={2}&Source={3}', listID, listItemID, ContentTypeId, window.location.href.split('#')[0]);
             _#-->
-                        &nbsp;&nbsp;
-                        <span title="Open Menu" class="NotificationDiv ms-ellipsis-a" rel="_#= viewPropUrl =#_" ref="_#= property =#_" path="_#= linkURL =#_" style="cursor: pointer; margin-top: 3px; float: right;">
-                            <img alt="Open Menu" src="/_layouts/15/images/spcommon.png" class="ms-ellipsis-icon">
-                        </span>
+                            &nbsp;&nbsp;
+                            <span title="Open Menu" class="NotificationDiv ms-ellipsis-a" rel="_#= viewPropUrl =#_" ref="_#= property =#_" path="_#= linkURL =#_" style="cursor: pointer; margin-top: 3px; float: right;">
+                                <img alt="Open Menu" src="/_layouts/15/images/spcommon.png" class="ms-ellipsis-icon">
+                            </span>
             <!--#_
+                        }
                     }
-                }
             _#-->
                 </td>
             <!--#_
+                }
             } 
             _#-->
         </tr>
