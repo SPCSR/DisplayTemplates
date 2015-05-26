@@ -95,6 +95,7 @@ _#-->
             // Show the properties that aren't empty
             for(var i = 1; i <= 10; i++) { 
                 var property = $getItemValue(ctx, String.format("Property {0}", i));
+				    if(property.managedPropertyName !== String.format("Property {0}", i)) {
             _#-->
                 <td class="ms-cellstyle ms-vb2">
             <!--#_
@@ -117,6 +118,7 @@ _#-->
             _#-->
                 </td>
             <!--#_
+			    }
             } 
             _#-->
         </tr>
