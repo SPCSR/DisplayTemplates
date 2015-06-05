@@ -25,7 +25,7 @@
             var content = String.format('<div class="cbs-Item"><a class="cbs-Line1Link ms-noWrap ms-displayBlock" href="{0}" title="{1}">{1}</a></div>', linkURL, line1);
             
             // Push the content to the grouping object
-            Srch.U.getRenderTemplateCollection().accordion_push(grouping, content);
+            Srch.U.getRenderTemplateCollection().accordion_push(grouping, content, ctx.ClientControl.get_id());
 _#-->
     </div>
 </body>
