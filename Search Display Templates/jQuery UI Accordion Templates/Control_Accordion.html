@@ -27,41 +27,42 @@
         Type.registerNamespace('search.Accordion');
 
         search.Accordion = function() {
-            var currentCtx;
+            var currentCtx = {};
             return {
-                init: function (currentContext, encodedId) {
-                    currentCtx = currentContext;
-
+                init: function (currentContext, encodedId, ccId) {
+                    currentCtx[ccId] = {};
                     // Creating a new grouping object
-                    currentCtx.Grouping = {};
+                    currentCtx[ccId].Grouping = {};
 
                     // Add an on post render callback, this will be excuted when all the results are rendered
-                    AddPostRenderCallback(currentContext, function() {
-                        var groupElm = document.getElementById(encodedId);
+                    (function (currentContext, encodedId, ccId) {
+                        AddPostRenderCallback(currentContext, function() {
+                            var groupElm = document.getElementById(encodedId);
 
-                        if (typeof jQuery === "undefined") {
-                            EnsureScriptFunc('jquery-ui.min.js', null, function () {
-                                search.Accordion.show(groupElm);
-                            });
-                        } else {
-                            search.Accordion.show(groupElm);
-                        }
-                    });
+                            if (typeof jQuery === "undefined") {
+                                EnsureScriptFunc('jquery-ui.min.js', null, function () {
+                                    search.Accordion.show(groupElm, ccId);
+                                });
+                            } else {
+                                search.Accordion.show(groupElm, ccId);
+                            }
+                        });
+                    })(currentContext, encodedId, ccId);
                 },
-                push: function (grouping, content) {
+                push: function (grouping, content, ccId) {
                     // If grouping value is empty, group the items under a "Unkown" tab
                     if (grouping.isEmpty) {
                         grouping = "Unknown";
                     }
                     // Add the markup to the grouping array 
-                    if (typeof currentCtx.Grouping[grouping] !== "undefined") {
-                        currentCtx.Grouping[grouping] += content;
+                    if (typeof currentCtx[ccId].Grouping[grouping] !== "undefined") {
+                        currentCtx[ccId].Grouping[grouping] += content;
                     } else {
-                        currentCtx.Grouping[grouping] = content;
+                        currentCtx[ccId].Grouping[grouping] = content;
                     }
                 },
-                show: function (groupElm) {
-                    var groups = currentCtx.Grouping;
+                show: function (groupElm, ccId) {
+                    var groups = currentCtx[ccId].Grouping;
 
                     var elm = $(groupElm);
 
@@ -87,7 +88,7 @@
 var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_Grouping");
 
 // Grouping init
-Srch.U.getRenderTemplateCollection().accordion_init(ctx, encodedId);
+Srch.U.getRenderTemplateCollection().accordion_init(ctx, encodedId, ctx.ClientControl.get_id());
 
 if (!$isNull(ctx.ClientControl) &&
     !$isNull(ctx.ClientControl.shouldRenderControl) &&
