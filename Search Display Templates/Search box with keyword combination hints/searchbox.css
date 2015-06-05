@@ -1,0 +1,16 @@
+.search-hint:last-child .separator {
+	display: none;
+}
+
+.hint-query {
+	display: inline-block;
+	height: 18px;
+	position: relative;
+	overflow: hidden;
+	width: 18px;
+}
+	.hint-query > img {
+		position: absolute;
+		left: -1px;
+		top: -68px;
+	}
