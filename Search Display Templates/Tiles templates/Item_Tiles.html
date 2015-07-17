@@ -1,0 +1,111 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>Item Tile</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:ManagedPropertyMapping msdt:dt="string">'Path':'Path','Title':'Title','Picture':'PublishingImage','Description':''</mso:ManagedPropertyMapping>
+<mso:MasterPageDescription msdt:dt="string">Tile - item display template</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <script>
+    Type.registerNamespace('search.Tiles');
+
+        search.Tiles = function() {
+            var hover = function (elm) {
+                    var listElm = elm.getElementsByClassName('ms-tileview-tile-detailsListMedium');
+                    if (listElm.length) {
+                        listElm = listElm[0];
+                        updateClass(listElm, "expanded");
+                    }
+                },
+                hide = function (elm) {
+                    var listElm = elm.getElementsByClassName('ms-tileview-tile-detailsListMedium');
+                    if (listElm.length) {
+                        listElm = listElm[0];
+                        updateClass(listElm, "collapsed");
+                    }
+                },
+                updateClass = function (elm, type) {
+                    var top = 0;
+                    switch (type) {
+                        case "expanded":
+                            top = 0;
+                            break;
+                        case "collapsed":
+                            top = 100;
+                            break;
+                    }
+                    var animationTop = new SPAnimation.State;
+                    animationTop.SetAttribute(1, 0);
+                    animationTop.SetAttribute(2, top);
+                    var hoverAnimation = new SPAnimation.Object(3, 0, elm.parentElement, animationTop, null, null);
+                    hoverAnimation.RunAnimation()
+                    elm.children[0].className = elm.children[0].getAttribute(type);
+                    elm.children[0].children[0].className = elm.children[0].children[0].getAttribute(type);
+                };
+
+            return {
+                hover: hover,
+                hide: hide
+            }
+        }();
+
+        Srch.U.registerRenderTemplateByName("tile_hover", search.Tiles.hover);
+        Srch.U.registerRenderTemplateByName("tile_hide", search.Tiles.hide);
+    </script>
+
+    <div id="ItemTile">
+<!--#_
+        var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_ItemTile_");
+        var containerId = encodedId + "container";
+
+        var path = $getItemValue(ctx, 'Path');
+        var title = $getItemValue(ctx, 'Title');
+        var description = $getItemValue(ctx, 'Description');
+        var picture = $getItemValue(ctx, 'Picture');
+_#-->
+
+        <div id="_#= containerId =#_" style="width: 160px; height: 160px;" class="ms-tileview-tile-root">
+            <div style="width: 150px; height: 150px;" class="ms-tileview-tile-content" onmouseover="Srch.U.getRenderTemplateCollection().tile_hover(this)" onmouseout="Srch.U.getRenderTemplateCollection().tile_hide(this)">
+                <a href="_#= path =#_" title="_#= title =#_">
+<!--#_
+        if (picture.isEmpty) {
+_#-->
+                    <img src="/_layouts/15/images/blank.gif" alt="blank" width="150" />
+<!--#_
+        } else {
+            var pictureUrl = STSHtmlDecode(Srch.ValueInfo.Renderers.imageSourceRendering(picture));
+_#-->
+                    <img src="_#= pictureUrl =#_?width=150&amp;height=150" alt="_#= title =#_" width="150" />
+<!--#_
+        }
+_#-->
+
+                    <div style="width: 150px; height: 150px; top: 100px; left: 0px;" class="ms-tileview-tile-detailsBox">
+                        <ul class="ms-noList ms-tileview-tile-detailsListMedium">
+                            <li collapsed="ms-tileview-tile-titleMedium ms-tileview-tile-titleMediumCollapsed" expanded="ms-tileview-tile-titleMedium ms-tileview-tile-titleMediumExpanded" class="ms-tileview-tile-titleMedium ms-tileview-tile-titleMediumCollapsed">
+                                <div collapsed="ms-tileview-tile-titleTextMediumCollapsed" expanded="ms-tileview-tile-titleTextMediumExpanded" class="ms-tileview-tile-titleTextMediumCollapsed">_#= title =#_</div>
+                            </li>
+<!--#_
+        if (!description.isEmpty) {
+_#-->
+                            <li title="_#= title =#_" class="ms-tileview-tile-descriptionMedium">_#= description =#_</li>
+<!--#_
+        }
+_#-->
+                        </ul>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
