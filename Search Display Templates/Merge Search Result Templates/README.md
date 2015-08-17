@@ -12,5 +12,5 @@ __Item_Combine.html__ | This is the item display template that pushes the item H
 
 Related blog post
 -------
-Check the following post to get more information about how you need to configure this on your environment: [Merge search results from various search web parts together](http://www.eliostruyf.com/merge-search-results-from-various-search-web-parts-together/)
+Check the following post to get more information about how you need to configure this on your environment: [Merge search results from multiple search web parts together](http://www.eliostruyf.com/merge-search-results-from-multiple-search-web-parts-together/)
 
