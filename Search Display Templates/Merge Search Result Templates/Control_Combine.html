@@ -1,0 +1,120 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>Control Combine</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:MasterPageDescription msdt:dt="string">Example control display template to show you how to combine search results.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106601</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <script>
+        Type.registerNamespace('search.combine');
+        
+        search.combine = function () {
+            var items = [];
+            var containerId = "";
+            
+            var init = function(ctx, elmId) {
+                    // Store the first container ID
+                    if ($isEmptyString(containerId)) {
+                        containerId = elmId;
+                    }
+                    AddPostRenderCallback(ctx, function(){
+                        // Loop over all queries on the page
+                        var allRendered = true;
+                        for (group in Srch.ScriptApplicationManager.get_current().queryGroups) {
+                            var displays = Srch.ScriptApplicationManager.get_current().queryGroups[group].displays;
+                            if (displays.length > 0 && 
+                                !displays[0].get_renderedResult() && 
+                                displays[0].get_visible() && 
+                                displays[0].get_renderTemplateId() === ctx.ClientControl.get_renderTemplateId()) {
+                                // Check if results are rendered
+                                allRendered = false;
+                            }
+                        }
+                        // Check if the work is finished
+                        if (allRendered) {
+                            renderItems();
+                        } else {
+                            // Still have to wait to render the items
+                        }
+                    });
+                },
+                // Push from the item template to the array
+                push = function (sortField, content) {
+                    items.push([sortField, content]);
+                },
+                // Ascending sort function
+                firstColumnOrderAsc = function (a, b) {
+                    return a[0] > b[0];
+                },
+                // Descending sort function
+                firstColumnOrderDes = function (a, b) {
+                    return a[0] < b[0];
+                },
+                // Render the items on the page
+                renderItems = function () {
+                    // Order the items based on the sortfield
+                    items.sort(firstColumnOrderDes);
+                    // Show items
+                    var elm = document.getElementById(containerId);
+                    if (!$isNull(elm)) {
+                        // Only show the values from the second column
+                        elm.innerHTML = items.map(function(val, index){return val[1]}).join('');
+                        elm.style.display = "block";
+                    }
+                };
+            
+            return {
+                init: init,
+                push: push
+            };
+        }();
+        
+        Srch.U.registerRenderTemplateByName("combine_init", search.combine.init);
+        Srch.U.registerRenderTemplateByName("combine_push", search.combine.push);
+    </script>
+    
+    <div id="Control_List">
+
+<!--#_
+var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_combine_");
+var containerId = encodedId + "container";
+Srch.U.getRenderTemplateCollection().combine_init(ctx, containerId);
+    
+if (!$isNull(ctx.ClientControl) &&
+    !$isNull(ctx.ClientControl.shouldRenderControl) &&
+    !ctx.ClientControl.shouldRenderControl()) {
+    return "";
+}
+ctx.ListDataJSONGroupsKey = "ResultTables";
+var ListRenderRenderWrapper = function(itemRenderResult, inCtx, tpl) {
+    var iStr = [];
+    iStr.push(itemRenderResult);
+    return iStr.join('');
+}
+ctx['ItemRenderWrapper'] = ListRenderRenderWrapper;
+_#-->
+        <div id="_#= containerId =#_" style="display: none">
+            _#= ctx.RenderGroups(ctx) =#_
+        </div>
+<!--#_
+var $noResults = Srch.ContentBySearch.getControlTemplateEncodedNoResultsMessage(ctx.ClientControl);
+var noResultsClassName = "ms-srch-result-noResults";
+if (ctx.ClientControl.get_shouldShowNoResultMessage()) {
+_#-->
+        <div class="_#= noResultsClassName =#_">_#= $noResults =#_</div>
+<!--#_
+}
+_#-->
+
+    </div>
+</body>
+</html>

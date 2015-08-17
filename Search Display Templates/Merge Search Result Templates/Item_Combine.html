@@ -1,0 +1,39 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>Item Combine</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:ManagedPropertyMapping msdt:dt="string">'Link URL'{Link URL}:'Path','Line 1':'Title','Line 2':'',SortField':'','FileExtension','SecondaryFileExtension'</mso:ManagedPropertyMapping>
+<mso:MasterPageDescription msdt:dt="string">Example item display template on how you can combine search results.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <div id="TwoLines">
+<!--#_  
+var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_2lines_");
+
+var linkURL = $getItemValue(ctx, "Link URL");
+linkURL.overrideValueRenderer($urlHtmlEncode);
+var iconURL = Srch.ContentBySearch.getIconSourceFromItem(ctx.CurrentItem);
+
+var line1 = $getItemValue(ctx, "Line 1");
+var line2 = $getItemValue(ctx, "Line 2");
+line1.overrideValueRenderer($contentLineText);
+line2.overrideValueRenderer($contentLineText);
+
+var sortField = $getItemValue(ctx, "SortField");
+sortField = sortField.isEmpty ? "" : sortField.value;
+
+var output = String.format('<div class="cbs-Item"><a class="cbs-Line1Link ms-noWrap ms-displayBlock" href="{0}" title="{1}">{1}</a> <strong>{2}</strong></div>', linkURL, line1, line2);
+Srch.U.getRenderTemplateCollection().combine_push(sortField, output);
+_#-->
+    </div>
+</body>
+</html>
