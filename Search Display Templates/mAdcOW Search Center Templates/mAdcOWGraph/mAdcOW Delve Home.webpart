@@ -1,4 +1,4 @@
-﻿<webParts>
+<webParts>
   <webPart xmlns="http://schemas.microsoft.com/WebPart/v3">
     <metaData>
       <type name="Microsoft.Office.Server.Search.WebControls.ContentBySearchWebPart, Microsoft.Office.Server.Search, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
@@ -27,11 +27,11 @@
         <property name="AlwaysRenderOnServer" type="bool">False</property>
         <property name="GroupTemplateId" type="string">~sitecollection/_catalogs/masterpage/Display Templates/Content Web Parts/Group_Content.js</property>
         <property name="ResultTypeId" type="string" />
-        <property name="ItemTemplateId" type="string">~sitecollection/_catalogs/masterpage/Display Templates/mAdcOWGraph/GraphItem.js</property>
+        <property name="ItemTemplateId" type="string">~sitecollection/_catalogs/masterpage/Display Templates/mAdcOWGraph/mAdcOW_GraphItem.js</property>
         <property name="AllowConnect" type="bool">True</property>
         <property name="HelpUrl" type="string" />
         <property name="ResultsPerPage" type="int">36</property>
-        <property name="RenderTemplateId" type="string">~sitecollection/_catalogs/masterpage/Display Templates/mAdcOWGraph/Control_GraphItem.js</property>
+        <property name="RenderTemplateId" type="string">~sitecollection/_catalogs/masterpage/Display Templates/mAdcOWGraph/mAdcOW_Control_Graph.js</property>
         <property name="AllowEdit" type="bool">True</property>
         <property name="AllowZoneChange" type="bool">True</property>
         <property name="AddSEOPropertiesFromSearch" type="bool">False</property>
