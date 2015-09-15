@@ -15,7 +15,7 @@ You will find two refiner templates, they are created depending on the data valu
 File | Desciption
 --- | ---
 __Filter_Users_Fullname.html__ | This user refiner template can be used in combination with the default DisplayAuthor managed property.
-__Filter_Users_Username.html__ | This user refiner template can be used in combination with the Modified By managed property (ModifiedById or EditorOWSUSER).
+__Filter_Users_Username.html__ | This user refiner template can be used in combination with the user full detail value. Thes values can be retrieved when using the Modified By managed property (ModifiedById or EditorOWSUSER).
 
 ## Related blog post ##
 Check the following post to get more information about the template: [People refinement made easy by adding profile pictures](http://www.eliostruyf.com/people-refinement-made-easy-by-adding-profile-pictures/)
