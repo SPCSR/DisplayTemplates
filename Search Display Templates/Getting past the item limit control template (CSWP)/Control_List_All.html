@@ -56,7 +56,6 @@
                     if (!$isNull(elm)) {
                         // Check if the maximum item limit is exceeded 
                         if (items.length > maxItems) {
-                            console.log(items.length);
                             items = items.slice(0, maxItems);
                         }
                         elm.innerHTML = items.join('');
