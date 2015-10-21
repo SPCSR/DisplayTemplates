@@ -8,6 +8,7 @@ This folder contains a single List view Display template that displays the selec
 
 
 **These templates are currently configured for a BaseViewID of 1 and a ListTemplateType of 101 (Document Library)**
+
 **jQuery is required for this template**
 
-![Screenshot of the template in action]()
+![Screenshot of the template in action](images/od4bthreshold-jslink.PNG)
