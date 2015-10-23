@@ -31,13 +31,13 @@
                         var dp = currentCtx.DataProvider;
                         // Retrieve the number of items to show property (max. 50)
                         var totalPerPage = dp.get_resultsPerPage();
+                        // Retrieve all properties
+                        var properties = dp.get_properties();
                         // Check if the total results number is greater than the number of results that can be displayed max. of 50
                         // check if the number of results that were retrieved is equal to the number to show
                         // Check if the max. item limit (maxItems) is reached
                         if (dp.get_totalRows() > totalPerPage && dp.get_rowCount() === totalPerPage && items.length < maxItems) {
                             calls++;
-                            // Retrieve all properties
-                            var properties = dp.get_properties();
                             // Set the StartRow (skip results) property to skip the first batch
                             properties["StartRow"] = $isNull(properties["StartRow"]) ? totalPerPage : properties["StartRow"] + totalPerPage;
                             // Do the new query
