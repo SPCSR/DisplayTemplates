@@ -129,8 +129,6 @@
                 init: init
             };
         }();
-
-        Srch.U.registerRenderTemplateByName("listname_init", search.listname.init);
     </script>
 
     <div id="Listname">
@@ -139,7 +137,7 @@ var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_listname_")
 var containerId = encodedId + "container";
 
 // Listname init
-Srch.U.getRenderTemplateCollection().listname_init(ctx, containerId);
+search.listname.init(ctx, containerId);
 
 var linkURL = $getItemValue(ctx, "Link URL");
 linkURL.overrideValueRenderer($urlHtmlEncode);

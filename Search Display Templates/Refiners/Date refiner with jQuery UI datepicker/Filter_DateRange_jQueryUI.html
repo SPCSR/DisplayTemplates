@@ -55,8 +55,6 @@
                 init: init
             };
         }();
-
-        Srch.U.registerRenderTemplateByName("daterange_init", estruyf.range.datepicker.init);
     </script>
 
     <div id="RangeFilter">
@@ -148,7 +146,7 @@ _#-->
                     };
 
                     
-                    Srch.U.getRenderTemplateCollection().daterange_init(controlID, fromInput, toInput);
+                    estruyf.range.datepicker.init(controlID, fromInput, toInput);
                 });
             }
         }

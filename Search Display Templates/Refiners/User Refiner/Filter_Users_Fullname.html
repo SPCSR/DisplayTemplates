@@ -191,9 +191,6 @@
                 setProfilePicture: setProfilePicture
             };
         }();
-
-
-        Srch.U.registerRenderTemplateByName("filter_profilepicture", estruyf.Refiner.User.setProfilePicture);
     </script>
 
     <div id="4">
@@ -236,7 +233,7 @@ _#-->
         {
             var containerClass = ctx.ClientControl.get_nextUniqueId() + "_container";
             AddPostRenderCallback(ctx, function () {
-                Srch.U.getRenderTemplateCollection().filter_profilepicture(containerClass);
+                estruyf.Refiner.User.setProfilePicture(containerClass);
             });
 
             var isExpanded = Srch.Refinement.getExpanded(ctx.RefinementControl.propertyName);

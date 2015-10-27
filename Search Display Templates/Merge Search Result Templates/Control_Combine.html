@@ -77,9 +77,6 @@
                 push: push
             };
         }();
-        
-        Srch.U.registerRenderTemplateByName("combine_init", search.combine.init);
-        Srch.U.registerRenderTemplateByName("combine_push", search.combine.push);
     </script>
     
     <div id="Control_List">
@@ -87,7 +84,7 @@
 <!--#_
 var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_combine_");
 var containerId = encodedId + "container";
-Srch.U.getRenderTemplateCollection().combine_init(ctx, containerId);
+search.combine.init(ctx, containerId);
     
 if (!$isNull(ctx.ClientControl) &&
     !$isNull(ctx.ClientControl.shouldRenderControl) &&

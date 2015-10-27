@@ -80,9 +80,6 @@
                 }
             }
         }();
-
-        Srch.U.registerRenderTemplateByName("tabs_init", search.Tabs.init);
-        Srch.U.registerRenderTemplateByName("tabs_push", search.Tabs.push);
     </script>
 
 
@@ -92,7 +89,7 @@
 var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_Grouping");
 
 // Grouping init
-Srch.U.getRenderTemplateCollection().tabs_init(ctx, encodedId, ctx.ClientControl.get_id());
+search.Tabs.init(ctx, encodedId, ctx.ClientControl.get_id());
 
 if (!$isNull(ctx.ClientControl) &&
     !$isNull(ctx.ClientControl.shouldRenderControl) &&

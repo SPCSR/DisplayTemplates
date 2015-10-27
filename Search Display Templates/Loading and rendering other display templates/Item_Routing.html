@@ -73,8 +73,6 @@
                 process: process
             };
         }();
-
-        Srch.U.registerRenderTemplateByName("routing_init", estruyf.routing.init);
     </script>
     
     <div id="RoutingTemplate">
@@ -82,7 +80,7 @@
         var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_article");
         var pagelayout = $getItemValue(ctx, 'PublishingPageLayoutOWSURLH');
 
-        Srch.U.getRenderTemplateCollection().routing_init(ctx, encodedId, pagelayout);
+        estruyf.routing.init(ctx, encodedId, pagelayout);
 _#-->
         <div id="_#= encodedId =#_"></div>
     </div>

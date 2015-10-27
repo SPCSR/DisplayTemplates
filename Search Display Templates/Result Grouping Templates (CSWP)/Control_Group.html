@@ -49,10 +49,6 @@
                 }
             }
         }();
-
-        Srch.U.registerRenderTemplateByName("group_init", search.Grouping.init);
-        Srch.U.registerRenderTemplateByName("group_push", search.Grouping.push);
-        Srch.U.registerRenderTemplateByName("group_show", search.Grouping.show);
     </script>
 
 
@@ -62,7 +58,7 @@
 var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_Grouping");
 
 // Grouping init
-Srch.U.getRenderTemplateCollection().group_init(ctx, encodedId);
+search.Grouping.init(ctx, encodedId);
 
 if (!$isNull(ctx.ClientControl) &&
     !$isNull(ctx.ClientControl.shouldRenderControl) &&

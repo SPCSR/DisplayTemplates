@@ -30,7 +30,7 @@
                 currentResultMarkup = ' (current results - {0})',
                 searchHintClasses = 'search-hint search-hint-{0}',
                 searchHintMarkup =  '"{0}": <strong>{1} results</strong>&nbsp;' +
-                                    '<a title="Use this query" class="hint-query" onclick="Srch.U.getRenderTemplateCollection().hints_query(\'{2}\');return false;" href="#">' +
+                                    '<a title="Use this query" class="hint-query" onclick="estruyf.searchbox.hints.doQuery(\'{2}\');return false;" href="#">' +
                                         '<img src="/_layouts/15/images/searchresultui.png?rev=23">' +
                                     '</a>' +
                                     '<span class="separator">&nbsp;|&nbsp;</span>';
@@ -145,9 +145,6 @@
                 doQuery: doQuery
             };
         }();
-
-        Srch.U.registerRenderTemplateByName("hints_show", estruyf.searchbox.hints.show);
-        Srch.U.registerRenderTemplateByName("hints_query", estruyf.searchbox.hints.doQuery);
     </script>
 
     <div id="Control_SearchResults">
@@ -157,7 +154,7 @@
             ctx.OnPostRender = function(){ Srch.U.animateResults(ctx.ClientControl, ctx.DataProvider.get_userAction()); }; 
         }
 
-        Srch.U.getRenderTemplateCollection().hints_show(ctx.DataProvider.get_totalRows());
+        estruyf.searchbox.hints.show(ctx.DataProvider.get_totalRows());
 _#-->                    
         <div class="ms-srch-result" id="Result" name="Control">
 <!--#_ 
