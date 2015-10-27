@@ -70,9 +70,6 @@
                 add: add
             };
         }();
-        
-        Srch.U.registerRenderTemplateByName("init_item", search.retrieval.init);
-        Srch.U.registerRenderTemplateByName("add_item", search.retrieval.add);
     </script>
     
     <div id="Control_List">
@@ -82,14 +79,14 @@ if (!$isNull(ctx.ClientControl) && !$isNull(ctx.ClientControl.shouldRenderContro
 }
 
 var elmId = ctx.ClientControl.get_nextUniqueId() + "_Control";
-Srch.U.getRenderTemplateCollection().init_item(ctx, elmId);
+search.retrieval.init(ctx, elmId);
     
 ctx.ListDataJSONGroupsKey = "ResultTables";
 var $noResults = Srch.ContentBySearch.getControlTemplateEncodedNoResultsMessage(ctx.ClientControl);
 
 var ListRenderRenderWrapper = function(itemRenderResult, inCtx, tpl) {
     // Add each item to the array
-    Srch.U.getRenderTemplateCollection().add_item(itemRenderResult);
+    search.retrieval.add(itemRenderResult);
     return '';
 }
 
