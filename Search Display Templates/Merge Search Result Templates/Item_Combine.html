@@ -32,7 +32,7 @@ var sortField = $getItemValue(ctx, "SortField");
 sortField = sortField.isEmpty ? "" : sortField.value;
 
 var output = String.format('<div class="cbs-Item"><a class="cbs-Line1Link ms-noWrap ms-displayBlock" href="{0}" title="{1}">{1}</a> <strong>{2}</strong></div>', linkURL, line1, line2);
-Srch.U.getRenderTemplateCollection().combine_push(sortField, output);
+search.combine.push(sortField, output);
 _#-->
     </div>
 </body>

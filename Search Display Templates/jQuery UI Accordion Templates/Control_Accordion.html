@@ -76,9 +76,6 @@
                 }
             }
         }();
-
-        Srch.U.registerRenderTemplateByName("accordion_init", search.Accordion.init);
-        Srch.U.registerRenderTemplateByName("accordion_push", search.Accordion.push);
     </script>
 
 
@@ -88,7 +85,7 @@
 var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_Grouping");
 
 // Grouping init
-Srch.U.getRenderTemplateCollection().accordion_init(ctx, encodedId, ctx.ClientControl.get_id());
+search.Accordion.init(ctx, encodedId, ctx.ClientControl.get_id());
 
 if (!$isNull(ctx.ClientControl) &&
     !$isNull(ctx.ClientControl.shouldRenderControl) &&
