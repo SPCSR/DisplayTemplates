@@ -1,9 +1,9 @@
 Clear all refiners - Refinement control template
 ================
 
-This is a refinement control template which adds a link above all the refiners that allows you to quickly clear the set refiners.
+This is a refinement control template which adds a link above all the refiners that allows you to quickly clear the set refiners. The **Clear all refiners** link will only be visible when the results are being refined.
 
-![Clear all refiners](http://www.eliostruyf.com/wp-content/uploads/2015/10/clear-all-2.png)
+![Clear all link is not visible when no refinement is in place](http://www.eliostruyf.com/wp-content/uploads/2015/10/clear-all-21.png)
 
 ----------
 
