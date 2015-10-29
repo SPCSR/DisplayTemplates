@@ -10,6 +10,10 @@
 <mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106601</mso:ContentTypeId>
 <mso:TargetControlType msdt:dt="string">;#Refinement;#</mso:TargetControlType>
 <mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+<mso:HtmlDesignStatusAndPreview msdt:dt="string">http://intranet/sites/SPS/_catalogs/masterpage/Client/Control_Refinement_Clear.html, Conversion successful.</mso:HtmlDesignStatusAndPreview>
+<mso:HtmlDesignConversionSucceeded msdt:dt="string">True</mso:HtmlDesignConversionSucceeded>
+<mso:CrawlerXSLFile msdt:dt="string"></mso:CrawlerXSLFile>
+<mso:HtmlDesignPreviewUrl msdt:dt="string"></mso:HtmlDesignPreviewUrl>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -30,20 +34,61 @@
                     // Clear the refiners
                     ctl.updateRefiners(reset);
                 }
-            };
+            },
+			hide = function (currentCtx) {
+                var dp = currentCtx.DataProvider;
+                var qs = dp.get_currentQueryState();
+				if (!$isNull(qs.r)) {
+					if (qs.r.length > 0) {
+						return '';
+					}
+				}
+				return 'ms-hide';
+			};
             
             return {
-                clearAll: clearAll
+                clearAll: clearAll,
+				hide: hide
             };
-        }();        
+        }();
+
+        /* Override refinement render function */
+		// This is required to check if the should be visible or not
+        if (typeof Srch.Refinement !== "undefined") {
+	        Srch.Refinement.prototype.originalRender = Srch.Refinement.prototype.render;
+	        Srch.Refinement.prototype.render = function() {
+				// Check if the link needs to be hidden
+	        	var dp = this.get_dataProvider();
+	        	var qs = dp.get_currentQueryState();
+				var elm = this.get_element();
+				if (elm !== null) {
+					var linkElm = elm.getElementsByClassName('clear-all');
+					// Check if element exists
+					if (linkElm.length) {
+						linkElm = linkElm[0];
+						if (!$isNull(qs.r)) {
+							if (qs.r.length > 0) {
+								// Remove ms-hide class
+								Srch.U.ensureCSSClassNameNotExist(linkElm, 'ms-hide');
+							}
+						} else {
+							Srch.U.ensureCSSClassNameExist(linkElm, 'ms-hide');
+						}
+					}
+				}
+				// Execute the original function
+		        this.originalRender();
+		    };      
+	   	}		
     </script>
     
     <div id="Control_Refinement">
 <!--#_ 
         ctx.ClientControl.alternateRenderer = function(container, cntxt) {};
+		var hideClass = refiner.control.hide(ctx);
 _#-->
         <div class="ms-ref-ctrl" id="Refinement" name="Control">
-            <a href="javascript:;" onclick="refiner.control.clearAll(this)">Clear all refiners</a>
+            <a href="javascript:;" onclick="refiner.control.clearAll(this)" class="clear-all _#= hideClass =#_">Clear all refiners</a>
 <!--#_
             if(!$isNull(ctx.ClientControl)){
                 var rcs = ctx.ClientControl.get_selectedRefinementControls();
