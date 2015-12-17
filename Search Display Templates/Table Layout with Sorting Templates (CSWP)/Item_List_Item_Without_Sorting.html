@@ -1,6 +1,6 @@
 <html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
 <head>
-<title>List Table Item</title>
+<title>List Table Item Without Sorting</title>
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
@@ -9,7 +9,6 @@
 <mso:MasterPageDescription msdt:dt="string">This is the item row template, use this template in combination with the List Table Control template.</mso:MasterPageDescription>
 <mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
 <mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
-<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
@@ -55,17 +54,7 @@ _#-->
                     var propertyName = typeof propertyNames[property.propertyLookupName] === "undefined" ? property.managedPropertyName : propertyNames[property.propertyLookupName];
             _#-->
             <th class="ms-vh2">
-                _#= propertyName =#_ 
-
-                <span id="_#= property.managedPropertyName.replace(/ /g, '-') =#_">
-                    <span style="" class="sortarrow ms-sortarrowup-iconouter" ></span>
-                    <a id="_#= property.managedPropertyName =#_ASC" href="#" title="Ascending" onclick="$getClientControl(this).sortOrRank('_#= property.managedPropertyName =#_ASC');return false;">
-                        <img alt="Ascending" src="/_layouts/15/images/sortaz.gif">
-                    </a>
-                    <a id="_#= property.managedPropertyName =#_DES" href="#" title="Descending" onclick="$getClientControl(this).sortOrRank('_#= property.managedPropertyName =#_DES');return false;">
-                        <img alt="Descending" src="/_layouts/15/images/sortza.gif">
-                    </a>
-                </span>
+                _#= propertyName =#_
             </th>
             <!--#_ 
                 }
@@ -95,7 +84,7 @@ _#-->
             // Show the properties that aren't empty
             for(var i = 1; i <= 10; i++) { 
                 var property = $getItemValue(ctx, String.format("Property {0}", i));
-				if (property.managedPropertyName !== String.format("Property {0}", i)) {
+                if (property.managedPropertyName !== String.format("Property {0}", i)) {
             _#-->
                 <td class="ms-cellstyle ms-vb2">
             <!--#_
@@ -118,7 +107,7 @@ _#-->
             _#-->
                 </td>
             <!--#_
-			    }
+                }
             } 
             _#-->
         </tr>

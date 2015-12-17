@@ -1,0 +1,44 @@
+﻿<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>Sharegate Item Shape</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+	<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+	<mso:MasterPageDescription msdt:dt="string">Displays a result tailored for a picture.</mso:MasterPageDescription>
+	<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
+	<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#SearchResults;#</mso:TargetControlType>
+	<mso:ManagedPropertyMapping msdt:dt="string">'Title':'Title','Path':'Path','Description':'Description','PictureURL':'PictureURL'</mso:ManagedPropertyMapping>
+	<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+<mso:HtmlDesignStatusAndPreview msdt:dt="string">http://sp2013/sites/imageviewer/_catalogs/masterpage/Display Templates/Search/Item_SharegateShapeItem.html, Conversion successful.</mso:HtmlDesignStatusAndPreview>
+<mso:HtmlDesignFromMaster msdt:dt="string"></mso:HtmlDesignFromMaster>
+<mso:HtmlDesignConversionSucceeded msdt:dt="string">True</mso:HtmlDesignConversionSucceeded>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+<body>
+    <div id="Item">
+<!--#_
+var siteURL = SP.PageContextInfo.get_siteServerRelativeUrl();
+var linkURL = $getItemValue(ctx, "Path");
+linkURL.overrideValueRenderer($urlHtmlEncode);
+var title = $getItemValue(ctx, "Title");
+var description = $getItemValue(ctx, "Description");
+var pictureURL = $getItemValue(ctx, "PictureURL");
+ _#-->
+ 
+ 
+ 				<a href="_#= linkURL =#_" data-path-hover="m 180,34.57627 -180,0 L 0,0 180,0 z">
+					<figure>
+						<img src="_#= pictureURL =#_"/>
+						<svg viewBox="0 0 180 320" preserveAspectRatio="none"><path d="M 180,160 0,218 0,0 180,0 z"/></svg>
+						<figcaption>
+							<h2>_#= $htmlEncode(title) =#_</h2>
+							<p>_#= $htmlEncode(description) =#_</p>
+							<button>View</button>
+						</figcaption>
+					</figure>
+				</a>
+	</div>
+</body>
+</html>

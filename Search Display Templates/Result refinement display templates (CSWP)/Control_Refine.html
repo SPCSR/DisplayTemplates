@@ -118,12 +118,6 @@
                 settings: settings
             };
         }();
-
-        Srch.U.registerRenderTemplateByName("refine_init", search.refine.init);
-        Srch.U.registerRenderTemplateByName("refine_click", search.refine.click);
-        Srch.U.registerRenderTemplateByName("refine_all", search.refine.all);
-        Srch.U.registerRenderTemplateByName("refine_display", search.refine.display);
-        Srch.U.registerRenderTemplateByName("refine_settings", search.refine.settings);
     </script>
 
     <div id="Control_List">
@@ -135,9 +129,9 @@ if (!$isNull(ctx.ClientControl) &&
     return "";
 }
 
-Srch.U.getRenderTemplateCollection().refine_init(ctx);
+search.refine.init(ctx);
 
-var displayStyle = Srch.U.getRenderTemplateCollection().refine_display() === true ? "" : "none";
+var displayStyle = search.refine.display() === true ? "" : "none";
 
 ctx.ListDataJSONGroupsKey = "ResultTables";
 var $noResults = Srch.ContentBySearch.getControlTemplateEncodedNoResultsMessage(ctx.ClientControl);
@@ -155,13 +149,13 @@ var ListRenderRenderWrapper = function(itemRenderResult, inCtx, tpl)
 ctx['ItemRenderWrapper'] = ListRenderRenderWrapper;
 
 // Retrieve the filter values set in the Item Display Template
-var filterValues = Srch.U.getRenderTemplateCollection().refine_settings(ctx);
+var filterValues = search.refine.settings(ctx);
 // Show a link for each filter value
 var total = filterValues.length;
 for (var i = 0; i < total; i++) {
     var val = filterValues[i];
 _#-->
-        <a href="#" onclick="Srch.U.getRenderTemplateCollection().refine_click($getClientControl(this), '_#= val =#_');return false;" title="Refine on '_#= val =#_'">Refine on '_#= val =#_'</a>
+        <a href="#" onclick="search.refine.click($getClientControl(this), '_#= val =#_');return false;" title="Refine on '_#= val =#_'">Refine on '_#= val =#_'</a>
 <!--#_
     if (i < (total - 1)) {
 _#-->
@@ -171,7 +165,7 @@ _#-->
 }
 _#-->
         <span style='display:_#= $htmlEncode(displayStyle) =#_'> - </span>
-        <a href="#" style='display:_#= $htmlEncode(displayStyle) =#_' onclick="Srch.U.getRenderTemplateCollection().refine_all($getClientControl(this));return false;" title="Refine results">All results</a>
+        <a href="#" style='display:_#= $htmlEncode(displayStyle) =#_' onclick="search.refine.all($getClientControl(this));return false;" title="Refine results">All results</a>
         <ul class="cbs-List">
 
 <!--#_

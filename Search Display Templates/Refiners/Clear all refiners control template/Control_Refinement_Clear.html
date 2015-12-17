@@ -1,0 +1,128 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>Vertical (Clear all)</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:CompatibleManagedProperties msdt:dt="string"></mso:CompatibleManagedProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:MasterPageDescription msdt:dt="string"></mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106601</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Refinement;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+<mso:HtmlDesignStatusAndPreview msdt:dt="string">http://intranet/sites/SPS/_catalogs/masterpage/Client/Control_Refinement_Clear.html, Conversion successful.</mso:HtmlDesignStatusAndPreview>
+<mso:HtmlDesignConversionSucceeded msdt:dt="string">True</mso:HtmlDesignConversionSucceeded>
+<mso:CrawlerXSLFile msdt:dt="string"></mso:CrawlerXSLFile>
+<mso:HtmlDesignPreviewUrl msdt:dt="string"></mso:HtmlDesignPreviewUrl>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+<body> 
+    <script>
+        var refiner = window.refiner = {};
+        refiner.control = function () {
+            var clearAll = function (elm) {
+                var ctl = $getClientControl(elm);
+                var dp = ctl.get_dataProvider();
+                var qs = dp.get_currentQueryState();
+                // Check if results are refined
+                if (!$isNull(qs.r)) {
+                    var reset = {};
+                    for (var i = 0; i < qs.r.length; i++) {
+                        reset[qs.r[i].n] = null;
+                    }
+                    // Clear the refiners
+                    ctl.updateRefiners(reset);
+                }
+            },
+			hide = function (currentCtx) {
+                var dp = currentCtx.DataProvider;
+                var qs = dp.get_currentQueryState();
+				if (!$isNull(qs.r)) {
+					if (qs.r.length > 0) {
+						return '';
+					}
+				}
+				return 'ms-hide';
+			};
+            
+            return {
+                clearAll: clearAll,
+				hide: hide
+            };
+        }();
+
+        /* Override refinement render function */
+		// This is required to check if the should be visible or not
+        if (typeof Srch.Refinement !== "undefined") {
+	        Srch.Refinement.prototype.originalRender = Srch.Refinement.prototype.render;
+	        Srch.Refinement.prototype.render = function() {
+				// Check if the link needs to be hidden
+	        	var dp = this.get_dataProvider();
+	        	var qs = dp.get_currentQueryState();
+				var elm = this.get_element();
+				if (elm !== null) {
+					var linkElm = elm.getElementsByClassName('clear-all');
+					// Check if element exists
+					if (linkElm.length) {
+						linkElm = linkElm[0];
+						if (!$isNull(qs.r)) {
+							if (qs.r.length > 0) {
+								// Remove ms-hide class
+								Srch.U.ensureCSSClassNameNotExist(linkElm, 'ms-hide');
+							}
+						} else {
+							Srch.U.ensureCSSClassNameExist(linkElm, 'ms-hide');
+						}
+					}
+				}
+				// Execute the original function
+		        this.originalRender();
+		    };      
+	   	}		
+    </script>
+    
+    <div id="Control_Refinement">
+<!--#_ 
+        ctx.ClientControl.alternateRenderer = function(container, cntxt) {};
+		var hideClass = refiner.control.hide(ctx);
+_#-->
+        <div class="ms-ref-ctrl" id="Refinement" name="Control">
+            <a href="javascript:;" onclick="refiner.control.clearAll(this)" class="clear-all _#= hideClass =#_">Clear all refiners</a>
+<!--#_
+            if(!$isNull(ctx.ClientControl)){
+                var rcs = ctx.ClientControl.get_selectedRefinementControls();
+                if(!$isEmptyArray(rcs)){
+                    for(var i = 0; i < rcs.length; i++){
+                        var rc = rcs[i];
+                        if(!$isNull(rc)){
+                            rc.containerId = ctx.ClientControl.get_nextUniqueId();
+_#-->
+                            <div class="ms-ref-refiner" id="_#= $htmlEncode(rc.containerId) =#_" name="Group" refinerName="_#= $htmlEncode(rc.propertyName) =#_"></div>
+<!--#_ 
+                        }
+                    }
+                }
+_#-->
+                <div id="_#= ctx.ClientControl.get_emptyRefinementMessageId() =#_" class="ms-disabled ms-alignCenter ms-hide">
+<!--#_
+                    var emptyMessage = ctx.ClientControl.get_emptyMessage();
+                    if ($isEmptyString(emptyMessage)) {
+_#-->
+                        _#= $htmlEncode(Srch.U.loadResource("rf_EmptyRefinement")) =#_
+<!--#_
+                    }
+                    else {
+_#-->
+                        _#= $htmlEncode(emptyMessage) =#_
+<!--#_
+                    }
+_#-->
+                </div>
+<!--#_
+            }
+_#-->
+        </div>
+    </div>
+</body>
+</html>

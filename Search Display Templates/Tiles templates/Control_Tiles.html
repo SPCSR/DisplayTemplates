@@ -1,97 +1,22 @@
 <html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
 <head>
-<title>List Refine</title>
+<title>Tiles</title>
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
 <mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
-<mso:MasterPageDescription msdt:dt="string">This template can be used to refine the results based on the display template property settings in the Item Display Template.</mso:MasterPageDescription>
+<mso:MasterPageDescription msdt:dt="string">Tiles - control display template</mso:MasterPageDescription>
 <mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106601</mso:ContentTypeId>
 <mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
 </mso:CustomDocumentProperties>
 </xml><![endif]-->
 </head>
 
 <body>
-    <script>
-        Type.registerNamespace('search.refine');
-
-        search.refine = function() {
-            var currentCtx;
-            var managedProperty = 'FileExtension';
-            var operator = 'or';
-
-            var init = function (context) {
-                    currentCtx = context;
-                },
-                click = function (cc, value) {
-                    // Create a new querystate
-                    var queryState = new Srch.QueryState();
-                    queryState.s = 1;
-
-                    // Get the current refinement
-                    queryState.r = checkRefinement();
-                    
-                    // Add the clicked refinement value
-                    var refiner = { key: managedProperty, value: [value] };
-                    var rc = new Srch.RefinementCategory(refiner.key);
-                    rc.t = refiner.value;
-                    if (!Srch.U.e(operator)) {
-                        rc.o = operator;
-                    }
-                    Srch.U.appendArray(queryState.r, rc);
-
-                    // Do the refinement
-                    var queryEventArgs = new Srch.QueryEventArgs(queryState);
-                    queryEventArgs.userAction = Srch.UserActionType.refine;
-                    cc.raiseQueryReadyEvent(queryEventArgs);
-                },
-                checkRefinement = function (cc) {
-                    var currentRefinement = [];
-                    if (!Srch.U.n(cc)) {
-                        var refiners = cc.get_dataProvider().get_currentQueryState().r;
-                        if (!Srch.U.n(refiners) && refiners.length > 0) {
-                            for (var i = 0; i < refiners.length; i++) {
-                                var refVal = refiners[i];
-                                if (!Srch.U.n(refVal)) {
-                                    Srch.U.appendArray(currentRefinement, refVal);
-                                }
-                            }
-                        }
-                    }
-                    return currentRefinement;
-                },
-                all = function (cc) {
-                    var queryState = new Srch.QueryState();
-                    // Clear the refinement object
-                    queryState.r = [];
-                    // Do a new query
-                    var queryEventArgs = new Srch.QueryEventArgs(queryState);
-                    cc.raiseQueryReadyEvent(queryEventArgs);
-                },
-                display = function () {
-                    var refiners = checkRefinement(currentCtx.ClientControl);
-                    if (refiners.length > 0) {
-                        for (var ref in refiners) {
-                            if (refiners[ref].n === managedProperty) {
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
-                };
-
-
-            return {
-                init: init,
-                click: click,
-                all: all,
-                display: display
-            };
-        }();
-    </script>
 
     <div id="Control_List">
+
 <!--#_ 
 if (!$isNull(ctx.ClientControl) &&
     !$isNull(ctx.ClientControl.shouldRenderControl) &&
@@ -99,11 +24,6 @@ if (!$isNull(ctx.ClientControl) &&
 {
     return "";
 }
-
-search.refine.init(ctx);
-
-var displayStyle = search.refine.display() === true ? "" : "none";
-
 ctx.ListDataJSONGroupsKey = "ResultTables";
 var $noResults = Srch.ContentBySearch.getControlTemplateEncodedNoResultsMessage(ctx.ClientControl);
 
@@ -112,17 +32,13 @@ var noResultsClassName = "ms-srch-result-noResults";
 var ListRenderRenderWrapper = function(itemRenderResult, inCtx, tpl)
 {
     var iStr = [];
-    iStr.push('<li>');
     iStr.push(itemRenderResult);
-    iStr.push('</li>');
     return iStr.join('');
 }
 ctx['ItemRenderWrapper'] = ListRenderRenderWrapper;
 _#-->
-        <a href="#" onclick="search.refine.click($getClientControl(this), 'docx');return false;" title="Refine on 'docx'">Refine on 'docx'</a> - 
-        <a href="#" onclick="search.refine.click($getClientControl(this), 'pdf');return false;" title="Refine on 'pdf'">Refine on 'pdf'</a><span style='display:_#= $htmlEncode(displayStyle) =#_'> - </span>
-        <a href="#" style='display:_#= $htmlEncode(displayStyle) =#_' onclick="search.refine.all($getClientControl(this));return false;" title="Refine results">All results</a>
-        <ul class="cbs-List">
+    
+    <div class="tiles-block">
 
 <!--#_
 var showPaging = ctx.ClientControl.get_showPaging();
@@ -162,7 +78,7 @@ if(showPaging)
         var nextPageImageClassName = getPagingImageClassName(buttonClassNamePrefix, true, hasNextPage);
         var previousPageImageClassName = getPagingImageClassName(buttonClassNamePrefix, false, hasPreviousPage);
 _#-->
-            <li class="ms-promlink-header">
+            <div class="ms-promlink-header">
                 <span class="ms-promlink-headerNav">
                     <a class="ms-commandLink ms-promlink-button _#= $htmlEncode(previousPageContainerClassName) =#_" title="_#= $htmlEncode(firstPage.title) =#_" href="#" onclick='$getClientControl(this).page(_#= $htmlEncode(firstPage.startItem) =#_);return Srch.U.cancelEvent(event);'>
                         <span class="ms-promlink-button-image">
@@ -170,20 +86,44 @@ _#-->
                         </span>
                     </a>
                     <span class="ms-promlink-button-inner"></span>
+
+<!--#_
+// Show the paging numbers
+for (var i = 0; i < pagingInfo.length; i++) {
+    var pi = pagingInfo[i];
+    if(!$isNull(pi)) {
+        if (pi.pageNumber !== -1 && pi.pageNumber !== -2) {
+            var pageLinkId = "PageLink_" + pi.pageNumber;
+            // Check if it is the current selected page
+            if (pi.startItem === -1) {
+_#-->
+            <strong>_#= $htmlEncode(pi.pageNumber) =#_</strong>
+<!--#_
+            } else {
+_#-->
+            <a id="_#= $htmlEncode(pageLinkId) =#_" href="#" title="_#= $htmlEncode(pi.title) =#_" onclick="$getClientControl(this).page(_#= $htmlEncode(pi.startItem) =#_);return Srch.U.cancelEvent(event);">_#= $htmlEncode(pi.pageNumber) =#_</a>
+<!--#_
+            }
+        }
+    }
+}
+_#-->
+
+                    <span class="ms-promlink-button-inner"></span>
                     <a class="ms-commandLink ms-promlink-button _#= $htmlEncode(nextPageContainerClassName) =#_" title="_#= $htmlEncode(lastPage.title) =#_" href="#" onclick='$getClientControl(this).page(_#= $htmlEncode(lastPage.startItem) =#_);return Srch.U.cancelEvent(event);'>
                         <span class="ms-promlink-button-image">
                             <img class="_#= $htmlEncode(nextPageImageClassName) =#_" alt="_#= $htmlEncode(lastPage.title) =#_" src="_#= $urlHtmlEncode(GetThemedImageUrl('spcommon.png')) =#_">
                         </span>
                     </a>
                 </span>
-            </li>
+            </div>
 <!--#_
     }
 }
 _#-->
 
-            _#= ctx.RenderGroups(ctx) =#_
-        </ul>
+        _#= ctx.RenderGroups(ctx) =#_
+    </div>
 <!--#_
 if (ctx.ClientControl.get_shouldShowNoResultMessage())
 {

@@ -7,8 +7,8 @@ tableLayoutDT.redirectToPropertiesUrl = function (element, docPath) {
     request.setRequestHeader('Accept', 'application/json; odata=verbose');
     request.onload = function (e) {
         if (request.readyState === 4) {
-            if (!Srch.U.n(request.response)) {
-                var data = JSON.parse(request.response);
+            if (!Srch.U.n(request.responseText)) {
+                var data = JSON.parse(request.responseText);
                 var webUrl = data.d.GetContextWebInformation.WebFullUrl;
                 // Check if the web url that is retrieved is not null or empty
                 if (!Srch.U.n(webUrl) && !Srch.U.e(webUrl)) {

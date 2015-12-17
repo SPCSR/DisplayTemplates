@@ -1,0 +1,210 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>User Refinement Username</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:CompatibleManagedProperties msdt:dt="string"></mso:CompatibleManagedProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:CompatibleSearchDataTypes msdt:dt="string"></mso:CompatibleSearchDataTypes>
+<mso:MasterPageDescription msdt:dt="string"></mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106604</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Refinement;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+<mso:HtmlDesignConversionSucceeded msdt:dt="string">True</mso:HtmlDesignConversionSucceeded>
+<mso:HtmlDesignStatusAndPreview msdt:dt="string">https://estruyfd7.sharepoint.com/search/_catalogs/masterpage/SearchDT/Filter_Users_Username.html, Conversion successful.</mso:HtmlDesignStatusAndPreview>
+</mso:CustomDocumentProperties></xml><![endif]-->
+</head>
+<body>
+    <div id="4">
+<!--#_
+    this.Options = {
+        ShowShortList: true,
+        ShortListSize: 5
+    };
+
+    var listData = ctx.ListData;
+    var hasControl = true;
+
+    if ($isNull(ctx.RefinementControl) || $isNull(ctx.ClientControl)) hasControl = false;
+
+    if (ctx.RefinementControl.propertyName == 'contentclass' || ctx.RefinementControl.propertyName == 'ContentTypeId' || ctx.RefinementControl.propertyName == 'WebTemplate') {
+        hasControl = false;
+    }
+    else if (hasControl && !$isNull(listData)) {
+        for(var i in listData) {
+            listData[i].RefinementTokens = [listData[i].RefinementToken];
+            listData[i].RefinementTokenWrappedValues = [Srch.RefinementUtil.stringValueToEqualsToken(listData[i].RefinementValue)];
+            if(ctx.RefinementControl.propertyName == "MediaDuration") {
+                Srch.U.modifyMediaDurationRefinementName(listData[i]);
+            }
+        }
+    }
+
+    if (hasControl) {
+        if($isNull(listData) || $isEmptyArray(listData)) {
+_#-->
+        <div id="EmptyContainer"></div>
+<!--#_
+        }
+        else {
+            var containerClass = ctx.ClientControl.get_nextUniqueId() + "_container";
+            var isExpanded = Srch.Refinement.getExpanded(ctx.RefinementControl.propertyName);
+            var iconClass = (isExpanded == "true"? "ms-ref-uparrow" : "ms-ref-downarrow");
+            var displayStyle = (isExpanded == "true"? "" : "none");
+            var refinerCatTitle = Srch.Refinement.getRefinementTitle(ctx.RefinementControl);
+_#-->
+          <div id='Container' class="_#= containerClass =#_">
+            _#= Srch.U.collapsibleRefinerTitle(ctx.RefinementControl.propertyName, ctx.ClientControl.get_id(), refinerCatTitle, iconClass) =#_
+<!--#_
+            function outputFilter(refinementName, refinementCount, refiners, method, aClass) {
+                var username = Srch.U.getUsernameFromAuthorField(refinementName);
+                if (username.indexOf('|') >= 0) {
+                    var uSplit = username.split('|');
+                    if (!$isEmptyArray(uSplit)) {
+                        username = uSplit[uSplit.length - 1];
+                    }
+                }
+                var displayName = Srch.U.getDisplayNameFromAuthorField(refinementName);
+
+                var aOnClick = "$getClientControl(this)." + method + "('" + $scriptEncode(Sys.Serialization.JavaScriptSerializer.serialize(refiners)) + "');";
+_#-->          
+            <div id='Value' name='Item' style='' ref='_#= refinementName =#_'>
+                <a id='FilterLink' class='_#= $htmlEncode(aClass) =#_' onclick="_#= aOnClick =#_" href='javascript:{}' title='_#= $htmlEncode(String.format(Srch.U.loadResource("rf_RefineBy"), refinementName)) =#_'>
+                        <div class="ms-ref-name" style="margin-bottom:5px">
+<!--#_
+                        if (!$isEmptyString(username)) {
+                            var picUrl = String.format("/_layouts/15/userphoto.aspx?size=S&accountname={0}", username);
+_#-->
+                            <img src="_#= picUrl =#_" alt="_#= displayName =#_" width="45px" style="float:left;margin-right:5px" />
+<!--#_    
+                        }
+_#-->
+                        <span style="vertical-align:top">_#= $htmlEncode(displayName) =#_</span>
+                        <div class="ms-clear"></div>
+                    </div>
+                </a>
+            </div>
+<!--#_
+            };
+
+            function allFilter(refiners, method, aClass) {
+                var aOnClick = "$getClientControl(this)." + method + "('" + $scriptEncode(Sys.Serialization.JavaScriptSerializer.serialize(refiners)) + "');";
+
+                var allUsers = 'Show all users';
+_#-->          
+                <div id='Value' name='Item'>
+                    <a id='FilterLink' class='_#= $htmlEncode(aClass) =#_ ms-ref-name' onclick="_#= aOnClick =#_" href='javascript:{}' title='_#= $htmlEncode(String.format(Srch.U.loadResource("rf_RefineBy"), allUsers)) =#_'>_#= allUsers =#_</a>
+                </div>
+<!--#_
+            };
+
+            var unselectedFilters = new Array();
+            var selectedFilters = new Array();
+
+            var hasDiscreteIntervals = (!$isEmptyString(ctx.RefinementControl.spec) && ctx.RefinementControl.spec.startsWith('(discretize=manual'));
+
+            var currentRefinementCategory = ctx.ClientControl.getCurrentRefinementCategory(ctx.RefinementControl.propertyName);
+            var hasAnyFiltertokens = (!Srch.U.n(currentRefinementCategory) && currentRefinementCategory.get_tokenCount() > 0);
+            for (var i = 0; i < listData.length; i++) {
+                var filter = listData[i];
+                if(!$isNull(filter)) {
+
+                    var isEmptyDiscreteInterval = (hasDiscreteIntervals && filter.RefinementCount < 1);
+
+                    if (ctx.ClientControl.hasAllRefinementFilters(filter.RefinerName, filter.RefinementTokens) ||
+                        ctx.ClientControl.hasAllRefinementFilters(filter.RefinerName, filter.RefinementTokenWrappedValues)) {
+                        selectedFilters.push(filter);
+                    } else if(!isEmptyDiscreteInterval) {
+                        unselectedFilters.push(filter);
+                    }
+                }
+            }
+
+
+            if (selectedFilters.length > 0 || hasAnyFiltertokens) {
+_#-->
+            <div id='AllSection' class='ms-ref-allSec' style='display:_#= $htmlEncode(displayStyle) =#_'>
+<!--#_
+                var refinersAll = new Object();
+                refinersAll[ctx.RefinementControl.propertyName] = null;
+                allFilter(refinersAll, "updateRefinersJSON", "ms-displayBlock");
+_#-->
+            </div>
+<!--#_
+            }
+_#-->
+
+            <div id='UnselectedSection' class='ms-ref-unselSec' style='display:_#= $htmlEncode(displayStyle) =#_'>
+                <div id='unselShortList' class='ms-ref-unsel-shortList'>
+<!--#_
+                    var addMethod = "addRefinementFiltersJSON";
+
+                    // Check if you should show the short or long list
+                    var numShortList = unselectedFilters.length;
+                    if (this.Options.ShowShortList == true && this.Options.ShortListSize < unselectedFilters.length) {
+                        numShortList = this.Options.ShortListSize;
+                    }
+
+                    for (var i = 0; i < numShortList; i++) {
+                        var filter = unselectedFilters[i];
+                        if(!$isNull(filter)) {
+                            var refiners = new Object();
+                            refiners[filter.RefinerName] = filter.RefinementTokens;
+                            outputFilter(filter.RefinementName, filter.RefinementCount, refiners, addMethod, "ms-displayBlock");
+                        }
+                    }
+_#-->
+                </div>
+<!--#_
+            if (this.Options.ShowShortList == true && this.Options.ShortListSize < unselectedFilters.length) {
+_#-->
+                <div id='unselLongList' class='ms-ref-unsel-longList' style='display:none'>
+<!--#_
+                    for (var i = 0; i < unselectedFilters.length; i++) {
+                        var filter = unselectedFilters[i];
+                        if(!$isNull(filter)) {
+                            var refiners = new Object();
+                            refiners[filter.RefinerName] = filter.RefinementTokens;
+                            outputFilter(filter.RefinementName, filter.RefinementCount, refiners, addMethod, "ms-displayBlock");
+                        }
+                    }
+_#-->
+                </div>
+                <a id='unselToggle' class='ms-ref-unsel-toggle ms-commandLink' onclick='EnsureScriptParams("SearchUI.js", "Srch.SU.toggleRefShortLong", this.parentNode)' href='javascript: {}'>
+                    <div class="ms-displayInlineBlock">_#= $htmlEncode(Srch.U.loadResource("rf_RefinementLabel_More")) =#_</div>
+                </a>
+<!--#_
+            }
+_#-->
+            </div>
+
+            <div id='SelectedSection' class='ms-ref-selSec'>
+<!--#_
+               if (selectedFilters.length > 0) {
+_#-->
+                    <h3 style="margin: 5px 0 5px 0">Selected user(s)</h3>
+<!--#_
+                }
+                for (var i = 0; i < selectedFilters.length; i++) {
+                    var filter = selectedFilters[i];
+                    if(!$isNull(filter)){
+                        var refiners = new Object();
+                        if (!$isNull(filter.RefinementTokenWrappedValues))
+                            filter.RefinementTokens = filter.RefinementTokens.concat(filter.RefinementTokenWrappedValues); 
+                        refiners[filter.RefinerName] = filter.RefinementTokens;
+                        outputFilter(filter.RefinementName, filter.RefinementCount, refiners, "removeRefinementFiltersJSON", "ms-core-listMenu-selected ms-ref-filterSel ms-displayBlock");
+                    }
+                }
+_#-->
+            </div>
+
+        </div>
+<!--#_
+        }
+    }
+_#-->
+
+    </div>
+</body>
+</html>

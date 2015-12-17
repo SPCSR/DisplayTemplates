@@ -128,7 +128,7 @@
                                         (function (prop, tableId) {
                                             // Do a Ajax call for each property to check if it is sortable
                                             var request = new XMLHttpRequest();
-                                            var restUrl = _spPageContextInfo.webAbsoluteUrl + "/_api/search/query?querytext='" + tableContext[tableId].clientControl.get_dataProvider().get_queryTemplate() + "'&sortlist='" + tableContext[tableId].properties[key] +":ascending'&RowLimit=1&selectproperties='Path'";
+                                            var restUrl = _spPageContextInfo.webAbsoluteUrl + "/_api/search/query?querytext='*'&sortlist='" + tableContext[tableId].properties[key] +":ascending'&RowLimit=1&selectproperties='Path'";
                                             request.open('GET', restUrl, true);
                                             request.onload = function (e) {
                                                 if (request.readyState === 4) {
@@ -291,7 +291,7 @@
                                 calloutOptions.ID = 'notificationcallout-' + i;
                                 calloutOptions.launchPoint = elm;
                                 calloutOptions.beakOrientation = 'leftRight';
-                                calloutOptions.content = String.format('<a href="{0}&PageType=4" onclick="Srch.U.getRenderTemplateCollection().redirecttopropertiesurl(this, \'{1}\');return false;" title="View properties">View properties</a><br /><a href="{0}&PageType=6" onclick="Srch.U.getRenderTemplateCollection().redirecttopropertiesurl(this, \'{1}\');return false;" title="Edit properties">Edit properties</a>', elm.getAttribute('rel'), elm.getAttribute('path'));
+                                calloutOptions.content = String.format('<a href="{0}&PageType=4" onclick="estruyf.Table.Callout.redirectToPropertiesUrl(this, \'{1}\');return false;" title="View properties">View properties</a><br /><a href="{0}&PageType=6" onclick="estruyf.Table.Callout.redirectToPropertiesUrl(this, \'{1}\');return false;" title="Edit properties">Edit properties</a>', elm.getAttribute('rel'), elm.getAttribute('path'));
                                 calloutOptions.title = elm.getAttribute('ref');
 
                                 var displayedPopup = CalloutManager.createNew(calloutOptions);
@@ -324,18 +324,6 @@
                 }
             };
         }();
-
-
-        // Register the table functions
-        Srch.U.registerRenderTemplateByName("setcontext", estruyf.Table.Layout.setContext);
-        Srch.U.registerRenderTemplateByName("setcurrentsorting", estruyf.Table.Layout.setCurrentSorting);
-        Srch.U.registerRenderTemplateByName("showpropertysorting", estruyf.Table.Layout.showPropertySorting);
-
-        Srch.U.registerRenderTemplateByName("sortproperty", estruyf.Table.Sort.sortProperty);
-        Srch.U.registerRenderTemplateByName("removesortproperty", estruyf.Table.Sort.removeSortProperty);
-
-        Srch.U.registerRenderTemplateByName("setcallouts", estruyf.Table.Callout.setCallouts);
-        Srch.U.registerRenderTemplateByName("redirecttopropertiesurl", estruyf.Table.Callout.redirectToPropertiesUrl);
     </script>
 
     <div id="Control_Table">
@@ -350,17 +338,17 @@ if (!$isNull(ctx.ClientControl) && !$isNull(ctx.ClientControl.shouldRenderContro
 var clientControl = ctx.ClientControl;
 
 // Set the current context
-Srch.U.getRenderTemplateCollection().setcontext(ctx, clientControl, tableId);
+estruyf.Table.Layout.setContext(ctx, clientControl, tableId);
 
 AddPostRenderCallback(ctx, function() {
     // Show the current sort option
-    Srch.U.getRenderTemplateCollection().showpropertysorting(tableId);
+    estruyf.Table.Layout.showPropertySorting(tableId);
 
     // Show or hide the sort options
-    Srch.U.getRenderTemplateCollection().setcurrentsorting(tableId);
+    estruyf.Table.Layout.setCurrentSorting(tableId);
 
     // Add a callout to each row
-    Srch.U.getRenderTemplateCollection().setcallouts(tableId);
+    estruyf.Table.Callout.setCallouts(tableId);
 });
 
 ctx.ClientControl.set_showSortOptions(true);

@@ -1,0 +1,88 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>Item Routing</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:ManagedPropertyMapping msdt:dt="string">'PublishingPageLayoutOWSURLH','Path','Title':'Title','Author':'Author'</mso:ManagedPropertyMapping>
+<mso:MasterPageDescription msdt:dt="string">This is a routing template that can be used to load multiple item display templates.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <script>
+        Type.registerNamespace('estruyf.routing');
+
+        estruyf.routing = function() {
+            var contexts = {};
+            var dtUrl = '~sitecollection/_catalogs/masterpage/Tests/';
+            var defaultLayout = 'Item_BodyOnly.js';
+            var layouts = { 
+                'PageFromDocLayout.aspx' : 'Item_BodyOnly.js',
+                'ArticleLeft.aspx' : 'Item_ImageLeft.js',
+                'ArticleRight.aspx' : 'Item_ImageRight.js',
+            };
+
+            var init = function (currentCtx, id, pageUrl) {
+                    contexts[id] = {};
+                    contexts[id]['CurrentItem'] = currentCtx.CurrentItem;
+                    
+                    AddPostRenderCallback(currentCtx, function () {
+                        process(pageUrl, id);
+                    });
+                },
+                process = function (pageUrl, id) {
+                    if (!pageUrl.isEmpty) {
+                        // Get the page name 
+                        var url = pageUrl.value[0].value;
+                        if (!$isEmptyString(url)) {
+                            // Retrieve the corresponding display template
+                            var pageName = url.substring(url.lastIndexOf('/') + 1);
+                            var dtName = layouts[pageName];
+                            if ($isEmptyString(dtName)) {
+                                dtName = defaultLayout;
+                            }
+
+                            // Load the display template for the corresponding page layout
+                            var dtFullUrl = dtUrl + dtName;
+                            RegisterSod(dtName, Srch.U.replaceUrlTokens(dtFullUrl));
+
+                            (function (id) {
+                                EnsureScriptFunc(dtName, null, function () {
+                                    var templateFunc = Srch.U.getRenderTemplateByName(dtFullUrl, null);
+                                    var markup = CoreRender(templateFunc, contexts[id]);
+                                    render(markup, id);
+                                });
+                            })(id);
+                        }
+                    }
+                },
+                render = function (markup, id) {
+                    var elm = document.getElementById(id);
+                    if (!$isNull(elm)) {
+                        elm.innerHTML += markup;
+                    }
+                };
+
+            return {
+                init: init,
+                process: process
+            };
+        }();
+    </script>
+    
+    <div id="RoutingTemplate">
+<!--#_
+        var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_article");
+        var pagelayout = $getItemValue(ctx, 'PublishingPageLayoutOWSURLH');
+
+        estruyf.routing.init(ctx, encodedId, pagelayout);
+_#-->
+        <div id="_#= encodedId =#_"></div>
+    </div>
+</body>
+</html>
