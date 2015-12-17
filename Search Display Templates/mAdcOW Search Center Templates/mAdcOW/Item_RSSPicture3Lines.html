@@ -45,6 +45,7 @@
 var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_picture3Lines_");
 
 var itemXml = STSHtmlDecode($getItemValue(ctx, "OpenSearchSingleResultXML").value);
+itemXml = itemXml.replace("media:", "media")
 var doc = Srch.U.createXMLDocument(itemXml);
 
 var line1 = $getItemValue(ctx, "Line 1");
@@ -52,7 +53,7 @@ var line2 =  Srch.U.getSingleHHXMLNodeValue(doc,"description");
 var line3 = Srch.U.getSingleHHXMLNodeValue(doc,"pubDate");
 
 var linkURL = Srch.U.getSingleHHXMLNodeValue(doc,"description");
-var pictureURL = doc.getElementsByTagName("media:thumbnail")[0].attributes["url"].value;
+var pictureURL = doc.getElementsByTagName("mediathumbnail")[0].attributes["url"].value;
 
 var imageValue = new Srch.ValueInfo(ctx.CurrentItem.Path, "PictureURL");
 imageValue.value = pictureURL
