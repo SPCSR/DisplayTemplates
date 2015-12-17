@@ -1,0 +1,64 @@
+﻿<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>Sharegate Control Shape</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+	<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+	<mso:MasterPageDescription msdt:dt="string"></mso:MasterPageDescription>
+	<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106601</mso:ContentTypeId>
+	<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#SearchResults;#</mso:TargetControlType>
+	<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+<mso:HtmlDesignStatusAndPreview msdt:dt="string">http://sp2013/sites/imageviewer/_catalogs/masterpage/Display Templates/Search/Control_SharegateShape.html, Conversion successful.</mso:HtmlDesignStatusAndPreview>
+<mso:HtmlDesignFromMaster msdt:dt="string"></mso:HtmlDesignFromMaster>
+<mso:HtmlDesignConversionSucceeded msdt:dt="string">True</mso:HtmlDesignConversionSucceeded>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+<body>
+	<script>
+		$includeCSS(this.url, "~sitecollection/style library/Shape/css/component.css");
+	</script>
+<div>
+<!--#_
+if (!$isNull(ctx.ClientControl) && !$isNull(ctx.ClientControl.shouldRenderControl) && !ctx.ClientControl.shouldRenderControl()){return "";}
+
+RegisterSod('snap.svg-min.js', Srch.U.replaceUrlTokens('~sitecollection/style library/Shape/js/snap.svg-min.js'));
+
+ctx.ListDataJSONGroupsKey = "ResultTables";
+ctx["CurrentItems"] = ctx.ListData.ResultTables[0].ResultRows;
+var siteURL = SP.PageContextInfo.get_siteAbsoluteUrl();
+
+AddPostRenderCallback(ctx, function () {
+	function init() {
+		var speed = 250,
+			easing = mina.easeinout;
+
+		[].slice.call ( document.querySelectorAll( '#grid > a' ) ).forEach( function( el ) {
+			var s = Snap( el.querySelector( 'svg' ) ), path = s.select( 'path' ),
+				pathConfig = {
+					from : path.attr( 'd' ),
+					to : el.getAttribute( 'data-path-hover' )
+				};
+
+			el.addEventListener( 'mouseenter', function() {
+				path.animate( { 'path' : pathConfig.to }, speed, easing );
+			} );
+
+			el.addEventListener( 'mouseleave', function() {
+				path.animate( { 'path' : pathConfig.from }, speed, easing );
+			} );
+		} );
+	}
+
+	if (typeof mina === "undefined") {
+		EnsureScriptFunc('snap.svg-min.js', null, init);
+	} else {
+		init();
+	}
+});_#-->
+<div class="container demo-1">
+			<section id="grid" class="grid clearfix"> _#= ctx.RenderItems(ctx) =#_ </section>
+			</div></div>
+</body>
+</html>

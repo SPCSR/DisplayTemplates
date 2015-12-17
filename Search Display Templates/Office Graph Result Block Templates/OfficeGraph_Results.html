@@ -160,8 +160,6 @@
                 init: init
             };
         }();
-
-        Srch.U.registerRenderTemplateByName("officegraph_init", search.OfficeGraph.init);
     </script>
 
     <div id="OfficeGraph_Results">
@@ -169,7 +167,7 @@
         var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_OfficeGraphResults");
 
         if (!$isNull(ctx.DataProvider)) {
-            Srch.U.getRenderTemplateCollection().officegraph_init(ctx, encodedId);
+            search.OfficeGraph.init(ctx, encodedId);
         }
 _#-->
         <div id="_#= encodedId =#_">

@@ -1,0 +1,348 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>List Table Control (Batch)</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:MasterPageDescription msdt:dt="string">This is the table layout control template.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106601</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <script>
+        Type.registerNamespace('estruyf.Table');
+
+        estruyf.Table.Layout = function() {
+            var tableContext = {};
+
+            var setContext = function (context, cc, tableId) {
+                    tableContext[tableId] = {};
+                    setCurrentCtx(context, tableId);
+                    setClientControl(cc, tableId);
+                    setProperties(cc, tableId);
+                },
+                setCurrentCtx = function (context, tableId) {
+                    tableContext[tableId]["currentCtx"] = context;
+                },
+                setClientControl = function (cc, tableId) {
+                    tableContext[tableId]["clientControl"] = cc;
+                },
+                setProperties = function (cc, tableId) {
+                    if (!Srch.U.n(cc)) {
+                        var propertyMappings = cc.get_propertyMappings();
+                        if (!Srch.U.n(propertyMappings) && !Srch.U.w(propertyMappings)) {
+                            tableContext[tableId]["properties"] = Srch.Result.parsePropertyMappingsString(propertyMappings);
+                        }
+                    }
+                },
+                // Add the sortable properties to your search context
+                addSortableProperty = function (property, tableId) {
+                    var availableSorts = tableContext[tableId].currentCtx.DataProvider.get_availableSorts();
+                    availableSorts.push({ "name": property + "ASC", "sorts": [{ "p": property, "d": 0 }] });
+                    availableSorts.push({ "name": property + "DES", "sorts": [{ "p": property, "d": 1 }] });
+                    tableContext[tableId].currentCtx.DataProvider.set_availableSorts(availableSorts);
+                },
+                addUnsortableProperty = function (property, tableId) {
+                    if (typeof tableContext[tableId].currentCtx.DataProvider.Unsortable === "undefined") {
+                        // Create an empty unsortable array
+                        tableContext[tableId].currentCtx.DataProvider.Unsortable = [];
+                    }
+                    tableContext[tableId].currentCtx.DataProvider.Unsortable.push(property);
+                },
+                checkSortableProperty = function (property, tableId) {
+                    var availableSorts = tableContext[tableId].currentCtx.DataProvider.get_availableSorts();
+                    var indexArray = availableSorts.map(function(o){return o.name;});
+                    var currentPropIdx = indexArray.indexOf(property+"ASC");
+                    return currentPropIdx === -1 ? true : false;
+                },
+                checkUnsortableProperty = function (property, tableId) {
+                    if (typeof tableContext[tableId].currentCtx.DataProvider.Unsortable !== "undefined") {
+                        var unsortableProps = tableContext[tableId].currentCtx.DataProvider.Unsortable;
+                        return unsortableProps.indexOf(property) === -1 ? true : false;
+                    } else {
+                        return true;
+                    }
+                },
+                hideSortableOptions = function (property, tableId) {
+                    var elm = document.querySelector('#' + tableId + ' #' + property.replace(/ /g, '-'));
+                    if (elm !== null) {
+                        elm.style.display = 'none';
+                    }
+                },
+                setCurrentSorting = function (tableId) {
+                    var queryState = tableContext[tableId].currentCtx.DataProvider.get_currentQueryState().o;
+                    if (queryState !== null && queryState.length > 0) {
+                        for (var i = 0; i < queryState.length; i++) {
+                            var sortName = queryState[i].p;
+                            var sortDir = queryState[i].d;
+                            if (!Srch.U.e(sortName)) {
+                                var elm = document.querySelector('#' + tableId + ' #' + sortName.replace(/ /g, '-'));
+                                if (elm !== null) {
+                                    elm.parentNode.style.fontWeight = "bold";
+                                    var sortElm = elm.getElementsByClassName('sortarrow')[0];
+                                    if (sortElm !== null) {
+                                        if (sortDir === 0){
+                                            sortElm.innerHTML = "<img src='/_layouts/15/images/spcommon.png' class='ms-sortarrowup-icon'>";
+                                        } else {
+                                            sortElm.innerHTML = "<img src='/_layouts/15/images/spcommon.png' class='ms-sortarrowdown-icon'>";
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                showPropertySorting = function (tableId) {
+                    // Check if the properties array is empty.
+                    // This can happen if you do not override the managed properties in the web part.
+                    if ($isEmptyArray(tableContext[tableId].properties)) {
+                        if (!Srch.U.n(DisplayTemplateData)) {
+                            if (!Srch.U.n(DisplayTemplateData.ManagedPropertyMapping)) {
+                                tableContext[tableId].properties = DisplayTemplateData.ManagedPropertyMapping;
+                            }
+                        }
+                    }
+
+                    if (!$isEmptyArray(tableContext[tableId].properties)) {
+                        // Create a property order and batch content object
+                        var propOrder = [];
+                        var batchContents = [];
+
+                        for (var key in tableContext[tableId].properties) {
+                            if (!Srch.U.e(tableContext[tableId].properties[key])) {
+                                var prop = tableContext[tableId].properties[key].toString();
+                                if (checkSortableProperty(prop, tableId)) {
+                                    if (checkUnsortableProperty(prop, tableId)) {
+                                        // Set the property in the order array
+                                        propOrder.push(prop);
+                                        // Create the rest endpoint
+                                        var endpoint = _spPageContextInfo.webAbsoluteUrl + "/_api/search/query?querytext='*'&sortlist='" + prop + ":ascending'&RowLimit=1&selectproperties='Path'";
+                                        // Put the properties to the batch
+                                        batchContents.push('--batch_' + tableId);
+                                        batchContents.push('Content-Type: application/http');
+                                        batchContents.push('Content-Transfer-Encoding: binary');
+                                        batchContents.push('');
+                                        batchContents.push('GET ' + endpoint + ' HTTP/1.1');
+                                        batchContents.push('Accept: application/json;odata=nometadata');
+                                        batchContents.push('');
+                                    } else {
+                                        // Hide the sorting options
+                                        hideSortableOptions(prop, tableId);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (propOrder.length !== 0) {
+                            batchContents.push('--batch_' + tableId + '--');
+                            var batchBody = batchContents.join('\r\n');
+
+                            (function (propOrder, tableId) {
+                                // Do a Ajax call for each property to check if it is sortable
+                                var request = new XMLHttpRequest();
+                                var restUrl = _spPageContextInfo.webAbsoluteUrl + '/_api/$batch';
+                                request.open('POST', restUrl, true);
+                                request.setRequestHeader('Accept', 'application/json;odata=verbose');
+                                request.setRequestHeader('Content-Type', 'multipart/mixed; boundary="batch_' + tableId + '"');
+                                request.setRequestHeader('X-RequestDigest', document.getElementById('__REQUESTDIGEST').value);
+                                request.onload = function (e) {
+                                    if (request.readyState === 4) {
+                                        // Check if the get was successful
+                                        if (request.status === 200) {
+                                            var responseInLines = request.response.split('\n');
+                                            // Loop over all the responses
+                                            var j = 0;
+                                            for (var i = 0; i < responseInLines.length; i++) {
+                                                try {
+                                                    // parse the JSON response...
+                                                    var result = JSON.parse(responseInLines[i]);
+                                                    var property = propOrder[j++];
+                                                    if (typeof result.error === 'undefined') {
+                                                        // The property is sortable
+                                                        addSortableProperty(property, tableId);
+                                                    } else {
+                                                        // The property is not sortable
+                                                        addUnsortableProperty(property, tableId);
+                                                        // Hide the sorting options
+                                                        hideSortableOptions(property, tableId);
+                                                    }
+                                                } catch (e) {
+                                                    // don't do anything... just keep moving
+                                                }
+                                            }
+                                        }
+                                    }
+                                };
+                                request.onerror = function (e) {
+                                    // Catching errors
+                                };
+                                request.send(batchBody);
+                            })(propOrder, tableId);
+                        }
+                    }
+                };
+
+            return {
+                setContext: setContext,
+                setCurrentSorting: setCurrentSorting,
+                showPropertySorting: showPropertySorting
+            };
+        }();
+
+        estruyf.Table.Callout = function () {
+            var set = function (tableId) {
+                    SP.SOD.executeFunc("callout.js", "Callout", function () {
+                        var tableElement = document.getElementById(tableId);
+                        var targetElement = tableElement.getElementsByClassName('NotificationDiv');
+                        if (targetElement.length > 0) {
+                            for (var i = 0; i < targetElement.length; i++) {
+                                var elm = targetElement[i];
+                                var calloutOptions = new CalloutOptions();
+                                calloutOptions.ID = 'notificationcallout-' + i;
+                                calloutOptions.launchPoint = elm;
+                                calloutOptions.beakOrientation = 'leftRight';
+                                calloutOptions.content = String.format('<a href="{0}&PageType=4" onclick="Srch.U.getRenderTemplateCollection().redirecttopropertiesurl(this, \'{1}\');return false;" title="View properties">View properties</a><br /><a href="{0}&PageType=6" onclick="Srch.U.getRenderTemplateCollection().redirecttopropertiesurl(this, \'{1}\');return false;" title="Edit properties">Edit properties</a>', elm.getAttribute('rel'), elm.getAttribute('path'));
+                                calloutOptions.title = elm.getAttribute('ref');
+
+                                var displayedPopup = CalloutManager.createNew(calloutOptions);
+                            }
+                        }
+                    });
+                },
+                redirect = function (element, docPath) {
+                    docPath = docPath.substring(0, docPath.lastIndexOf('/')) + "/_api/contextinfo";
+                    var request = new XMLHttpRequest();
+                    request.open('POST', docPath, true);
+                    request.setRequestHeader('Accept', 'application/json; odata=nometadata');
+                    request.onload = function (e) {
+                        if (request.readyState === 4) {
+                            if (!Srch.U.n(request.response)) {
+                                var data = JSON.parse(request.response);
+                                var webUrl = data.WebFullUrl;
+                                // Check if the web url that is retrieved is not null or empty
+                                if (!Srch.U.n(webUrl) && !Srch.U.e(webUrl)) {
+                                    GoToPage(String.format('{0}{1}', webUrl, element.getAttribute('href')));
+                                }
+                            }
+                        }
+                    };
+                    request.onerror = function (e) {
+                        // Catching errors
+                    };
+                    request.send(null);
+                    return false;
+                };
+
+            return {
+                set: set,
+                redirect: redirect
+            };
+        }();
+
+        Srch.U.registerRenderTemplateByName("setcontext", estruyf.Table.Layout.setContext);
+        Srch.U.registerRenderTemplateByName("setcurrentsorting", estruyf.Table.Layout.setCurrentSorting);
+        Srch.U.registerRenderTemplateByName("showpropertysorting", estruyf.Table.Layout.showPropertySorting);
+
+        Srch.U.registerRenderTemplateByName("setcallouts", estruyf.Table.Callout.set);
+        Srch.U.registerRenderTemplateByName("redirecttopropertiesurl", estruyf.Table.Callout.redirect);
+    </script>
+
+    <div id="Control_List">
+<!--#_ 
+    var tableId = ctx.ClientControl.get_nextUniqueId() + "_table";
+
+    if (!$isNull(ctx.ClientControl) && !$isNull(ctx.ClientControl.shouldRenderControl) && !ctx.ClientControl.shouldRenderControl()) {
+        return "";
+    }
+
+    // Get the client control
+    var clientControl = ctx.ClientControl;
+
+    // Set the current context
+    Srch.U.getRenderTemplateCollection().setcontext(ctx, clientControl, tableId);
+
+    AddPostRenderCallback(ctx, function() {
+        // Show the current sort option
+        Srch.U.getRenderTemplateCollection().showpropertysorting(tableId);
+
+        // Show or hide the sort options
+        Srch.U.getRenderTemplateCollection().setcurrentsorting(tableId);
+
+        // Add a callout to each row
+        Srch.U.getRenderTemplateCollection().setcallouts(tableId);
+    });
+
+    ctx.ClientControl.set_showSortOptions(true);
+
+    ctx.ListDataJSONGroupsKey = "ResultTables";
+
+    var ListRenderRenderWrapper = function(itemRenderResult, inCtx, tpl) {
+        var iStr = [];
+        iStr.push(itemRenderResult);
+        return iStr.join('');
+    }
+    ctx['ItemRenderWrapper'] = ListRenderRenderWrapper;
+_#-->
+        <table id="_#= tableId =#_" class="cbs-List">
+            _#= ctx.RenderGroups(ctx) =#_
+        </table>
+<!--#_
+    var showPaging = ctx.ClientControl.get_showPaging();
+    if(showPaging) {
+        var pagingInfo = ctx.ClientControl.get_pagingInfo();
+        showPaging = !$isEmptyArray(pagingInfo);
+        if(showPaging) {
+            var currentPage = null;
+            var firstPage = pagingInfo[0];
+            var lastPage = pagingInfo[pagingInfo.length - 1];
+
+            var getPagingImageClassName = function(buttonClassNamePrefix, isNext, isEnabled) {
+                var className = buttonClassNamePrefix;
+                className += (isNext && !Srch.U.isRTL()) || (!isNext && Srch.U.isRTL()) ? "right" : "left";
+                if(!$isNull(isEnabled) && isEnabled == false) {
+                    className += "-disabled";
+                }
+                return className;
+            }
+
+            var getPagingContainerClassName = function(buttonClassNamePrefix, isEnabled) {
+                var className = buttonClassNamePrefix;
+                className += isEnabled ? "enabled" : "disabled";
+                return className;
+            }
+
+            var hasNextPage = lastPage.pageNumber == -2;
+            var hasPreviousPage = firstPage.pageNumber == -1;
+            var buttonClassNamePrefix = "ms-promlink-button-";
+            var nextPageContainerClassName = getPagingContainerClassName(buttonClassNamePrefix, hasNextPage);
+            var previousPageContainerClassName = getPagingContainerClassName(buttonClassNamePrefix, hasPreviousPage);
+            var nextPageImageClassName = getPagingImageClassName(buttonClassNamePrefix, true, hasNextPage);
+            var previousPageImageClassName = getPagingImageClassName(buttonClassNamePrefix, false, hasPreviousPage);
+    _#-->
+        <div class="ms-promlink-header">
+            <span class="ms-promlink-headerNav">
+                <a class="ms-commandLink ms-promlink-button _#= $htmlEncode(previousPageContainerClassName) =#_" title="_#= $htmlEncode(firstPage.title) =#_" href="#" onclick='$getClientControl(this).page(_#= $htmlEncode(firstPage.startItem) =#_);return Srch.U.cancelEvent(event);'>
+                    <span class="ms-promlink-button-image">
+                        <img class="_#= $htmlEncode(previousPageImageClassName) =#_" alt="_#= $htmlEncode(firstPage.title) =#_" src="_#= $urlHtmlEncode(GetThemedImageUrl('spcommon.png')) =#_">
+                    </span>
+                </a>
+                <span class="ms-promlink-button-inner"></span>
+                <a class="ms-commandLink ms-promlink-button _#= $htmlEncode(nextPageContainerClassName) =#_" title="_#= $htmlEncode(lastPage.title) =#_" href="#" onclick='$getClientControl(this).page(_#= $htmlEncode(lastPage.startItem) =#_);return Srch.U.cancelEvent(event);'>
+                    <span class="ms-promlink-button-image">
+                        <img class="_#= $htmlEncode(nextPageImageClassName) =#_" alt="_#= $htmlEncode(lastPage.title) =#_" src="_#= $urlHtmlEncode(GetThemedImageUrl('spcommon.png')) =#_">
+                    </span>
+                </a>
+            </span>
+        </div>
+        <!--#_
+        }
+    }
+    _#-->
+
+    </div>
+</body>
+</html>

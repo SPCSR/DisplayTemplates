@@ -1,0 +1,27 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>Two lines</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:ManagedPropertyMapping msdt:dt="string">'Path','Title':'Title','Author':'Author'</mso:ManagedPropertyMapping>
+<mso:MasterPageDescription msdt:dt="string">Image on the left</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <div id="ImageLeft">
+<!--#_
+var title = $getItemValue(ctx, "Title");
+var author = $getItemValue(ctx, "Author");
+_#-->
+        <div class="image-left">
+            <div style="display:inline-block;width:10px;height:10px;background-color:greenyellow;margin-right:10px;"></div><strong>Item_ImageLeft.js:</strong> _#= title =#_ - _#= author =#_
+        </div>
+    </div>
+</body>
+</html>

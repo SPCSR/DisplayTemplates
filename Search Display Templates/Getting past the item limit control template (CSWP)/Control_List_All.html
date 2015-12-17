@@ -1,0 +1,112 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>All results</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:MasterPageDescription msdt:dt="string">With this control template you can retrieve all results for a search query.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106601</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <script>
+        Type.registerNamespace('search.retrieval');
+        
+        search.retrieval = function () { 
+            var items = [],
+                calls = 0,
+                maxItems = 175,
+                elmId;
+            
+            var init = function (currentCtx, id) {
+                    elmId = id;
+                    
+                    AddPostRenderCallback(currentCtx, function() {
+                        // Get the DataProvider
+                        var dp = currentCtx.DataProvider;
+                        // Retrieve the number of items to show property (max. 50)
+                        var totalPerPage = dp.get_resultsPerPage();
+                        // Retrieve all properties
+                        var properties = dp.get_properties();
+                        // Check if the total results number is greater than the number of results that can be displayed max. of 50
+                        // check if the number of results that were retrieved is equal to the number to show
+                        // Check if the max. item limit (maxItems) is reached
+                        if (dp.get_totalRows() > totalPerPage && dp.get_rowCount() === totalPerPage && items.length < maxItems) {
+                            calls++;
+                            // Set the StartRow (skip results) property to skip the first batch
+                            properties["StartRow"] = $isNull(properties["StartRow"]) ? totalPerPage : properties["StartRow"] + totalPerPage;
+                            // Do the new query
+                            dp.issueQuery();
+                        } else {
+                            // Render the results if all are retrieved
+                            render();
+                            // Once all the items are rendered, we need to reset the array and delete the StartRow property
+                            items = [];
+                            delete properties.StartRow;
+                        }
+                    });
+                },
+                add = function (value) {
+                    items.push(value);
+                },
+                render = function () {
+                    var elm = document.getElementById(elmId);
+                    if (!$isNull(elm)) {
+                        // Check if the maximum item limit is exceeded 
+                        if (items.length > maxItems) {
+                            items = items.slice(0, maxItems);
+                        }
+                        elm.innerHTML = items.join('');
+                    }
+                };
+            
+            return {
+                init: init,
+                add: add
+            };
+        }();
+    </script>
+    
+    <div id="Control_List">
+<!--#_ 
+if (!$isNull(ctx.ClientControl) && !$isNull(ctx.ClientControl.shouldRenderControl) && !ctx.ClientControl.shouldRenderControl()) {
+    return "";
+}
+
+var elmId = ctx.ClientControl.get_nextUniqueId() + "_Control";
+search.retrieval.init(ctx, elmId);
+    
+ctx.ListDataJSONGroupsKey = "ResultTables";
+var $noResults = Srch.ContentBySearch.getControlTemplateEncodedNoResultsMessage(ctx.ClientControl);
+
+var ListRenderRenderWrapper = function(itemRenderResult, inCtx, tpl) {
+    // Add each item to the array
+    search.retrieval.add(itemRenderResult);
+    return '';
+}
+
+ctx['ItemRenderWrapper'] = ListRenderRenderWrapper;
+// Start rendering the results
+ctx.RenderGroups(ctx);
+_#-->
+    
+    <div id="_#= elmId =#_" class="all-items"> 
+        <h2 class="ms-accentText"><img src="/_layouts/15/images/gears_anv4.gif?rev=23" alt="Loading image" width="16" /> Retrieving results</h2>
+    </div>
+    
+<!--#_
+if (ctx.ClientControl.get_shouldShowNoResultMessage()) {
+_#-->
+        <div class="ms-srch-result-noResults">_#= $noResults =#_</div>
+<!--#_
+}
+_#-->
+
+    </div>
+</body>
+</html>
