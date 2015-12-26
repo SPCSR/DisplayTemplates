@@ -1,4 +1,4 @@
-Blank ListView Template
+Sample: Rendering Person or Group fields
 ================
 
 This folder contains a sample list view display template that shows how the default rendering behaviour of the Person or Group field can be recreated in your custom templates.
