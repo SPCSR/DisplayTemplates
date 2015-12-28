@@ -97,11 +97,6 @@ pfh.evaluateObject = function(objValue) {
 }
 
 
-//Define any code/function that needs to be run AFTER the page has been completed and the DOM is complete.
-pfh.PostRenderCallback = function(ctx) {
-}
-
-
 //Define the function that will register our Override with SharePoint.
 pfh.RegisterTemplateOverride = function () {
 // 	Define a JavaScript object that will contain our Override
