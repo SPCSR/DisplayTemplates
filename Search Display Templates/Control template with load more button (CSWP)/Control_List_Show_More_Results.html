@@ -1,0 +1,110 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>List with load more</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:MasterPageDescription msdt:dt="string">This is the default Control Display Template that will list the items. It does not allow the user to page through items.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106601</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+<mso:HtmlDesignStatusAndPreview msdt:dt="string">https://eliostruyf.sharepoint.com/sites/demo/_catalogs/masterpage/1.Test/Control_List_Show_More_Results.html, Conversion successful.</mso:HtmlDesignStatusAndPreview>
+<mso:HtmlDesignConversionSucceeded msdt:dt="string">True</mso:HtmlDesignConversionSucceeded>
+<mso:CrawlerXSLFile msdt:dt="string"></mso:CrawlerXSLFile>
+<mso:HtmlDesignPreviewUrl msdt:dt="string"></mso:HtmlDesignPreviewUrl>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <script>
+        $includeScript(this.url, "https://code.jquery.com/jquery-1.10.1.min.js");
+    </script>
+
+    <div id="Control_List">
+<!--#_ 
+if (!$isNull(ctx.ClientControl) &&
+    !$isNull(ctx.ClientControl.shouldRenderControl) &&
+    !ctx.ClientControl.shouldRenderControl())
+{
+    return "";
+}
+ctx.ListDataJSONGroupsKey = "ResultTables";
+var $noResults = Srch.ContentBySearch.getControlTemplateEncodedNoResultsMessage(ctx.ClientControl);
+
+var noResultsClassName = "ms-srch-result-noResults";
+
+var ListRenderRenderWrapper = function(itemRenderResult, inCtx, tpl)
+{
+    var iStr = [];
+    iStr.push('<li>');
+    iStr.push(itemRenderResult);
+    iStr.push('</li>');
+    return iStr.join('');
+}
+ctx['ItemRenderWrapper'] = ListRenderRenderWrapper;
+
+
+var hiddenElmId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_Results_");
+AddPostRenderCallback(ctx, function() {
+    var hiddenElm = $('#'+hiddenElmId);
+	var visibleElm = hiddenElm.parents('.ms-WPBody:eq(0)').parent().children('#Show-Items');
+	// Hide the original set of results
+	hiddenElm.hide();
+
+	// Check if the Visible items element already exists
+	if (visibleElm.length <= 0) {
+        // Reset the page number on refresh
+        if (ctx.ClientControl.get_currentPageNumber() > 1) {
+            ctx.ClientControl.page(1);
+        } else {
+            // Get the tag name of the element
+            var tagname = hiddenElm.prop('tagName');
+            // Box needs to be created before or after the web part, 
+            // otherwise the content will be cleared when new results are retrieved.
+            hiddenElm.parents('.ms-WPBody:eq(0)').before('<'+tagname+' id="Show-Items" class="'+hiddenElm.attr('class')+'"></'+tagname+'>');
+            visibleElm = hiddenElm.parents('.ms-WPBody:eq(0)').parent().children('#Show-Items');
+        }
+	}
+
+	// Append all the hidden items to the visible items element
+	hiddenElm.children().each(function () {
+		// Append the items to the visible div
+		$(this).appendTo(visibleElm);
+	});
+
+	// Get the paging information
+	var pagingInfo = ctx.ClientControl.get_pagingInfo();
+	var lastPage = pagingInfo[pagingInfo.length -1];
+	// If the value of pageNumber is equal to -2, more results can be retrieved
+    if (typeof lastPage !== 'undefined' && typeof lastPage.pageNumber !== 'undefined') {
+        var hasNextPage = lastPage.pageNumber == -2;
+        // Append the show more link if a next page is available
+        if (hasNextPage) {
+            hiddenElm.after('<a href="#" id="'+hiddenElmId+'showmore">Show More Results</a>');
+        }
+    }
+
+    // When clicked on the show more link, the new set of results needs to be retrieved
+	$('#'+hiddenElmId+'showmore').click(function () {
+		// Load the next set of results
+		ctx.ClientControl.page(lastPage.startItem);
+		return false;
+	});
+});
+_#-->
+    <ul id="_#=hiddenElmId=#_" class="cbs-List">
+        _#= ctx.RenderGroups(ctx) =#_
+    </ul>
+<!--#_
+if (ctx.ClientControl.get_shouldShowNoResultMessage())
+{
+_#-->
+        <div class="_#= noResultsClassName =#_">_#= $noResults =#_</div>
+<!--#_
+}
+_#-->
+    </div>
+</body>
+</html>
