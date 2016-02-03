@@ -20,5 +20,5 @@ Path: ~sitecollection/_catalogs/masterpage/hybrid-search/
 If you want to put these files in another folder, you will have to update the image reference in the Item_CommonItem_Body_External.html template.
 
 ## Related blog post ##
-Check the following article to get more information about these templates: [Highlight on-premises search results in your hybrid configuration](http://www.eliostruyf.com/highlight-on-premises-search-results-in-your-hybrid-configuration/)
+Check the following article to get more information about these templates: [Highlight on-premises search results in your hybrid configuration](http://www.eliostruyf.com/highlight-premises-search-results-hybrid-configuration/)
 
