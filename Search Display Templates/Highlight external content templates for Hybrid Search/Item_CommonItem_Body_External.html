@@ -67,11 +67,11 @@
         var clickType = ctx.CurrentItem.csr_ClickType;
         if(!clickType) {clickType = "Result"}        
 
-        var vpnImg = Srch.U.replaceUrlTokens('~sitecollection/_catalogs/masterpage/hybrid-search/vpn-small.png');
+        var corpnetImg = Srch.U.replaceUrlTokens('~sitecollection/_catalogs/masterpage/hybrid-search/corpnet-small.png');
 _#-->				
         <div id="_#= $htmlEncode(id + Srch.U.Ids.body) =#_" class="ms-srch-item-body" onclick="_#= showHoverPanelCallback =#_">
-            <div class="ms-srch-item-icon" title="You need to be connected to the corporate VPN in order to view this."> 
-                <img onload="this.style.display='inline'" src="_#= vpnImg =#_" alt="VPN required" />
+            <div class="ms-srch-item-icon" title="You need to be connected to the corporate network in order to view this."> 
+                <img onload="this.style.display='inline'" src="_#= corpnetImg =#_" alt="Corporate network required" />
             </div>
 <!--#_
             if (!$isEmptyString(ctx.CurrentItem.csr_Icon)) {

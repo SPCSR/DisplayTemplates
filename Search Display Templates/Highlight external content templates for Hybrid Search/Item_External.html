@@ -15,7 +15,7 @@
 </head>
 <body>
     <script>
-        $includeScript(this.url, "~sitecollection/_catalogs/masterpage/test/Item_CommonItem_Body_External.js");  
+        $includeScript(this.url, "~sitecollection/_catalogs/masterpage/hybrid-search/Item_CommonItem_Body_External.js");  
     </script>
     <div id="Item_External">
 <!--#_ 
@@ -31,7 +31,7 @@
             // Get the default body template
             var defTemplate = ctx.ClientControl.get_itemBodyTemplateId();
             // Set the external body template
-            ctx.ClientControl.set_itemBodyTemplateId("~sitecollection/_catalogs/masterpage/test/Item_CommonItem_Body_External.js");
+            ctx.ClientControl.set_itemBodyTemplateId("~sitecollection/_catalogs/masterpage/hybrid-search/Item_CommonItem_Body_External.js");
 _#-->
             <div id="_#= $htmlEncode(itemId) =#_" name="Item" data-displaytemplate="ExternalItem" class="ms-srch-item" onmouseover="_#= ctx.currentItem_ShowHoverPanelCallback =#_" onmouseout="_#= ctx.currentItem_HideHoverPanelCallback =#_">
 				_#=ctx.RenderBody(ctx)=#_
