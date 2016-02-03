@@ -43,7 +43,9 @@
                 }
 
                 // Remove brackets from guid
-                listId = listId.substring(listId.indexOf('{') + 1, listId.indexOf('}'));
+                if (listId.indexOf("{") > 0) {
+                    listId = listId.substring(listId.indexOf('{') + 1, listId.indexOf('}'));
+                }
 
                 // Check if the list object exists, if it exists, an Ajax call is already initiated or performed
                 if (typeof listInfo[listId] !== "undefined") {
