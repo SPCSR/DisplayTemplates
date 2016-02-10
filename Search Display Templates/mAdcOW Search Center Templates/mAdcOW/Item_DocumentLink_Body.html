@@ -77,7 +77,7 @@ _#-->
         <div id="_#= $htmlEncode(id + Srch.U.Ids.body) =#_" class="ms-srch-item-body" onclick="_#= showHoverPanelCallback =#_">
 <!--#_
 			if($isEmptyString(ctx.CurrentItem.csr_Icon) && !$isEmptyString(ctx.CurrentItem.URLOWSURLH)) {
-				var ext = ctx.CurrentItem.URLOWSURLH.split(".").pop().split('?')[0];
+				var ext = ctx.CurrentItem.URLOWSURLH.split(",")[0].split(".").pop().split('?')[0];
 				var extObj = new Object();
 				extObj["FileExtension"] = ext;
 			
