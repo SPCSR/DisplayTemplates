@@ -61,10 +61,13 @@ _#-->
                     keywordQuery.get_selectProperties().clear();
 
                     // Add all the properties to be retrieved with the query
+                    var props = keywordQuery.get_selectProperties();
                     for (var i = 0; i < properties.length; i++) {
                         var property = properties[i];
                         var propertyValue = property['RefinementValue'];
-                        keywordQuery.get_selectProperties().add(propertyValue);
+                        if (!$isEmptyString(propertyValue) && propertyValue !== 'ClassificationLastScan') {
+                            props.add(propertyValue);
+                        }
                     }
 
                     var searchExecutor = Microsoft.SharePoint.Client.Search.Query.SearchExecutor.newObject(crc);
@@ -79,7 +82,7 @@ _#-->
                             renderResults(resultValue, elm);
                         }
                     }, function(sender, args) {
-                        console.log('Request failed. ' + args.get_message() + ' ' + args.get_stackTrace());
+                        console.error('Request failed. ' + args.get_message());
                     });
                 }
             });
@@ -108,37 +111,33 @@ _#-->
                     var htmlContent = '';
                     var totalFilled = 0;
                     var result = resultRows[0];
-                    var propRow = '<tr class="ms-itmHoverEnabled ms-itmhover"><td>{0}</td><td>{1}</td><td>{2}</td></tr>';
+                    var propRow = '<tr class="ms-itmHoverEnabled ms-itmhover"><td class="ms-noWrap">{0}. </td><td>{1}</td><td>{2}</td><td>{3}</td></tr>';
 
+                    var mpCount = 0;
                     for (var key in result) {
+                        mpCount++;
                         // Check if object is not NULL
                         if (!Srch.U.n(result[key])) {
                             var objectType = Object.prototype.toString.call(result[key]);
                             if (objectType === "[object String]") {
                                 // Check if string is not empty
                                 if (!Srch.U.e(result[key])) {
-                                    htmlContent += String.format(propRow, key, objectType, $htmlEncode(result[key]));
+                                    htmlContent += String.format(propRow, mpCount, key, objectType, $htmlEncode(result[key]));
                                     totalFilled++;
                                 } else {
-                                    htmlContent += String.format(propRow, key, objectType, "<strong>EMPTY</strong>");
+                                    htmlContent += String.format(propRow, mpCount, key, objectType, "<strong>EMPTY</strong>");
                                 }
                             } else {
-                                htmlContent += String.format(propRow, key, objectType, result[key]);
+                                htmlContent += String.format(propRow, mpCount, key, objectType, result[key]);
                                 totalFilled++;
                             }
                         } else {
-                            htmlContent += String.format(propRow, key, "<strong>NULL</strong>", "<strong>NULL</strong>");
+                            htmlContent += String.format(propRow, mpCount, key, "<strong>NULL</strong>", "<strong>NULL</strong>");
                         }
                     }
                     
-                    var mp = ctx.ClientControl.get_dataProvider().get_refinementInfo().ManagedProperties;
-                    var totalProperties = 0;
-                    if (!Srch.U.n(mp) && !$isEmptyArray(mp)) {
-                        totalProperties = mp.length;
-                    }
-                    
-                    var heading = totalFilled + ' from the ' + totalProperties + ' properties contained a value';
-                    var resultSectionContent = '<h2>' + heading + '</h2><table style="word-break:break-all"><tr><th style="min-width:200px;">Property</th><th style="min-width:100px;">Type</th><th>Value</th></tr>' + htmlContent + '</table>';
+                    var heading = totalFilled + ' from the ' + mpCount + ' properties contained a value';
+                    var resultSectionContent = '<h2>' + heading + '</h2><table style="word-break:break-all"><tr><th></th><th style="min-width:200px;">Property</th><th style="min-width:100px;">Type</th><th>Value</th></tr>' + htmlContent + '</table>';
                     resultSection.innerHTML = resultSectionContent;
                 }
                 else {
