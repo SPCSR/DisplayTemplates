@@ -76,7 +76,7 @@
                             // Check if the get call was successful
                             if (request.status === 200) {
                                 // List retrieved
-                                var data = JSON.parse(request.response);
+                                var data = typeof request.response !== 'undefined' ? JSON.parse(request.response) : JSON.parse(request.responseText);
                                 if ($isEmptyString(data.d.Title)) {
                                     return;
                                 }
