@@ -77,11 +77,23 @@
                             if (request.status === 200) {
                                 // List retrieved
                                 var data = JSON.parse(request.response);
-                                if ($isEmptyString(data.Title)) {
+                                if (typeof data.Title !== "undefined") {
+                                    if ($isEmptyString(data.Title)) {
+                                        return;
+                                    }
+                                    // Store the list name
+                                    listInfo[listId]["Title"] = data.Title;
+                                } else if (typeof data.d !== "undefined") {
+                                    if (typeof data.d.Title !== "undefined") {
+                                        if ($isEmptyString(data.d.Title)) {
+                                            return;
+                                        }
+                                        // Store the list name
+                                        listInfo[listId]["Title"] = data.d.Title;
+                                    }
+                                } else {
                                     return;
                                 }
-                                // Store the list name
-                                listInfo[listId]["Title"] = data.Title;
                                 // Render the list name
                                 render(elmId, listId);
                             } else {
