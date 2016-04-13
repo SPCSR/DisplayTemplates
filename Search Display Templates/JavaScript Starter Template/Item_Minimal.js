@@ -13,8 +13,8 @@
             }
         },
         render = function (ctx) {
-        // Display template data
-        var cachePreviousTemplateData = ctx.DisplayTemplateData;
+	        // Display template data
+	        var cachePreviousTemplateData = ctx.DisplayTemplateData;
             ctx.DisplayTemplateData = {
 	            'TemplateUrl': templateUrl,
 	            'TemplateType': 'Item',
@@ -26,14 +26,14 @@
                     return Srch.ValueInfo.getCachedCtxItemValue(ctx, slotOrPropName);
             };
 
-        // Retrieve managed property data
-        var path = $getItemValue(ctx, 'Path');
-        var title = $getItemValue(ctx, 'Title');
+	        // Retrieve managed property data
+	        var path = $getItemValue(ctx, 'Path');
+	        var title = $getItemValue(ctx, 'Title');
 
-        // HTML markup for an item
-        var htmlMarkup = String.format( '<div>' +
-                            				'<a href="{0}" title="{1}">{1}</a>' +
-                                        '</div>', path, title);
+	        // HTML markup for an item
+	        var htmlMarkup = String.format( '<div>' +
+	                            				'<a href="{0}" title="{1}">{1}</a>' +
+	                                        '</div>', path, title);
 
             // Caching
             ctx.ItemValues = cachePreviousItemValuesFunction;
@@ -46,18 +46,18 @@
     // Retrieve all the loaded scripts
     var allScripts = document.getElementsByTagName("script");
     // Get the last script file (this is the current DT file)
-        var scriptUrl = allScripts[allScripts.length - 1].src;
-        if (scriptUrl.indexOf('/_catalogs/') > 0) {
-        // Remove the query string 
-        if (scriptUrl.indexOf('?') > 0) {
-            scriptUrl = scriptUrl.split("?")[0];
-        }
-        // Insert the site collection token
-        templateUrl = '~sitecollection' + scriptUrl.substr(scriptUrl.indexOf('/_catalogs/'))
-        // Register the template to load
-        register();
-        if (typeof (RegisterModuleInit) === "function" && typeof(Srch.U.replaceUrlTokens) === "function") {
-            RegisterModuleInit(Srch.U.replaceUrlTokens(templateUrl), register);
-        }
+    var scriptUrl = allScripts[allScripts.length - 1].src;
+    if (scriptUrl.indexOf('/_catalogs/') > 0) {
+	    // Remove the query string 
+	    if (scriptUrl.indexOf('?') > 0) {
+	        scriptUrl = scriptUrl.split("?")[0];
+	    }
+	    // Insert the site collection token
+	    templateUrl = '~sitecollection' + scriptUrl.substr(scriptUrl.indexOf('/_catalogs/'))
+	    // Register the template to load
+	    register();
+	    if (typeof (RegisterModuleInit) === "function" && typeof(Srch.U.replaceUrlTokens) === "function") {
+	        RegisterModuleInit(Srch.U.replaceUrlTokens(templateUrl), register);
+	    }
     }
 })();
