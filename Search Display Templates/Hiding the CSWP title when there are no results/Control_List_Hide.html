@@ -60,7 +60,11 @@ if (ctx.ClientControl.get_shouldShowNoResultMessage()) {
             var container = document.getElementsByClassName(containerClass);
             if (container.length) {
                 var elm = container[0];
-                while ((elm = elm.parentElement) && !elm.classList.contains('s4-wpcell-plain'));
+                if (typeof elm.classList !== 'undefined') {
+                    while ((elm = elm.parentElement) && !elm.classList.contains('s4-wpcell-plain'));
+                } else {
+                    while ((elm = elm.parentElement) && elm.className.indexOf('s4-wpcell-plain') === -1);
+                }
                 if (typeof elm !== "undefined" && elm !== null) {
                     elm.style.display = "none";
                 }
