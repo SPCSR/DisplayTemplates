@@ -1,4 +1,6 @@
 (function () {
+    'use strict';
+    
 	var templateUrl;
 
 	var register = function () {
