@@ -5,7 +5,7 @@
 			if ("undefined" !== typeof (Srch) && "undefined" !== typeof (Srch.U) && typeof (Srch.U.registerRenderTemplateByName) === "function") {
 	            Srch.U.registerRenderTemplateByName(templateUrl, render);
 	        }
-		};
+		},
 		render = function (ctx) {
 			// Display template data
 			var cachePreviousTemplateData = ctx.DisplayTemplateData;
