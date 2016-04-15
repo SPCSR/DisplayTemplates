@@ -53,7 +53,8 @@
 	        scriptUrl = scriptUrl.split("?")[0];
 	    }
 	    // Insert the site collection token
-	    templateUrl = '~sitecollection' + scriptUrl.substr(scriptUrl.indexOf('/_catalogs/'))
+	    templateUrl = '~sitecollection' + scriptUrl.substr(scriptUrl.indexOf('/_catalogs/'));
+	    templateUrl = decodeURI(templateUrl);
 	    // Register the template to load
 	    register();
 	    if (typeof (RegisterModuleInit) === "function" && typeof(Srch.U.replaceUrlTokens) === "function") {
