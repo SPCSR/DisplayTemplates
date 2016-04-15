@@ -43,8 +43,9 @@
             return htmlMarkup;
         };
 
+    // MDS needs to start on the head
     // Retrieve all the loaded scripts
-    var allScripts = document.getElementsByTagName("script");
+    var allScripts = document.head.getElementsByTagName("script");
     // Get the last script file (this is the current DT file)
     var scriptUrl = allScripts[allScripts.length - 1].src;
     if (scriptUrl.indexOf('/_catalogs/') > 0) {
