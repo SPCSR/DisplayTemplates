@@ -1,0 +1,221 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>Item video</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:ManagedPropertyMapping msdt:dt="string">'Title':'Title','Preview':'PictureThumbnailURL;PictureURL','VideoFileURL':'UserEncodingURL;ExternalMediaURL;DefaultEncodingURL','MediaDuration','FileExtension','ContentTypeId'</mso:ManagedPropertyMapping>
+<mso:MasterPageDescription msdt:dt="string">Video item template that can be used to show videos from the Video Portal or SharePoint</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+<script>
+    Type.registerNamespace('loadCssDT');
+    loadCssDT = function () {
+        var added = false;
+        
+        // Add styles that are required for this template
+        var styles = (function() {/*
+            .video-item {
+                position: relative;
+                height: 190px;
+                margin-bottom: 20px;
+                width: 300px;
+            }
+            .video-placeholder {
+                background-color: #000;
+                height: 169px;
+                width: 100%;
+            }
+            .video-preview {
+                position: absolute;
+                height: 169px;
+                left: 0;
+                top: 0;
+                width: 300px;
+            }
+            .video-preview img {
+                max-width: 100%;
+            }
+            .video-info {
+                bottom: 0;
+                position: absolute;
+                left: 0;
+            }
+        */}).toString().slice(15, -3);
+        
+        return {
+            init: function () {
+                // Check if CSS is already added
+                if (!added) {
+                    var head = document.head || document.getElementsByTagName('head')[0],
+                        style = document.createElement('style');
+
+                    style.type = 'text/css';
+                    if (style.styleSheet){
+                        style.styleSheet.cssText = styles;
+                    } else {
+                        style.appendChild(document.createTextNode(styles));
+                    }
+                    head.appendChild(style);
+                    // Set added to true, to not read the CSS code to the page
+                    added = true;
+                }
+            }
+        };
+    }();
+    loadCssDT.init();
+    
+    // Render cloud video
+    window.RenderCloudVideo = function (elm, containerId, videoFileUrl, videoPlayerId) {
+        var video = {};
+        video.ProcessingStatus = 2;
+        var uri = new URI(videoFileUrl);
+        video.VideoItemRelativeURL = uri.getPath();
+        var videoServiceUrl = Srch.U.getVideoServiceUrl();
+
+        EnsureScriptFunc("videoportal.js", "VideoPortal", function() {
+            // Set the width and height of the element
+            var containerElm = document.getElementById(containerId);
+            VideoPortal.renderVideoPlayback(containerElm, 
+                                            videoPlayerId + '_cloud', 
+                                            video, 
+                                            videoServiceUrl,
+                                            "VideoPortal.smallVideoPlayback", 
+                                            "SearchJSBridgedCallback('" + containerId +"')", 
+                                            true, 
+                                            true);
+            // Hide preview image
+            elm.parentElement.parentElement.style.display = 'none';
+        });
+    };
+
+    // Check if there were problem rendering
+    window.SearchJSBridgedCallback = function(playerElementId) {
+        var videoContainer = document.getElementById(playerElementId);
+        var videoPlayer = videoContainer.getElementsByTagName("object")[0];
+        videoPlayer.addEventListener("mediaPlayerStateChange", "onMediaPlayerStateChange");
+        if(!SP.ScriptUtility.isNullOrUndefined(videoPlayer)){ 
+            var isAttributeSet = videoPlayer.getAttribute(VideoPortal.playerErrorEventAttribute);
+            if(!Boolean(isAttributeSet)){
+                VideoPortal.calloutBridgeCreatedCallback(videoPlayer.getAttribute("id"));
+            }
+        }
+    };
+
+    // Render SharePoint video files
+    window.RenderMediaPlayer = function (containerElm, canRenderVideo, fileExt, source, videoPlayerId, previewImage) {
+        if (canRenderVideo) {
+            var playerParams = {
+                mediaSource: source,
+                mediaFileExtension: fileExt,
+                autoPlay: false,
+                embedModePreview: true,
+                previewImageSource: previewImage
+            };
+
+            EnsureScript("mediaplayer.js", typeof ($_global_mediaplayer), function () {
+                var mimeType = mediaPlayer.tryGetMimeTypeFromFileExtension(playerParams.mediaFileExtension);
+
+                var showThumbnailInChrome = !$isNull(browseris) && browseris.chrome && document.createElement("VIDEO").canPlayType(mimeType) == '';
+                containerElm.innerHTML = '';
+                mediaPlayer.ensureCssIsIncluded();
+                mediaPlayer.createMediaPlayer(containerElm, videoPlayerId, '300px', '169px', playerParams, null);
+            });
+        }
+    };
+</script>
+<div id="VideoItem">
+<!--#_
+// Script registration
+RegisterSod("mediaplayer.js", Srch.U.urlTokenExpansion("/_layouts/15/mediaplayer.js"));
+RegisterSod("videoportal.js", Srch.U.urlTokenExpansion("/_layouts/15/videoportal.js"));
+RegisterSod("sp.publishing.resources.resx", Srch.U.urlTokenExpansion("/_layouts/15/ScriptResx.ashx?name=sp.publishing.resources&culture={Locale}"));
+RegisterSodDep("mediaplayer.js", "sp.publishing.resources.resx");
+
+// HTML IDs
+var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_video_");
+var containerId = encodedId + "container";
+var dataContainerId = encodedId + "dataContainer";
+var videoPlayerId = containerId + "_VideoPlayerId";
+
+// Managed properties retrieval
+var title = $getItemValue(ctx, "Title");
+var mediaDuration = $getItemValue(ctx, "MediaDuration");
+var contentTypeId = $getItemValue(ctx, "ContentTypeId");
+var fileExtensionInfo = $getItemValue(ctx, "FileExtension");
+var videoFileUrl = $getItemValue(ctx, "VideoFileURL");
+var preview = $getItemValue(ctx, "Preview");
+
+// Set preview image
+var previewImage = !preview.isEmpty ? $imgSrcUrl(preview) : SP.Utilities.VersionUtility.getImageUrl("videopreview.png");
+
+// Format media duration from seconds to time format
+mediaDuration.overrideValueRenderer(function(secondsValue) {
+    return $htmlEncode(Srch.U.getFormattedTimeFromSeconds(secondsValue.value));
+});
+
+// Variables
+var fileExtension;
+
+// Check if the video file is retrieved and can be rendered
+var mediaSource = videoFileUrl.toString();
+var canRenderVideoPreview = false;
+if(!videoFileUrl.isEmpty) {
+    if(!fileExtensionInfo.isEmpty)     {
+        fileExtension = fileExtensionInfo.toString();
+    }
+    else if(!videoFileUrl.isEmpty) {
+        fileExtension =  mediaSource.substr(mediaSource.lastIndexOf(".") + 1);
+    }
+    var isFireFoxOrChrome = !$isNull(browseris) && (browseris.firefox || browseris.chrome);
+    var isOGGorOGVorWEBM = fileExtension == "ogg" || fileExtension == "ogv" || fileExtension == "webm";
+    canRenderVideoPreview = isFireFoxOrChrome || !isOGGorOGVorWEBM;
+}
+
+// Check if it is a video coming from the Video Portal
+var isCloudVideo = false;
+if (!contentTypeId.isNull && !contentTypeId.isEmpty){
+    isCloudVideo = Srch.U.isCloudVideoContentId(contentTypeId.value);
+}
+
+// Do rendering based on the video type
+AddPostRenderCallback(ctx, function() {
+    var containingElement = document.getElementById(dataContainerId);
+    if ($isNull(containingElement)) return;
+    if (!isCloudVideo) {
+        RenderMediaPlayer(containingElement, canRenderVideoPreview, fileExtension, mediaSource, videoPlayerId, previewImage);
+    }
+});
+_#-->
+        <div class="video-item" id="_#= containerId =#_">
+            <div id="_#= dataContainerId =#_" class="video-placeholder"></div>
+<!--#_
+if (isCloudVideo) {
+_#-->
+            <div id="_#= videoPlayerId =#___cloud" class="video-preview">
+                <img src="_#= previewImage =#_">
+                <div class="mediaPlayerInitialPlayButton"><a href="javascript:;" title="Play" onclick="RenderCloudVideo(this, '_#=dataContainerId=#_', '_#=videoFileUrl=#_', '_#=videoPlayerId=#_');"><span></span></a></div>
+            </div>
+<!--#_
+}
+_#-->            
+            <div class="video-info">_#= title =#_
+<!--#_
+if(!mediaDuration.isEmpty) {
+_#-->
+                 - _#= mediaDuration =#_
+<!--#_
+}
+_#-->
+            </div>
+        </div>
+    </div>
+</body>
+</html>
