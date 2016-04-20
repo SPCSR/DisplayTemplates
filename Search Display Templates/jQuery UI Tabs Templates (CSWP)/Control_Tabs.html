@@ -40,7 +40,7 @@
                             var groupElm = document.getElementById(encodedId);
 
                             if (typeof jQuery === "undefined") {
-                                EnsureScriptFunc('jquery-ui.min.js', null, function () {
+                                EnsureScriptFunc('jquery-ui.min.js', 'jQuery.ui', function () {
                                     search.Tabs.show(groupElm, ccId);
                                 });
                             } else {
