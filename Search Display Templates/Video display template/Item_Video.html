@@ -16,120 +16,168 @@
 
 <body>
 <script>
-    Type.registerNamespace('loadCssDT');
-    loadCssDT = function () {
-        var added = false;
+    VideoTemplate = function () {
+        var added = false,
+            videoHeight = '169px',
+            videoWidth = '300px';
         
         // Add styles that are required for this template
         var styles = (function() {/*
             .video-item {
-                position: relative;
                 height: 190px;
                 margin-bottom: 20px;
+                position: relative;
                 width: 300px;
             }
             .video-placeholder {
                 background-color: #000;
                 height: 169px;
+                position: relative;
                 width: 100%;
             }
-            .video-preview {
+            .video-placeholder .video-loader {
                 position: absolute;
+                left: 45%;
+                top: 45%;
+            }
+            .video-preview {
                 height: 169px;
                 left: 0;
+                position: absolute;
                 top: 0;
                 width: 300px;
             }
             .video-preview img {
                 max-width: 100%;
             }
+            .btn-play {
+                background-color: #000;
+                background-color: rgba(0,0,0,0.6);
+                border: 3.5px solid #FFFFFF;
+                border-radius: 28px;
+                bottom: 15px;
+                height: 47px;
+                position: absolute;
+                right: 15px;
+                width: 47px;
+            }
+                .btn-play:hover {
+                    background-color: #000;
+                }
+                .btn-play a span {
+                    border-bottom: 11px solid transparent;
+                    border-left: 16px solid #FFFFFF;
+                    border-top: 11px solid transparent;
+                    display: block;
+                    margin-top: 12px;
+                    margin-left: 19px;
+                }
             .video-info {
                 bottom: 0;
                 position: absolute;
                 left: 0;
             }
+            .video-error {
+                background-color: #000;
+                background-color: rgba(0,0,0,0.8);
+                bottom: 0px;
+                color: #fff;
+                padding: 10px 0;
+                position: absolute;
+                text-align: center;
+                width: 100%;
+            }
         */}).toString().slice(15, -3);
         
-        return {
-            init: function () {
-                // Check if CSS is already added
-                if (!added) {
-                    var head = document.head || document.getElementsByTagName('head')[0],
-                        style = document.createElement('style');
+        var init = function () {
+            // Check if CSS is already added
+            if (!added) {
+                var head = document.head || document.getElementsByTagName('head')[0],
+                    style = document.createElement('style');
 
-                    style.type = 'text/css';
-                    if (style.styleSheet){
-                        style.styleSheet.cssText = styles;
-                    } else {
-                        style.appendChild(document.createTextNode(styles));
-                    }
-                    head.appendChild(style);
-                    // Set added to true, to not read the CSS code to the page
-                    added = true;
+                style.type = 'text/css';
+                if (style.styleSheet){
+                    style.styleSheet.cssText = styles;
+                } else {
+                    style.appendChild(document.createTextNode(styles));
+                }
+                head.appendChild(style);
+                // Set added to true, to not read the CSS code to the page
+                added = true;
+            }
+        },
+        // Render cloud video
+        RenderCloudVideo = function (elm, containerId, videoFileUrl, videoPlayerId) {
+            var video = {};
+            video.ProcessingStatus = 2;
+            var uri = new URI(videoFileUrl);
+            video.VideoItemRelativeURL = uri.getPath();
+            var videoServiceUrl = Srch.U.getVideoServiceUrl();
+
+            EnsureScriptFunc("videoportal.js", "VideoPortal", function() {
+                // Set the width and height of the element
+                var containerElm = document.getElementById(containerId);
+                // Show loading image
+                containerElm.innerHTML = '<img src="/_layouts/15/images/hig_progcircle_loading24.gif" class="video-loader" title="Buffering... Please wait" alt="Buffering... Please wait" />';
+                VideoPortal.renderVideoPlayback(containerElm, 
+                                                videoPlayerId + '_cloud', 
+                                                video, 
+                                                videoServiceUrl,
+                                                "VideoPortal.smallVideoPlayback", 
+                                                "VideoTemplate.SearchJSBridgedCallback('" + containerId +"')", 
+                                                true, 
+                                                true);
+                // Hide preview image
+                elm.parentElement.parentElement.style.display = 'none';
+            });
+        },
+        // Check if there were problem rendering
+        SearchJSBridgedCallback = function(playerElementId) {
+            var videoContainer = document.getElementById(playerElementId);
+            var videoPlayer = videoContainer.getElementsByTagName("object")[0];
+            videoPlayer.addEventListener("mediaPlayerStateChange", "onMediaPlayerStateChange");
+            if(!SP.ScriptUtility.isNullOrUndefined(videoPlayer)){ 
+                var isAttributeSet = videoPlayer.getAttribute(VideoPortal.playerErrorEventAttribute);
+                if(!Boolean(isAttributeSet)){
+                    VideoPortal.calloutBridgeCreatedCallback(videoPlayer.getAttribute("id"));
                 }
             }
+        },
+        // Render SharePoint video files
+        RenderMediaPlayer = function (containerElm, canRenderVideo, fileExt, source, videoPlayerId, previewImage) {
+            // Check if the video can be rendered by the browser
+            if (canRenderVideo) {
+                var playerParams = {
+                    mediaSource: source,
+                    mediaFileExtension: fileExt,
+                    autoPlay: false,
+                    embedModePreview: true,
+                    previewImageSource: previewImage
+                };
+
+                EnsureScript("mediaplayer.js", typeof ($_global_mediaplayer), function () {
+                    var mimeType = mediaPlayer.tryGetMimeTypeFromFileExtension(playerParams.mediaFileExtension);
+
+                    var showThumbnailInChrome = !$isNull(browseris) && browseris.chrome && document.createElement("VIDEO").canPlayType(mimeType) == '';
+                    containerElm.innerHTML = '';
+                    mediaPlayer.ensureCssIsIncluded();
+                    mediaPlayer.createMediaPlayer(containerElm, videoPlayerId, videoWidth, videoHeight, playerParams, null);
+                });
+            } else {
+                // Show preview image if the video cannot be rendered
+                containerElm.innerHTML =    '<img src="' + previewImage + '" width="' + videoWidth + '" height="' + videoHeight + '" />' + 
+                                            '<div class="video-error">The file is in a format that is not recognized.</div>';
+            }
+        };
+        
+        return {
+            init: init,
+            RenderCloudVideo: RenderCloudVideo,
+            RenderMediaPlayer: RenderMediaPlayer,
+            SearchJSBridgedCallback: SearchJSBridgedCallback
         };
     }();
-    loadCssDT.init();
-    
-    // Render cloud video
-    window.RenderCloudVideo = function (elm, containerId, videoFileUrl, videoPlayerId) {
-        var video = {};
-        video.ProcessingStatus = 2;
-        var uri = new URI(videoFileUrl);
-        video.VideoItemRelativeURL = uri.getPath();
-        var videoServiceUrl = Srch.U.getVideoServiceUrl();
-
-        EnsureScriptFunc("videoportal.js", "VideoPortal", function() {
-            // Set the width and height of the element
-            var containerElm = document.getElementById(containerId);
-            VideoPortal.renderVideoPlayback(containerElm, 
-                                            videoPlayerId + '_cloud', 
-                                            video, 
-                                            videoServiceUrl,
-                                            "VideoPortal.smallVideoPlayback", 
-                                            "SearchJSBridgedCallback('" + containerId +"')", 
-                                            true, 
-                                            true);
-            // Hide preview image
-            elm.parentElement.parentElement.style.display = 'none';
-        });
-    };
-
-    // Check if there were problem rendering
-    window.SearchJSBridgedCallback = function(playerElementId) {
-        var videoContainer = document.getElementById(playerElementId);
-        var videoPlayer = videoContainer.getElementsByTagName("object")[0];
-        videoPlayer.addEventListener("mediaPlayerStateChange", "onMediaPlayerStateChange");
-        if(!SP.ScriptUtility.isNullOrUndefined(videoPlayer)){ 
-            var isAttributeSet = videoPlayer.getAttribute(VideoPortal.playerErrorEventAttribute);
-            if(!Boolean(isAttributeSet)){
-                VideoPortal.calloutBridgeCreatedCallback(videoPlayer.getAttribute("id"));
-            }
-        }
-    };
-
-    // Render SharePoint video files
-    window.RenderMediaPlayer = function (containerElm, canRenderVideo, fileExt, source, videoPlayerId, previewImage) {
-        if (canRenderVideo) {
-            var playerParams = {
-                mediaSource: source,
-                mediaFileExtension: fileExt,
-                autoPlay: false,
-                embedModePreview: true,
-                previewImageSource: previewImage
-            };
-
-            EnsureScript("mediaplayer.js", typeof ($_global_mediaplayer), function () {
-                var mimeType = mediaPlayer.tryGetMimeTypeFromFileExtension(playerParams.mediaFileExtension);
-
-                var showThumbnailInChrome = !$isNull(browseris) && browseris.chrome && document.createElement("VIDEO").canPlayType(mimeType) == '';
-                containerElm.innerHTML = '';
-                mediaPlayer.ensureCssIsIncluded();
-                mediaPlayer.createMediaPlayer(containerElm, videoPlayerId, '300px', '169px', playerParams, null);
-            });
-        }
-    };
+    VideoTemplate.init();
 </script>
 <div id="VideoItem">
 <!--#_
@@ -190,7 +238,7 @@ AddPostRenderCallback(ctx, function() {
     var containingElement = document.getElementById(dataContainerId);
     if ($isNull(containingElement)) return;
     if (!isCloudVideo) {
-        RenderMediaPlayer(containingElement, canRenderVideoPreview, fileExtension, mediaSource, videoPlayerId, previewImage);
+        VideoTemplate.RenderMediaPlayer(containingElement, canRenderVideoPreview, fileExtension, mediaSource, videoPlayerId, previewImage);
     }
 });
 _#-->
@@ -201,7 +249,7 @@ if (isCloudVideo) {
 _#-->
             <div id="_#= videoPlayerId =#___cloud" class="video-preview">
                 <img src="_#= previewImage =#_">
-                <div class="mediaPlayerInitialPlayButton"><a href="javascript:;" title="Play" onclick="RenderCloudVideo(this, '_#=dataContainerId=#_', '_#=videoFileUrl=#_', '_#=videoPlayerId=#_');"><span></span></a></div>
+                <div class="btn-play"><a href="javascript:;" title="Play" onclick="VideoTemplate.RenderCloudVideo(this, '_#=dataContainerId=#_', '_#=videoFileUrl=#_', '_#=videoPlayerId=#_');"><span></span></a></div>
             </div>
 <!--#_
 }
@@ -211,6 +259,11 @@ _#-->
 if(!mediaDuration.isEmpty) {
 _#-->
                  - _#= mediaDuration =#_
+<!--#_
+} 
+if(!isCloudVideo) {
+_#-->
+                 - _#= fileExtension.toUpperCase() =#_
 <!--#_
 }
 _#-->
