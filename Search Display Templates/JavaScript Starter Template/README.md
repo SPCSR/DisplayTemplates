@@ -7,7 +7,31 @@ File | Desciption
 __Control_Minimal.js__ | Starter control JavaScript display template.
 __Item_Minimal.js__ | Starter item JavaScript display template.
 
-##Usage / provisioning
+##Template usage
+If you want to make use of the templates, you need to be aware of two things:
+- The item and control template contain a **config** variable. In this variable you have to specify the filename of the template. This is required to register the right template. For the Item template you will also have to specify the managed property mappings:
+
+**Item template config**
+```javascript
+var config = {
+    template: 'item_minimal.js',
+    propertyMappings: { 'Path':null, 'Title':['Title'] }
+};
+```
+
+**Control template config**
+```javascript
+var config = {
+    template: 'control_minimal.js'
+};
+```
+
+- At the bottom of the template there is some required JavaScript code to retrieve your JavaScript file and to register it. Leave this code in place, or adapt it to your needs if you know what you are doing.
+
+###Making changes to the template
+In the template, you find a **render** function. This function can be adapted to your needs.
+
+##Installation and configuration
 ###Manual upload
 When you upload the files to the master page gallery you will have to manually set the metadata for each of the display template files.
 
