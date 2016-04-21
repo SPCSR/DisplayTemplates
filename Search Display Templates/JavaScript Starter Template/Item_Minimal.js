@@ -42,24 +42,35 @@
             // Return the HTML markup
             return htmlMarkup;
         };
+    //get the current script url so you don't need to specify it in every file and on every file change
+    var getScriptUrl = function() {
+        // MDS needs to start on the head
+        // Retrieve all the loaded scripts
+        // Get the last script file (this is the current DT file)
+        var allScripts = document.head.getElementsByTagName("script");        
+        var found = false;
+        var reverseIndex = 0;
+        var scriptUrl;
+        //while is because other scripts are too "fast" and are loaded
+        //so we need to traverse back to the latest DT
+        while(!found) {
+            reverseIndex += 1;
+            scriptUrl = allScripts[allScripts.length - reverseIndex].src;
+            if (scriptUrl.indexOf('/_catalogs/') > 0) {
+                // Remove the query string 
+                if (scriptUrl.indexOf('?') > 0) {
+                    scriptUrl = scriptUrl.split("?")[0];
+                }
+                found = true;
+            }
+        }
+        return scriptUrl;
+    };
 
-    // MDS needs to start on the head
-    // Retrieve all the loaded scripts
-    var allScripts = document.head.getElementsByTagName("script");
-    // Get the last script file (this is the current DT file)
-    var scriptUrl = allScripts[allScripts.length - 1].src;
-    if (scriptUrl.indexOf('/_catalogs/') > 0) {
-	    // Remove the query string 
-	    if (scriptUrl.indexOf('?') > 0) {
-	        scriptUrl = scriptUrl.split("?")[0];
-	    }
-	    // Insert the site collection token
-	    templateUrl = '~sitecollection' + scriptUrl.substr(scriptUrl.indexOf('/_catalogs/'));
-	    templateUrl = decodeURI(templateUrl);
-	    // Register the template to load
-	    register();
-	    if (typeof (RegisterModuleInit) === "function" && typeof(Srch.U.replaceUrlTokens) === "function") {
-	        RegisterModuleInit(Srch.U.replaceUrlTokens(templateUrl), register);
-	    }
-    }
+    var scriptUrl = getScriptUrl();
+    // Insert the site collection token
+    templateUrl = '~sitecollection' + scriptUrl.substr(scriptUrl.indexOf('/_catalogs/'));
+    templateUrl = decodeURI(templateUrl);
+    // Register the template to load
+    register();
 })();
