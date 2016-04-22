@@ -5,7 +5,7 @@
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
 <mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
-<mso:ManagedPropertyMapping msdt:dt="string">'Title':'Title','Preview':'PictureThumbnailURL;PictureURL','VideoFileURL':'UserEncodingURL;ExternalMediaURL;DefaultEncodingURL','MediaDuration','FileExtension','ContentTypeId'</mso:ManagedPropertyMapping>
+<mso:ManagedPropertyMapping msdt:dt="string">'Title':'Title','Preview':'PictureThumbnailURL;PictureURL','VideoFileURL':'UserEncodingURL;ExternalMediaURL;DefaultEncodingURL','MediaDuration','FileExtension','ContentTypeId','SiteTitle'</mso:ManagedPropertyMapping>
 <mso:MasterPageDescription msdt:dt="string">Video item template that can be used to show videos from the Video Portal or SharePoint</mso:MasterPageDescription>
 <mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
 <mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
@@ -24,28 +24,32 @@
         // Add styles that are required for this template
         var styles = (function() {/*
             .video-item {
-                height: 190px;
                 margin-bottom: 20px;
-                position: relative;
                 width: 300px;
             }
-            .video-placeholder {
-                background-color: #000;
+            .video-container {
                 height: 169px;
+                margin-bottom: 5px;
                 position: relative;
                 width: 100%;
             }
-            .video-placeholder .video-loader {
-                position: absolute;
-                left: 45%;
-                top: 45%;
+            .video-placeholder {
+                background-color: #000;
+                height: 100%;
+                position: relative;
+                width: 100%;
             }
+                .video-placeholder .video-loader {
+                    position: absolute;
+                    left: 45%;
+                    top: 45%;
+                }
             .video-preview {
-                height: 169px;
+                height: 100%;
                 left: 0;
                 position: absolute;
                 top: 0;
-                width: 300px;
+                width: 100%;
             }
             .video-preview img {
                 max-width: 100%;
@@ -72,11 +76,7 @@
                     margin-top: 12px;
                     margin-left: 19px;
                 }
-            .video-info {
-                bottom: 0;
-                position: absolute;
-                left: 0;
-            }
+            .video-info {}
             .video-error {
                 background-color: #000;
                 background-color: rgba(0,0,0,0.8);
@@ -200,6 +200,7 @@ var contentTypeId = $getItemValue(ctx, "ContentTypeId");
 var fileExtensionInfo = $getItemValue(ctx, "FileExtension");
 var videoFileUrl = $getItemValue(ctx, "VideoFileURL");
 var preview = $getItemValue(ctx, "Preview");
+var channelTitle = $getItemValue(ctx, "SiteTitle");
 
 // Set preview image
 var previewImage = !preview.isEmpty ? $imgSrcUrl(preview) : SP.Utilities.VersionUtility.getImageUrl("videopreview.png");
@@ -242,23 +243,30 @@ AddPostRenderCallback(ctx, function() {
     }
 });
 _#-->
-        <div class="video-item" id="_#= containerId =#_">
-            <div id="_#= dataContainerId =#_" class="video-placeholder"></div>
+        <div class="video-item">
+            <div class="video-container" id="_#= containerId =#_">
+                <div id="_#= dataContainerId =#_" class="video-placeholder"></div>
 <!--#_
 if (isCloudVideo) {
 _#-->
-            <div id="_#= videoPlayerId =#___cloud" class="video-preview">
-                <img src="_#= previewImage =#_">
-                <div class="btn-play"><a href="javascript:;" title="Play" onclick="VideoTemplate.RenderCloudVideo(this, '_#=dataContainerId=#_', '_#=videoFileUrl=#_', '_#=videoPlayerId=#_');"><span></span></a></div>
-            </div>
+                <div id="_#= videoPlayerId =#___cloud" class="video-preview">
+                    <img src="_#= previewImage =#_">
+                    <div class="btn-play"><a href="javascript:;" title="Play" onclick="VideoTemplate.RenderCloudVideo(this, '_#=dataContainerId=#_', '_#=videoFileUrl=#_', '_#=videoPlayerId=#_');"><span></span></a></div>
+                </div>
 <!--#_
 }
-_#-->            
+_#-->           
+            </div> 
             <div class="video-info">_#= title =#_
 <!--#_
 if(!mediaDuration.isEmpty) {
 _#-->
                  - _#= mediaDuration =#_
+<!--#_
+} 
+if (!channelTitle.isEmpty) {
+_#-->
+                 - _#= channelTitle =#_
 <!--#_
 } 
 if(!isCloudVideo) {

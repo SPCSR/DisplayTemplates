@@ -11,6 +11,7 @@ __Item_Video.js__ | Video item display template.
 ##How to use it
 Download this file and upload it to your master page gallery on the site collection where you want to make use of it. Once the video display template is published, you can configure your Content Search Web Part as follows:
 
+![Item video configuration](http://cdn-eliostruyf.azureedge.net/wp-content/uploads/2016/04/snip_20160422122745-300x174.png)
 
 ##Search Queries
 ###Video portal files
@@ -24,6 +25,7 @@ To retrieve all videos that exist on SharePoint, you can use the following query
 ##Template result
 The output of the template looks like this:
 
+![Video template output](http://cdn-eliostruyf.azureedge.net/wp-content/uploads/2016/04/snip_20160422141117-229x300.png)
 
 If you are displaying videos from SharePoint, it can happen that your browser cannot play the video file. If that happens a message will get displayed.
 
