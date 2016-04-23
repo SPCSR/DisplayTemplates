@@ -42,7 +42,7 @@
 	    Header: '</div>'
 	  },
 	  BaseViewID: 1,
-	  ListTemplateType = 100
+	  ListTemplateType: 100
 	};
 
 	SPClientTemplates.TemplateManager.RegisterTemplateOverrides(override);
