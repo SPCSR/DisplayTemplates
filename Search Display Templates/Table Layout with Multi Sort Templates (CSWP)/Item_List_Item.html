@@ -59,13 +59,13 @@ _#-->
 
                 <span id="_#= property.managedPropertyName.replace(/ /g, '-') =#_">
                     <span style="" class="sortarrow ms-sortarrowup-iconouter" ></span>
-                    <a id="_#= property.managedPropertyName =#_ASC" href="#" title="Ascending" onclick="Srch.U.getRenderTemplateCollection().sortproperty('_#= property.managedPropertyName =#_ASC', $getClientControl(this));return false;">
+                    <a id="_#= property.managedPropertyName =#_ASC" href="#" title="Ascending" onclick="estruyf.Table.Sort.sortProperty('_#= property.managedPropertyName =#_ASC', $getClientControl(this));return false;">
                         <img alt="Ascending" src="/_layouts/15/images/sortaz.gif">
                     </a>
-                    <a id="_#= property.managedPropertyName =#_DES" href="#" title="Descending" onclick="Srch.U.getRenderTemplateCollection().sortproperty('_#= property.managedPropertyName =#_DES', $getClientControl(this));return false;">
+                    <a id="_#= property.managedPropertyName =#_DES" href="#" title="Descending" onclick="estruyf.Table.Sort.sortProperty('_#= property.managedPropertyName =#_DES', $getClientControl(this));return false;">
                         <img alt="Descending" src="/_layouts/15/images/sortza.gif">
                     </a>
-                    <a id="_#= property.managedPropertyName =#_Remove" href="#" title="Remove sort" onclick="Srch.U.getRenderTemplateCollection().removesortproperty('_#= property.managedPropertyName =#_', $getClientControl(this));return false;" style="display:inline-block;height:10px;overflow:hidden;position:relative;width:10px;">
+                    <a id="_#= property.managedPropertyName =#_Remove" href="#" title="Remove sort" onclick="estruyf.Table.Sort.removeSortProperty('_#= property.managedPropertyName =#_', $getClientControl(this));return false;" style="display:inline-block;height:10px;overflow:hidden;position:relative;width:10px;">
                         <img alt="Descending" src="/_layouts/15/images/spcommon.png" style="left:-5px;position: absolute;top:-185px;">
                     </a>
                 </span>

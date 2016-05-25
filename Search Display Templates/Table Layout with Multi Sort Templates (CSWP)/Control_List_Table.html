@@ -15,7 +15,8 @@
 
 <body>
     <script>
-        Type.registerNamespace('estruyf.Table');
+        estruyf = window.estruyf || {};
+        estruyf.Table = estruyf.Table || {};
 
         /*********************************
          * Show property sorting options *
@@ -83,8 +84,6 @@
                 },
                 // Highlight the properties that are currently sorted
                 setCurrentSorting: function (tableId) {
-                    console.log(tableContext);
-                    console.log(tableContext[tableId]);
                     var queryState = tableContext[tableId].currentCtx.DataProvider.get_currentQueryState().o;
                     if (queryState !== null && queryState.length > 0) {
                         for (var i = 0; i < queryState.length; i++) {
