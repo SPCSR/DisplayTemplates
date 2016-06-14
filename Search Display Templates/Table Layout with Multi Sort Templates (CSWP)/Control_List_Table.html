@@ -294,9 +294,18 @@
                                 calloutOptions.content = "";
                                 if(previewURL && previewURL.length > 0) {
                                     calloutOptions.contentWidth = 400;
-                                    calloutOptions.content = String.format('<div style="height:400px;margin-top:11px"><iframe src="{0}" scrolling="no" frameborder="0px" style="width:100%;height:100%"></iframe></div>', elm.getAttribute('preview'));
+                                    calloutOptions.content = String.format('<div style="height:400px;margin-top:11px;margin-bottom:36px"><iframe src="{0}" scrolling="no" frameborder="0px" style="width:100%;height:100%"></iframe></div>', elm.getAttribute('preview'));
                                 }
-                                calloutOptions.content += String.format('<a href="{0}&PageType=4" onclick="estruyf.Table.Callout.redirectToPropertiesUrl(this, \'{1}\');return false;" title="View properties">View properties</a><br /><a href="{0}&PageType=6" onclick="estruyf.Table.Callout.redirectToPropertiesUrl(this, \'{1}\');return false;" title="Edit properties">Edit properties</a>', elm.getAttribute('rel'), elm.getAttribute('path'));                                                                
+
+                                calloutOptions.content += String.format('<div class="js-callout-footerArea" style="margin:25px 0 -25px 0;margin-top: -14px;margin-bottom: -25px;position: absolute;margin-left: -20px;width: 360px;">' +
+                                                                            '<span class="js-callout-action">' +
+                                                                                '<a href="{0}&PageType=4" onclick="estruyf.Table.Callout.redirectToPropertiesUrl(this, \'{1}\');return false;" title="View properties" class="ms-calloutLink ms-calloutLinkEnabled">View properties</a>' +
+                                                                            '</span>' +
+                                                                            '<span class="js-callout-action">' +
+                                                                                '<a href="{0}&PageType=6" onclick="estruyf.Table.Callout.redirectToPropertiesUrl(this, \'{1}\');return false;" title="Edit properties" class="ms-calloutLink ms-calloutLinkEnabled">Edit properties</a>' +
+                                                                            '</span>' +
+                                                                        '</div>', elm.getAttribute('rel'), elm.getAttribute('path'));
+
                                 calloutOptions.title = elm.getAttribute('ref');
                                 var displayedPopup = CalloutManager.createNew(calloutOptions);
                             }
