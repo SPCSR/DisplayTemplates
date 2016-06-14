@@ -290,9 +290,14 @@
                                 calloutOptions.ID = 'notificationcallout-' + i;
                                 calloutOptions.launchPoint = elm;
                                 calloutOptions.beakOrientation = 'leftRight';
-                                calloutOptions.content = String.format('<a href="{0}&PageType=4" onclick="estruyf.Table.Callout.redirectToPropertiesUrl(this, \'{1}\');return false;" title="View properties">View properties</a><br /><a href="{0}&PageType=6" onclick="estruyf.Table.Callout.redirectToPropertiesUrl(this, \'{1}\');return false;" title="Edit properties">Edit properties</a>', elm.getAttribute('rel'), elm.getAttribute('path'));
+                                var previewURL = elm.getAttribute('preview');
+                                calloutOptions.content = "";
+                                if(previewURL && previewURL.length > 0) {
+                                    calloutOptions.contentWidth = 400;
+                                    calloutOptions.content = String.format('<div style="height:400px;margin-top:11px"><iframe src="{0}" scrolling="no" frameborder="0px" style="width:100%;height:100%"></iframe></div>', elm.getAttribute('preview'));
+                                }
+                                calloutOptions.content += String.format('<a href="{0}&PageType=4" onclick="estruyf.Table.Callout.redirectToPropertiesUrl(this, \'{1}\');return false;" title="View properties">View properties</a><br /><a href="{0}&PageType=6" onclick="estruyf.Table.Callout.redirectToPropertiesUrl(this, \'{1}\');return false;" title="Edit properties">Edit properties</a>', elm.getAttribute('rel'), elm.getAttribute('path'));                                                                
                                 calloutOptions.title = elm.getAttribute('ref');
-
                                 var displayedPopup = CalloutManager.createNew(calloutOptions);
                             }
                         }

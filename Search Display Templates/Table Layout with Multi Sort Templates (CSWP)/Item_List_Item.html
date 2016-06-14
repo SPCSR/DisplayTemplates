@@ -5,7 +5,7 @@
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
 <mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
-<mso:ManagedPropertyMapping msdt:dt="string">ListID','ListItemID','ContentTypeId','Link URL':'Path','Property 1':'Title','Property 2':'','Property 3':'','Property 4:'','Property 5':'','Property 6':'','Property 7':'','Property 8':'','Property 9':'','Property 10':'','FileExtension','SecondaryFileExtension'</mso:ManagedPropertyMapping>
+<mso:ManagedPropertyMapping msdt:dt="string">ListID','ListItemID','ContentTypeId','Link URL':'Path','Property 1':'Title','Property 2':'','Property 3':'','Property 4:'','Property 5':'','Property 6':'','Property 7':'','Property 8':'','Property 9':'','Property 10':'','FileExtension','SecondaryFileExtension','ServerRedirectedEmbedURL'</mso:ManagedPropertyMapping>
 <mso:MasterPageDescription msdt:dt="string">This is the item row template, use this template in combination with the List Table Control template.</mso:MasterPageDescription>
 <mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
 <mso:TargetControlType msdt:dt="string">;#Content Web Parts;#</mso:TargetControlType>
@@ -24,6 +24,7 @@ var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_tableitems_
 
 var linkURL = $getItemValue(ctx, "Link URL");
 linkURL.overrideValueRenderer($urlHtmlEncode);
+var previewURL = $getItemValue(ctx, "ServerRedirectedEmbedURL");
 var iconURL = Srch.ContentBySearch.getIconSourceFromItem(ctx.CurrentItem);
 
 var listID = $getItemValue(ctx, 'ListID');
@@ -112,7 +113,7 @@ _#-->
                             var viewPropUrl = String.format('/_layouts/15/listform.aspx?ListId={0}&ID={1}&ContentTypeID={2}&Source={3}', listID, listItemID, ContentTypeId, window.location.href.split('#')[0]);
             _#-->
                             &nbsp;&nbsp;
-                            <span title="Open Menu" class="NotificationDiv ms-ellipsis-a" rel="_#= viewPropUrl =#_" ref="_#= property =#_" path="_#= linkURL =#_" style="cursor: pointer; margin-top: 3px; float: right;">
+                            <span title="Open Menu" class="NotificationDiv ms-ellipsis-a" rel="_#= viewPropUrl =#_" ref="_#= property =#_" path="_#= linkURL =#_" preview="_#= previewURL =#_"  style="cursor: pointer; margin-top: 3px; float: right;">
                                 <img alt="Open Menu" src="/_layouts/15/images/spcommon.png" class="ms-ellipsis-icon">
                             </span>
             <!--#_
