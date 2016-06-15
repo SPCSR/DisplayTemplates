@@ -329,10 +329,12 @@
                                 calloutOptions.beakOrientation = 'leftRight';
                                 var previewURL = elm.getAttribute('preview');
                                 calloutOptions.content = "";
+                                calloutOptions.contentWidth = 400;
                                 if(previewURL && previewURL.length > 0) {
-                                    previewURL = previewURL.replace('WopiFrame.aspx','WopiFrame2.aspx');                  
-                                    calloutOptions.contentWidth = 400;
+                                    previewURL = previewURL.replace('WopiFrame.aspx','WopiFrame2.aspx');                                                      
                                     calloutOptions.content = String.format('<div class="table-hover-wopi"><iframe src="{0}" scrolling="no" frameborder="0px" style="width:100%;height:100%"></iframe></div>', previewURL);
+                                } else {
+                                    calloutOptions.content = '<div style="margin-bottom:36px"></div>';
                                 }
 
                                 calloutOptions.content += String.format('<div class="js-callout-footerArea table-hover-footer">' +
