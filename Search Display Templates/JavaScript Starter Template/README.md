@@ -70,6 +70,7 @@ You can also provision the templates via a sandboxed solution module.
       <Property Name="TargetControlType" Value=";#Content Web Parts;#" />
       <Property Name="DisplayTemplateLevel" Value="Control" />
       <Property Name="HtmlDesignAssociated" Value="FALSE" />
+      <Property Name="TemplateHidden" Value="FALSE" />
       <Property Name="ContentType" Value="Display Template Code" />
     </File>
     <File Url="Item_Minimal.js" Level="Published" ReplaceContent="true" Type="GhostableInLibrary">
@@ -80,6 +81,7 @@ You can also provision the templates via a sandboxed solution module.
       <Property Name="DisplayTemplateLevel" Value="Item" />
       <Property Name="ManagedPropertyMapping" Value="'Path','Title':'Title'" />
       <Property Name="HtmlDesignAssociated" Value="FALSE" />
+      <Property Name="TemplateHidden" Value="FALSE" />
       <Property Name="ContentType" Value="Display Template Code" />
     </File>
   </Module>
