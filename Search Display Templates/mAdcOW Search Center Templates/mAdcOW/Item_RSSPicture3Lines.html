@@ -53,7 +53,11 @@ var line2 =  Srch.U.getSingleHHXMLNodeValue(doc,"description");
 var line3 = Srch.U.getSingleHHXMLNodeValue(doc,"pubDate");
 
 var linkURL = Srch.U.getSingleHHXMLNodeValue(doc,"description");
-var pictureURL = doc.getElementsByTagName("mediathumbnail")[0].attributes["url"].value;
+var pictureURL = "";
+var mediaThumbnail = doc.getElementsByTagName("mediathumbnail");
+if( mediaThumbnail != null && mediaThumbnail.length > 0 ) {
+    pictureURL = mediaThumbnail[0].attributes["url"].value;
+}
 
 var imageValue = new Srch.ValueInfo(ctx.CurrentItem.Path, "PictureURL");
 imageValue.value = pictureURL
