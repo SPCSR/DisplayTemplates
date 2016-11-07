@@ -52,7 +52,7 @@ var line1 = $getItemValue(ctx, "Line 1");
 var line2 =  Srch.U.getSingleHHXMLNodeValue(doc,"description");
 var line3 = Srch.U.getSingleHHXMLNodeValue(doc,"pubDate");
 
-var linkURL = Srch.U.getSingleHHXMLNodeValue(doc,"description");
+var linkURL = Srch.U.getSingleHHXMLNodeValue(doc,"link");
 var pictureURL = "";
 var mediaThumbnail = doc.getElementsByTagName("mediathumbnail");
 if( mediaThumbnail != null && mediaThumbnail.length > 0 ) {
