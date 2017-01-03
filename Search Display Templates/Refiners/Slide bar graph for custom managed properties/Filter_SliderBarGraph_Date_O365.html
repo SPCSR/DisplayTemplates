@@ -1,0 +1,135 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>Slider with bar graph (Date)</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:CompatibleManagedProperties msdt:dt="string"></mso:CompatibleManagedProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:CompatibleSearchDataTypes msdt:dt="string">;#DateTime;#</mso:CompatibleSearchDataTypes>
+<mso:MasterPageDescription msdt:dt="string"></mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106604</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Refinement;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+<body>
+    <div id="DateExponentialSliderRefinementItem">
+
+<!--#_
+      var sliderMin = 0;
+      var sliderMax = 6;
+      var sliderType = "dateRangeExponential";
+
+      var maxPixelWidth = 160;
+      var histogramHeight = 60;
+
+      var hasControl = true;
+      if($isNull(ctx.RefinementControl) || $isNull(ctx.ClientControl)) hasControl = false;
+      var hasNoListData = ($isEmptyArray(ctx.ListData));
+
+      if(hasControl)
+      { 
+          var rc = ctx.RefinementControl; rc.MinValue = sliderMin; rc.MaxValue = sliderMax; rc.SliderType = sliderType; 
+          var idPrefix = $htmlEncode(rc.containerId);
+          var idSliderDeferredLoadContainer = idPrefix + "_SliderLoadContainer";
+
+        if(hasNoListData)
+        {
+_#-->
+          <div id="EmptyContainer"></div>
+<!--#_
+        }
+        else
+        {
+          var isExpanded = Srch.Refinement.getExpanded(ctx.RefinementControl.propertyName);
+          var displayStyle = (isExpanded == "true"? "" : "none");
+          var iconClass = (isExpanded == "true"? "ms-ref-uparrow" : "ms-ref-downarrow");
+          var refinerCatTitle = Srch.Refinement.getRefinementTitle(rc);
+_#-->
+          <div id='Container'>
+                _#= Srch.U.collapsibleRefinerTitle(ctx.RefinementControl.propertyName, ctx.ClientControl.get_id(), refinerCatTitle, iconClass) =#_
+
+                <div id="_#= idSliderDeferredLoadContainer =#_">
+                </div>
+
+          </div>
+
+<!--#_
+          function trickDateProperty (prop) {
+            var knownDateTimeMPs = ["LastModifiedTime", "Created", "DiscoveredTime", "DisplayDate", "EndDate", "ExpirationTimes", "ExtractedDate", "ImageDateCreated", "processingtime", "StartDate", "StartDateInvariant", "EndDateInvariant"];
+            if (knownDateTimeMPs.indexOf(prop) === -1) {
+              return knownDateTimeMPs[0];
+            }
+            return prop;
+          }
+
+          var sliderInitCallback = function() {
+
+              var sliderContainerElement = $get(idSliderDeferredLoadContainer);
+
+              if($isNull(sliderContainerElement)) return;
+ 
+              var propertyName = ctx.RefinementControl.propertyName;
+              // Let the refiner think it is a datetime field, needed for custom managed properties
+              ctx.RefinementControl.propertyName = trickDateProperty(propertyName);
+
+              ctx.BucketedFilterData = AjaxControlToolkit.SliderRefinementControl.GetDefaultBuckets(ctx);
+              
+              // Reset the property name
+              ctx.RefinementControl.propertyName = propertyName;
+
+              ctx.FilterLabelMarkup = AjaxControlToolkit.SliderRefinementControl.GetDefaultFilterLabelMarkupAndOptions(
+                ctx,
+                idPrefix,
+                ctx.BucketedFilterData);
+
+              ctx.SliderMarkup = AjaxControlToolkit.SliderRefinementControl.GetDefaultSliderMarkupAndOptions(
+                ctx,
+                idPrefix,
+                sliderMin,
+                sliderMax,
+                maxPixelWidth,
+                ctx.BucketedFilterData);
+
+              ctx.HistogramMarkup = AjaxControlToolkit.SliderRefinementControl.GetDefaultHistogramMarkupAndOptions(
+                ctx,
+                idPrefix, 
+                histogramHeight,
+                maxPixelWidth,
+                ctx.BucketedFilterData);
+
+              var ms_outSliderHtml = [];
+ms_outSliderHtml.push(''
+,'                <span class="ms-ref-unselSec" style="display: ', displayStyle ,';">'
+,'                    ', ctx.HistogramMarkup ,''
+,''
+,'                    ', ctx.SliderMarkup ,''
+,'                </span>'
+,''
+,'                ', ctx.FilterLabelMarkup ,''
+);
+               sliderContainerElement.innerHTML = ms_outSliderHtml.join('');
+
+               AjaxControlToolkit.SliderRefinementControl.OnPostRenderInitSliderForElement(ctx);
+
+               ctx.BucketedFilterData = null;
+               ctx.FilterLabelOptions = null;
+               ctx.SliderOptions = null;
+               ctx.HistogramOptions = null;
+               ctx.FilterLabelMarkup = null;
+               ctx.SliderMarkup = null;
+               ctx.HistogramMarkup = null;
+          };
+
+          $addRenderContextCallback(ctx, "OnPostRender", function(){
+            EnsureScriptFunc('ajaxtoolkit.js', 'AjaxControlToolkit.SliderRefinementControl', sliderInitCallback);
+          });
+        }
+      }
+_#-->
+
+    </div>
+</body>
+</html>
