@@ -6,6 +6,7 @@ This is the slider with bar graph refiner display template with a fix to be able
 File | Desciption
 --- | ---
 __Filter_SliderBarGraph_Date.html__ | Upload this file to the master page gallery to be able to use it as a refiner.
+__Filter_SliderBarGraph_Date_O365.html__ | Temporary fix for date slider template in Office 365.
 
 Related blog post
 -------
