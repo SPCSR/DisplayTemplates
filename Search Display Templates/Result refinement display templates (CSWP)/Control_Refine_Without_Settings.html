@@ -14,9 +14,8 @@
 
 <body>
     <script>
-        Type.registerNamespace('search.refine');
-
-        search.refine = function() {
+        searchRefine = window.searchRefine || {};
+        searchRefine = (function() {
             var currentCtx;
             var managedProperty = 'FileExtension';
             var operator = 'or';
@@ -88,7 +87,7 @@
                 all: all,
                 display: display
             };
-        }();
+        })();
     </script>
 
     <div id="Control_List">
@@ -100,9 +99,9 @@ if (!$isNull(ctx.ClientControl) &&
     return "";
 }
 
-search.refine.init(ctx);
+searchRefine.init(ctx);
 
-var displayStyle = search.refine.display() === true ? "" : "none";
+var displayStyle = searchRefine.display() === true ? "" : "none";
 
 ctx.ListDataJSONGroupsKey = "ResultTables";
 var $noResults = Srch.ContentBySearch.getControlTemplateEncodedNoResultsMessage(ctx.ClientControl);
@@ -119,9 +118,9 @@ var ListRenderRenderWrapper = function(itemRenderResult, inCtx, tpl)
 }
 ctx['ItemRenderWrapper'] = ListRenderRenderWrapper;
 _#-->
-        <a href="#" onclick="search.refine.click($getClientControl(this), 'docx');return false;" title="Refine on 'docx'">Refine on 'docx'</a> - 
-        <a href="#" onclick="search.refine.click($getClientControl(this), 'pdf');return false;" title="Refine on 'pdf'">Refine on 'pdf'</a><span style='display:_#= $htmlEncode(displayStyle) =#_'> - </span>
-        <a href="#" style='display:_#= $htmlEncode(displayStyle) =#_' onclick="search.refine.all($getClientControl(this));return false;" title="Refine results">All results</a>
+        <a href="#" onclick="searchRefine.click($getClientControl(this), 'docx');return false;" title="Refine on 'docx'">Refine on 'docx'</a> - 
+        <a href="#" onclick="searchRefine.click($getClientControl(this), 'pdf');return false;" title="Refine on 'pdf'">Refine on 'pdf'</a><span style='display:_#= $htmlEncode(displayStyle) =#_'> - </span>
+        <a href="#" style='display:_#= $htmlEncode(displayStyle) =#_' onclick="searchRefine.all($getClientControl(this));return false;" title="Refine results">All results</a>
         <ul class="cbs-List">
 
 <!--#_
