@@ -103,6 +103,10 @@ _#-->
 <!--#_
 var cardContainer;
 AddPostRenderCallback(ctx, function() {
+	if(!jQuery) {
+		alert("You need to include jQuery on the page for the Delve clone to work");
+		return;
+	}
 	cardContainer = jQuery('#cardcontainer');
 	cardContainer.masonry({
 		  gutter: 10,
