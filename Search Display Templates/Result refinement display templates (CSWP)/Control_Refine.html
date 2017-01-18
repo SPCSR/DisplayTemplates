@@ -1,6 +1,6 @@
 <html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
 <head>
-<title>List Refine</title>
+<title>List Refine (Settings)</title>
 
 <!--[if gte mso 9]><xml>
 <mso:CustomDocumentProperties>
@@ -14,9 +14,8 @@
 
 <body>
     <script>
-        Type.registerNamespace('search.refine');
-
-        search.refine = function() {
+        searchRefine = window.searchRefine || {};
+        searchRefine = function() {
             var currentCtx;
             var managedProperty;
             var operator = 'or';
@@ -129,9 +128,9 @@ if (!$isNull(ctx.ClientControl) &&
     return "";
 }
 
-search.refine.init(ctx);
+searchRefine.init(ctx);
 
-var displayStyle = search.refine.display() === true ? "" : "none";
+var displayStyle = searchRefine.display() === true ? "" : "none";
 
 ctx.ListDataJSONGroupsKey = "ResultTables";
 var $noResults = Srch.ContentBySearch.getControlTemplateEncodedNoResultsMessage(ctx.ClientControl);
@@ -149,13 +148,13 @@ var ListRenderRenderWrapper = function(itemRenderResult, inCtx, tpl)
 ctx['ItemRenderWrapper'] = ListRenderRenderWrapper;
 
 // Retrieve the filter values set in the Item Display Template
-var filterValues = search.refine.settings(ctx);
+var filterValues = searchRefine.settings(ctx);
 // Show a link for each filter value
 var total = filterValues.length;
 for (var i = 0; i < total; i++) {
     var val = filterValues[i];
 _#-->
-        <a href="#" onclick="search.refine.click($getClientControl(this), '_#= val =#_');return false;" title="Refine on '_#= val =#_'">Refine on '_#= val =#_'</a>
+        <a href="#" onclick="searchRefine.click($getClientControl(this), '_#= val =#_');return false;" title="Refine on '_#= val =#_'">Refine on '_#= val =#_'</a>
 <!--#_
     if (i < (total - 1)) {
 _#-->
@@ -165,7 +164,7 @@ _#-->
 }
 _#-->
         <span style='display:_#= $htmlEncode(displayStyle) =#_'> - </span>
-        <a href="#" style='display:_#= $htmlEncode(displayStyle) =#_' onclick="search.refine.all($getClientControl(this));return false;" title="Refine results">All results</a>
+        <a href="#" style='display:_#= $htmlEncode(displayStyle) =#_' onclick="searchRefine.all($getClientControl(this));return false;" title="Refine results">All results</a>
         <ul class="cbs-List">
 
 <!--#_
