@@ -16,7 +16,8 @@
 <body>
     <script>
         $includeLanguageScript(this.url, "~sitecollection/_catalogs/masterpage/Display Templates/Language Files/{Locale}/CustomStrings.js");
-		$includeScript(this.url, "~sitecollection/_catalogs/masterpage/Display Templates/mAdcOWGraph/masonry.pkgd.min.js");
+	$includeScript(this.url, "https://code.jquery.com/jquery-1.12.4.min.js");
+	$includeScript(this.url, "~sitecollection/_catalogs/masterpage/Display Templates/mAdcOWGraph/masonry.pkgd.min.js");
     </script>
     <div id="Control_List">
 <!--#_ 
@@ -60,11 +61,6 @@ mAdcOW.Search.Graph = function () {
 		}
 	}
 }()
-
-if(!jQuery) {
-	alert("You need to include jQuery on the page for the Delve clone to work");
-	return;
-}
 
 mAdcOW.Search.Graph.setProvider(ctx.DataProvider);
 
