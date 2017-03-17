@@ -2,11 +2,11 @@
 
 This display template is developed to render the hierarchy of the given term set.
 
-![Output example](/assets/refiner-template.png)
+![Output example](assets/refiner-template.png)
 
 The term set looks as follows:
 
-![Term set](/assets/termset.png)
+![Term set](assets/termset.png)
 
 ## File(s)
 
