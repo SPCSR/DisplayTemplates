@@ -1,10 +1,10 @@
 # Managed metadata refiner
 
-This display template is developed to render the hierarchy of the given term set.
+These display templates are developed to render the hierarchy of the specified term set.
 
 ![Output example](assets/refiner-template.png)
 
-The term set looks as follows:
+As you can see in the next screenshot, it renders the same hierarchy:
 
 ![Term set](assets/termset.png)
 
@@ -12,13 +12,15 @@ The term set looks as follows:
 
 File | Description
 --- | ---
-__Filter_ManagedMetadata_Label.html__ | This is the managed metadata refiner display template. **Important**: this template is created to be used in combination with the label value of the term, not the taxId.
+__Filter_ManagedMetadata_Label.html__ | This is the label version managed metadata refiner display template. **Important**: this template is created to be used in combination with the label value of the term, not the taxId.
+__Filter_ManagedMetadata_TaxID.html__ | This is the taxid version managed metadata refiner display template. **Important**: this template is created to be used in combination with the TaxID value of the term, not the label.
 __filter_mm.css___ | This is the required css file for styling the managed metadata hierarchy.
 
 ## Configuration
 
 If you want to make use of these templates, you will have to go through the following configuration steps:
 
+- Be sure which template you are going to pick, the term label version or taxid version
 - Open the HTML display template and find the CSS reference: `$includeCSS('this.url', '~sitecollection/_catalogs/masterpage/MMRefiner/filter_mm.css');`
 - Validate the CSS reference, if the location is different on your environment, update it to your location
 - In the file you will find the following variables that need some configuration:
