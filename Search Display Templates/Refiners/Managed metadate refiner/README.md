@@ -39,7 +39,7 @@ termSetId = '<Term-Set-ID>',
 
 - **termSetId**: for this property, you need to fill in the ID of the term set. You can find it at the bottom of the term set page:
 
-![Term set ID](/assets/termsetId.png)
+![Term set ID](assets/termsetId.png)
 
 - Once you did these configuration steps, you can upload the file to your master page gallery and use it.
 
@@ -59,4 +59,4 @@ By default the templates renders the complete term set hierarchy. If you want to
 
 This results in:
 
-![Term set ID](/assets/show-refiners.png)
+![Term set ID](assets/show-refiners.png)
