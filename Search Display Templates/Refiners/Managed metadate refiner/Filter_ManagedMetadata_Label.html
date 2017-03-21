@@ -143,7 +143,7 @@
                             // Set the method for the refiner
                             var method = ref.selected ? 'removeRefinementFiltersJSON' : 'addRefinementFiltersJSON';
                             var refObj = {};
-                            refObj[ref.refinerName] = [ref.value];
+                            refObj[ref.refinerName] = [ref.token];
                             var onclickFn = String.format("$getClientControl(this).{0}('{1}');", method, $scriptEncode(JSON.stringify(refObj)));
                             var markup = String.format(refinerMarkup, onclickFn, currentTerm.name);                          
                             htmlOutput.push(markup);
@@ -200,9 +200,9 @@
     var refs = [];
     if (hasControl && !$isNull(listData)) {
         for(var i in listData) {
-            var selected = ctx.ClientControl.hasAllRefinementFilters(ctx.RefinementControl.propertyName, [listData[i].RefinementValue]);
+            var selected = ctx.ClientControl.hasAllRefinementFilters(ctx.RefinementControl.propertyName, [listData[i].RefinementToken]);
             showAll = selected ? true : showAll;
-            refs.push({ name: listData[i].RefinementName, value: listData[i].RefinementValue, refinerName: listData[i].RefinerName, selected: selected });
+            refs.push({ name: listData[i].RefinementName, value: listData[i].RefinementValue, token: listData[i].RefinementToken, refinerName: listData[i].RefinerName, selected: selected });
         }
     }
     refiner.mm.label.push(refs);
