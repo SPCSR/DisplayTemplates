@@ -1,0 +1,270 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>Managed Metadata Refinement (TaxId)</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:CompatibleManagedProperties msdt:dt="string"></mso:CompatibleManagedProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:CompatibleSearchDataTypes msdt:dt="string"></mso:CompatibleSearchDataTypes>
+<mso:MasterPageDescription msdt:dt="string"></mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106604</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#Refinement;#</mso:TargetControlType>
+<mso:HtmlDesignAssociated msdt:dt="string">1</mso:HtmlDesignAssociated>
+</mso:CustomDocumentProperties></xml><![endif]-->
+</head>
+<body>
+    <script>
+        $includeCSS('this.url', '~sitecollection/_catalogs/masterpage/1.MMRefiner/filter_mm.css');
+        
+        Type.registerNamespace('refiner.mm.taxid')
+        
+        refiner.mm.taxid = (function () {            
+            var availableRefs = [],
+                termStoreName = '<Term-Store-Name-OPTIONAL>',
+                termSetId = '<Term-Set-ID>',
+                containerId = '',
+                refinerMarkup = '<a id="FilterLink" onclick="{0}" href="javascript:;" title="{1}" class="{2}">' +
+                                    '<div id="RefinementName">{1}</div>' + 
+                                '</a>',
+                showClassName = 'show';
+            
+            var setContainerId = function (id) {
+                    containerId = id;
+                },
+                push = function (refs) {
+                    availableRefs = refs;
+                },
+                loadTaxonomyDefinition = function () {
+                    // Current Context
+                    var context = SP.ClientContext.get_current();
+                    // Current Taxonomy Session
+                    var taxSession = SP.Taxonomy.TaxonomySession.getTaxonomySession(context);
+                    
+                    // Get all term stores
+                    // var termStores = taxSession.get_termStores();
+                    // Name of the Term Store from which to get the Terms.
+                    // var termStore = termStores.getByName(termStoreName);
+
+                    // Get the default term store
+                    var termStore = taxSession.getDefaultKeywordsTermStore();
+
+                    // GUID of Term Set from which to get the Terms.
+                    var termSet = termStore.getTermSet(termSetId);
+                    var terms = termSet.getAllTerms();
+                    context.load(terms);
+                    context.executeQueryAsync(function () {
+                        var termListArray = [];
+                        var termsEnumerator = terms.getEnumerator();
+            
+                        // Retrieve all all terms
+                        var i = 0;
+                        while (termsEnumerator.moveNext()) {
+                            var currentTerm = termsEnumerator.get_current();
+                            var paths = currentTerm.get_pathOfTerm().split(';');
+                            var parentItem = '';
+                            if (paths.length > 1) {
+                                parentItem = paths[paths.length - 2];
+                            }
+                            
+                            termListArray.push({
+                                id: i++,
+                                name: currentTerm.get_name(), 
+                                value: currentTerm.get_id().toString(), 
+                                path: currentTerm.get_pathOfTerm(),
+                                parent: parentItem,
+                                children: null
+                            });
+                        }
+                        if (termListArray.length > 0) {
+                            // Sort terms
+                            termListArray = termListArray.sort(function(a, b){
+                                if(a.path < b.path) return -1;
+                                if(a.path > b.path) return 1;
+                                return 0;
+                            });
+                            // Render the list
+                            buildHierarchy(termListArray);
+                        }
+                    }, function (sender, args) {
+                        console.log(args.get_message());
+                    });
+                },
+                buildHierarchy = function (allTerms) {
+                    var htmlOutput = [],
+                        map = {}, 
+                        currentTerm, 
+                        roots = [];
+                        
+                    // Build a hierarchy of the retrieved items
+                    for (var i = 0; i < allTerms.length; i++) {
+                        currentTerm = allTerms[i];
+                        currentTerm.refiner = getRefiner(currentTerm); 
+                        currentTerm.containsRefiners = false;                           
+                        currentTerm.children = [];
+                        if (typeof map[currentTerm.parent] === "undefined") {
+                            // use map to look-up the parents
+                            map[currentTerm.parent] = i - 1;
+                        }
+                        if (currentTerm.parent !== '') {
+                            allTerms[map[currentTerm.parent]].children.push(currentTerm);
+                            if (!$isNull(currentTerm.refiner)) {
+                                allTerms[map[currentTerm.parent]].containsRefiners = true;
+                                // Check if parent its parent is also set to true
+                                var parentTerm = allTerms[map[currentTerm.parent]];
+                                while (parentTerm !== null) {
+                                    if (parentTerm.parent !== null && parentTerm.parent !== '') {
+                                        allTerms[map[parentTerm.parent]].containsRefiners = true;
+                                        parentTerm = allTerms[map[parentTerm.parent]];
+                                    } else {
+                                        break;
+                                    }
+                                }
+                            }
+                        } else {
+                            roots.push(currentTerm);
+                        }
+                    }
+                    
+                    // Once the hierarchy is built, we can start the visualization
+                    htmlOutput = getOutput(htmlOutput, roots);
+                    render(htmlOutput);
+                },
+                getOutput = function (htmlOutput, roots) {
+                    for (var i = 0; i < roots.length; i++) {
+                        var currentTerm = roots[i];
+                        // Check if there is a refiner for the retrieved term
+                        var ref = currentTerm.refiner;
+                        // Check if current term contains refinable children
+                        var showClass = !$isNull(ref) || currentTerm.containsRefiners  ? showClassName : '';
+                        htmlOutput.push('<div class="term ' + showClass + '">');
+                        if (!$isNull(ref)) {
+                            // Set the method for the refiner
+                            var method = ref.selected ? 'removeRefinementFiltersJSON' : 'updateRefinersJSON';
+                            var refObj = {};
+                            refObj[ref.refinerName] = [ref.value];
+                            var onclickFn = String.format("$getClientControl(this).{0}('{1}');", method, $scriptEncode(JSON.stringify(refObj)));
+                            var markup = String.format(refinerMarkup, onclickFn, currentTerm.name, ref.selected ? "selected" : "");                          
+                            htmlOutput.push(markup);
+                        } else {
+                            htmlOutput.push(currentTerm.name);
+                        }
+                        
+                        // Check if there are children before closing the div
+                        if (!$isNull(currentTerm.children)) {
+                            if (currentTerm.children.length > 0) {
+                                getOutput(htmlOutput, currentTerm.children);
+                            }
+                        }
+                        
+                        htmlOutput.push('</div>');
+                    }
+                    return htmlOutput;
+                },
+                render = function (markup) {
+                    // Get container
+                    var elm = document.getElementById(containerId);
+                    if (!$isNull(elm)) {
+                        elm.innerHTML += markup.join('');
+                    } 
+                },
+                getRefiner = function (term) {
+                    var total = availableRefs.length;
+                    var found = null;
+                    for (var i = 0; i < total; i++) {
+                        var ref = availableRefs[i];
+                        if (ref.value.indexOf(term.value) > 0) {
+                            // check for the GPP value token
+                            if (ref.value.indexOf('GPP') >= 0) {
+                                return ref;
+                            }
+                            found = ref;
+                        }
+                    }
+                    return found;
+                };
+            
+            return {
+                push: push,
+                loadTaxonomyDefinition: loadTaxonomyDefinition,
+                setContainerId: setContainerId
+            }
+        })();
+    </script>
+    
+    <div id="4">
+<!--#_
+    var showAll = false;
+    var listData = ctx.ListData;
+    var hasControl = true;
+    
+    if ($isNull(ctx.RefinementControl) || $isNull(ctx.ClientControl)) hasControl = false;
+
+    // Get all the available refiners
+    var refs = [];
+    if (hasControl && !$isNull(listData)) {
+        for(var i in listData) {
+            if (listData[i].RefinementValue.indexOf('GTSet') !== 0 &&
+                listData[i].RefinementValue.indexOf('L0') !== 0) {
+                var selected = ctx.ClientControl.hasAllRefinementFilters(ctx.RefinementControl.propertyName, [listData[i].RefinementValue]);
+                showAll = selected ? true : showAll;
+                refs.push({ name: listData[i].RefinementName, value: listData[i].RefinementValue, refinerName: listData[i].RefinerName, selected: selected });
+            }
+        }
+    }
+    refiner.mm.taxid.push(refs);
+    
+    if (hasControl) {
+        if($isNull(refs) || $isEmptyArray(refs)) {
+_#-->
+            <div id="EmptyContainer"></div>
+<!--#_ 
+        } else {
+            var isExpanded = Srch.Refinement.getExpanded(ctx.RefinementControl.propertyName);
+            var iconClass = (isExpanded == "true"? "ms-ref-uparrow" : "ms-ref-downarrow");
+            var displayStyle = (isExpanded == "true"? "" : "none");
+            var refinerCatTitle = Srch.Refinement.getRefinementTitle(ctx.RefinementControl);
+            
+            var refinersAll = {};
+            refinersAll[ctx.RefinementControl.propertyName] = null;
+            refAllSer = $scriptEncode(Sys.Serialization.JavaScriptSerializer.serialize(refinersAll));
+
+            var containerId = ctx.ClientControl.get_nextUniqueId();
+            refiner.mm.taxid.setContainerId(containerId);
+_#-->
+            <div id="Container">
+                _#= Srch.U.collapsibleRefinerTitle(ctx.RefinementControl.propertyName, ctx.ClientControl.get_id(), refinerCatTitle, iconClass) =#_ 
+                <div id='_#= containerId =#_' class="ms-ref-unselSec" style='display:_#= $htmlEncode(displayStyle) =#_'>
+<!--#_
+                if (showAll) {
+_#-->               
+                <a href="javascript:{}" onclick="$getClientControl(this).updateRefinersJSON('_#= refAllSer =#_');">Show all</a>
+<!--#_
+                }
+_#--> 
+                </div>
+            </div>
+<!--#_
+            // Check if the taxonomy JS is loaded
+            var taxonomySodLoaded = false;
+            if (typeof(_v_dictSod) !== 'undefined' && _v_dictSod['sp.taxonomy.js'] == null) {
+                RegisterSod('sp.taxonomy.js', '/_layouts/15/sp.taxonomy.js');
+                RegisterSodDep('sp.taxonomy.js', 'sp.js');
+            }
+            else {
+                taxonomySodLoaded = _v_dictSod['sp.taxonomy.js'].state === Sods.loaded;
+            }
+            if (taxonomySodLoaded) {
+                // Script was loaded
+                refiner.mm.taxid.loadTaxonomyDefinition();
+            } else {
+                // Script was not loaded
+                EnsureScriptFunc('sp.taxonomy.js', false, refiner.mm.taxid.loadTaxonomyDefinition);
+            }
+        }
+    }
+_#-->
+
+    </div>
+</body>
+</html>
