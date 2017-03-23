@@ -14,7 +14,12 @@ File | Description
 --- | ---
 __Filter_ManagedMetadata_Label.html__ | This is the label version managed metadata refiner display template. **Important**: this template is created to be used in combination with the label value of the term, not the taxId.
 __Filter_ManagedMetadata_TaxID.html__ | This is the taxid version managed metadata refiner display template. **Important**: this template is created to be used in combination with the TaxID value of the term, not the label.
-__filter_mm.css___ | This is the required css file for styling the managed metadata hierarchy.
+__Filter_ManagedMetadata_TaxID_parent.html__ | This is a similar template as the TaxID one, but with this version you can refine on the parents. **Important**: this template is created to be used in combination with the TaxID value of the term, not the label.
+__filter_mm.css__ | This is the required css file for styling the managed metadata hierarchy.
+
+Here is an example of how the **Filter_ManagedMetadata_TaxID_parent.html** renders compared to the other two:
+
+![Term set](assets/refiner-template-parent.png)
 
 ## Configuration
 
