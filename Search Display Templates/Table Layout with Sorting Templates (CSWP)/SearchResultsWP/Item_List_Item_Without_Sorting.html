@@ -1,0 +1,123 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>List Table Item Without Sorting</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:ManagedPropertyMapping msdt:dt="string">ListID','ListItemID','ContentTypeId','Link URL':'Path','Property 1':'Title','Property 2':'','Property 3':'','Property 4:'','Property 5':'','Property 6':'','Property 7':'','Property 8':'','Property 9':'','Property 10':'','FileExtension','SecondaryFileExtension'</mso:ManagedPropertyMapping>
+<mso:MasterPageDescription msdt:dt="string">This is the item row template, use this template in combination with the List Table Control template.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106603</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#SearchResults;#</mso:TargetControlType>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <div id="TwoLines">
+<!--#_
+// Give up your names for the properties in the following array
+var propertyNames = {"Property 1":"Property 1 header value","Property 2":"Property 2 header value"};
+
+var encodedId = $htmlEncode(ctx.ClientControl.get_nextUniqueId() + "_tableitems_");
+
+var linkURL = $getItemValue(ctx, "Link URL");
+linkURL.overrideValueRenderer($urlHtmlEncode);
+var iconURL = Srch.U.getIconUrlByFileExtension(ctx.CurrentItem, SP.Utilities.VersionUtility.getImageUrl("generaldocument.png"));
+
+var listID = $getItemValue(ctx, 'ListID');
+var listItemID = $getItemValue(ctx, 'ListItemID');
+var ContentTypeId = $getItemValue(ctx, 'ContentTypeId');
+
+var rowId = encodedId + "row";
+var editCellId = rowId + "_cell";
+
+var currentItemIdx = ctx.CurrentItemIdx + 1;
+var alternating = currentItemIdx % 2 === 0 ? "ms-alternating" : "";
+
+if (currentItemIdx === 1) {
+_#-->
+    <thead>
+        <tr>
+            <!--#_ 
+            // Show the file icon
+            _#-->
+            <th class="ms-vh-icon ms-minWidthHeader">
+                <img width="16" height="16" border="0" src="/_layouts/15/images/icgen.gif">
+            </th>
+            <!--#_ 
+
+            // Show the properties that aren't empty
+            for(var i = 1; i <= 10; i++) { 
+                var property = $getItemValue(ctx, String.format("Property {0}", i));
+                if(property.managedPropertyName !== String.format("Property {0}", i)) {
+                    var propertyName = typeof propertyNames[property.propertyLookupName] === "undefined" ? property.managedPropertyName : propertyNames[property.propertyLookupName];
+            _#-->
+            <th class="ms-vh2">
+                _#= propertyName =#_
+            </th>
+            <!--#_ 
+                }
+            } 
+            _#-->
+        </tr>
+    </thead>
+    <tbody>
+<!--#_
+}
+_#-->
+        <tr id="_#= rowId =#_" class="_#= alternating =#_ ms-itmHoverEnabled ms-itmhover">
+            <td class="ms-cellstyle ms-vb-icon">
+            <!--#_ if(!iconURL.isEmpty) { _#-->
+                <img src="_#= iconURL =#_" />
+                <span id="_#= editCellId =#_"></span>
+            <!--#_ 
+            } else {
+            _#-->
+                <img width="16" height="16" border="0" src="/_layouts/15/images/icgen.gif">
+            <!--#_ 
+            }
+            _#-->
+            </td>
+
+            <!--#_
+            // Show the properties that aren't empty
+            for(var i = 1; i <= 10; i++) { 
+                var property = $getItemValue(ctx, String.format("Property {0}", i));
+                if (property.managedPropertyName !== String.format("Property {0}", i)) {
+            _#-->
+                <td class="ms-cellstyle ms-vb2">
+            <!--#_
+                    if(!property.isEmpty)
+                    {
+                        var value = i === 1 ? String.format("<a href='{0}' class='ms-listlink'>{1}</a>", linkURL, property) : property;
+            _#-->
+                    _#= value =#_
+            <!--#_
+                        if (i === 1 && !listID.isEmpty && !listItemID.isEmpty && !ContentTypeId.isEmpty) {
+                            var viewPropUrl = String.format('/_layouts/15/listform.aspx?ListId={0}&ID={1}&ContentTypeID={2}&Source={3}', listID, listItemID, ContentTypeId, window.location.href.split('#')[0]);
+            _#-->
+                            &nbsp;&nbsp;
+                            <span title="Open Menu" class="NotificationDiv ms-ellipsis-a" rel="_#= viewPropUrl =#_" ref="_#= property =#_" path="_#= linkURL =#_" style="cursor: pointer; margin-top: 3px; float: right;">
+                                <img alt="Open Menu" src="/_layouts/15/images/spcommon.png" class="ms-ellipsis-icon">
+                            </span>
+            <!--#_
+                        }
+                    }
+            _#-->
+                </td>
+            <!--#_
+                }
+            } 
+            _#-->
+        </tr>
+<!--#_
+if (currentItemIdx === ctx.CurrentGroup.RowCount) {
+_#-->
+    </tbody>
+<!--#_
+}
+_#-->
+    </div>
+</body>
+</html>

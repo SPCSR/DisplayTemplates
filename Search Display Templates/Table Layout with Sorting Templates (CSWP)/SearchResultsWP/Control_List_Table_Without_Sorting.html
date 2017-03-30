@@ -1,0 +1,151 @@
+<html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"> 
+<head>
+<title>List Table Control Without Sort</title>
+
+<!--[if gte mso 9]><xml>
+<mso:CustomDocumentProperties>
+<mso:TemplateHidden msdt:dt="string">0</mso:TemplateHidden>
+<mso:MasterPageDescription msdt:dt="string">This is the table layout control template.</mso:MasterPageDescription>
+<mso:ContentTypeId msdt:dt="string">0x0101002039C03B61C64EC4A04F5361F385106601</mso:ContentTypeId>
+<mso:TargetControlType msdt:dt="string">;#SearchResults;#</mso:TargetControlType>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+</head>
+
+<body>
+    <script>
+        $includeScript(this.URL, "~sitecollection/_catalogs/masterpage/TableLayout/table.redirection.js");
+    </script>
+
+    <div id="Control_List">
+<!--#_ 
+var tableId = ctx.ClientControl.get_nextUniqueId() + "_table";
+
+if (!$isNull(ctx.ClientControl) &&
+    !$isNull(ctx.ClientControl.shouldRenderControl) &&
+    !ctx.ClientControl.shouldRenderControl())
+{
+    return "";
+}
+
+// Retrieve the property mappings
+var cc = ctx.ClientControl;
+var properties;
+if (!Srch.U.n(cc)) {
+    // The property mappings variable must manually be maintained for the Search Results WP. Use the same mappings as in the item template.
+    var propertyMappings = "ListID,ListItemID,ContentTypeId,Link URL:Path,Property 1:Title,Property 2:,Property 3:,Property 4:,Property 5:,Property 6:,Property 7:,Property 8:,Property 9:,Property 10:,FileExtension,SecondaryFileExtension";
+    if (!Srch.U.n(propertyMappings) && !Srch.U.w(propertyMappings)) {
+        properties = Srch.Result.parsePropertyMappingsString(propertyMappings);
+    }
+}
+
+AddPostRenderCallback(ctx, function() {
+    // Add a callout to each row
+    SP.SOD.executeFunc("callout.js", "Callout", function () {
+        var tableElement = document.getElementById(tableId);
+        var targetElement = tableElement.getElementsByClassName('NotificationDiv');
+        if (targetElement.length > 0) {
+            for (var i = 0; i < targetElement.length; i++) {
+                var elm = targetElement[i];
+                var calloutOptions = new CalloutOptions();
+                calloutOptions.ID = 'notificationcallout-' + i;
+                calloutOptions.launchPoint = elm;
+                calloutOptions.beakOrientation = 'leftRight';
+                calloutOptions.content = String.format('<a href="{0}&PageType=4" onclick="javascript:tableLayoutDT.redirectToPropertiesUrl(this, \'{1}\');return false;" title="View properties">View properties</a><br /><a href="{0}&PageType=6" onclick="javascript:tableLayoutDT.redirectToPropertiesUrl(this, \'{1}\');return false;" title="Edit properties">Edit properties</a>', elm.getAttribute('rel'), elm.getAttribute('path'));
+                calloutOptions.title = elm.getAttribute('ref');
+
+                var displayedPopup = CalloutManager.createNew(calloutOptions);
+            }
+        }
+    });
+});
+
+ctx.ClientControl.set_showSortOptions(true);
+
+ctx.ListDataJSONGroupsKey = "ResultTables";
+
+var ListRenderRenderWrapper = function(itemRenderResult, inCtx, tpl)
+{
+    var iStr = [];
+    iStr.push(itemRenderResult);
+    return iStr.join('');
+}
+ctx['ItemRenderWrapper'] = ListRenderRenderWrapper;
+_#-->
+        <table id="_#= tableId =#_" class="cbs-List">
+            _#= ctx.RenderGroups(ctx) =#_
+        </table>
+
+<!--#_
+    var showPaging = ctx.ClientControl.get_showPaging();
+    if(showPaging)
+    {
+        var pagingInfo = ctx.ClientControl.get_pagingInfo();
+        showPaging = !$isEmptyArray(pagingInfo);
+        if(showPaging)
+        {
+            var currentPage = null;
+            var firstPage = pagingInfo[0];
+            var lastPage = pagingInfo[pagingInfo.length - 1];
+
+            for (var i = 0; i< pagingInfo.length; i++)
+            {
+                var pl = pagingInfo[i];
+                if (!$isNull(pl))
+                {
+                    if (pl.startItem == -1)
+                    {
+                        currentPage = pl;
+                    }
+                }
+            }
+
+            var getPagingImageClassName = function(buttonClassNamePrefix, isNext, isEnabled)
+            {
+                var className = buttonClassNamePrefix;
+                className += (isNext && !Srch.U.isRTL()) || (!isNext && Srch.U.isRTL()) ? "right" : "left";
+                if(!$isNull(isEnabled) && isEnabled == false)
+                {
+                    className += "-disabled";
+                }
+                return className;
+            }
+
+            var getPagingContainerClassName = function(buttonClassNamePrefix, isEnabled)
+            {
+                var className = buttonClassNamePrefix;
+                className += isEnabled ? "enabled" : "disabled";
+                return className;
+            }
+
+            var hasNextPage = lastPage.pageNumber == -2;
+            var hasPreviousPage = firstPage.pageNumber == -1;
+            var buttonClassNamePrefix = "ms-promlink-button-";
+            var nextPageContainerClassName = getPagingContainerClassName(buttonClassNamePrefix, hasNextPage);
+            var previousPageContainerClassName = getPagingContainerClassName(buttonClassNamePrefix, hasPreviousPage);
+            var nextPageImageClassName = getPagingImageClassName(buttonClassNamePrefix, true, hasNextPage);
+            var previousPageImageClassName = getPagingImageClassName(buttonClassNamePrefix, false, hasPreviousPage);
+    _#-->
+        <div class="ms-promlink-header">
+            <span class="ms-promlink-headerNav">
+                <a class="ms-commandLink ms-promlink-button _#= $htmlEncode(previousPageContainerClassName) =#_" title="_#= $htmlEncode(firstPage.title) =#_" href="#" onclick='$getClientControl(this).page(_#= $htmlEncode(firstPage.startItem) =#_);return Srch.U.cancelEvent(event);'>
+                    <span class="ms-promlink-button-image">
+                        <img class="_#= $htmlEncode(previousPageImageClassName) =#_" alt="_#= $htmlEncode(firstPage.title) =#_" src="_#= $urlHtmlEncode(GetThemedImageUrl('spcommon.png')) =#_">
+                    </span>
+                </a>
+                <span class="ms-promlink-button-inner"></span>
+                <a class="ms-commandLink ms-promlink-button _#= $htmlEncode(nextPageContainerClassName) =#_" title="_#= $htmlEncode(lastPage.title) =#_" href="#" onclick='$getClientControl(this).page(_#= $htmlEncode(lastPage.startItem) =#_);return Srch.U.cancelEvent(event);'>
+                    <span class="ms-promlink-button-image">
+                        <img class="_#= $htmlEncode(nextPageImageClassName) =#_" alt="_#= $htmlEncode(lastPage.title) =#_" src="_#= $urlHtmlEncode(GetThemedImageUrl('spcommon.png')) =#_">
+                    </span>
+                </a>
+            </span>
+        </div>
+        <!--#_
+        }
+    }
+    _#-->
+
+    </div>
+</body>
+</html>
