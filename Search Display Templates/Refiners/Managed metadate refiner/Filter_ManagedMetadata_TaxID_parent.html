@@ -108,7 +108,7 @@
                         }
                         if (currentTerm.parent !== '') {
                             allTerms[map[currentTerm.parent]].children.push(currentTerm);
-                            if (!$isNull(currentTerm.refiner)) {
+                            if (!$isEmptyArray(currentTerm.refiner)) {
                                 allTerms[map[currentTerm.parent]].containsRefiners = true;
                                 // Check if parent its parent is also set to true
                                 var parentTerm = allTerms[map[currentTerm.parent]];
@@ -136,15 +136,30 @@
                         // Check if there is a refiner for the retrieved term
                         var ref = currentTerm.refiner;
                         // Check if current term contains refinable children
-                        var showClass = !$isNull(ref) || currentTerm.containsRefiners  ? showClassName : '';
+                        var showClass = !$isEmptyArray(ref) || currentTerm.containsRefiners  ? showClassName : '';
                         htmlOutput.push('<div class="term ' + showClass + '">');
-                        if (!$isNull(ref)) {
+                        if (!$isEmptyArray(ref)) {
+                            var refSelected = false;
+                            var refValues = [];
+                            var refName = "";
+
+                            // Go over all retrieved refiner values
+                            for (var j = 0; j < ref.length; j++) {
+                                var crntRef = ref[j];
+                                // Set the refiner name if not yet set
+                                refName = !!refName ? refName : crntRef.refinerName;
+                                // Check if the refiner is not already flagged as selected
+                                refSelected = !refSelected && crntRef.selected ? true : refSelected;
+                                // Push the current refiner value to the array
+                                refValues.push(crntRef.value);
+                            }
+
                             // Set the method for the refiner
-                            var method = ref.selected ? 'removeRefinementFiltersJSON' : 'updateRefinersJSON';
+                            var method = refSelected ? 'removeRefinementFiltersJSON' : ref.length > 1 ? 'addRefinementFiltersJSONWithOr' : 'updateRefinersJSON';
                             var refObj = {};
-                            refObj[ref.refinerName] = [ref.value];
+                            refObj[refName] = refValues;
                             var onclickFn = String.format("$getClientControl(this).{0}('{1}');", method, $scriptEncode(JSON.stringify(refObj)));
-                            var markup = String.format(refinerMarkup, onclickFn, currentTerm.name, ref.selected ? "selected" : "");                          
+                            var markup = String.format(refinerMarkup, onclickFn, currentTerm.name, refSelected ? "selected" : "");                          
                             htmlOutput.push(markup);
                         } else {
                             htmlOutput.push(currentTerm.name);
@@ -170,15 +185,11 @@
                 },
                 getRefiner = function (term) {
                     var total = availableRefs.length;
-                    var found = null;
+                    var found = [];
                     for (var i = 0; i < total; i++) {
                         var ref = availableRefs[i];
                         if (ref.value.indexOf(term.value) > 0) {
-                            // check for the GPP value token
-                            if (ref.value.indexOf('GPP') >= 0) {
-                                return ref;
-                            }
-                            found = ref;
+                            found.push(ref);
                         }
                     }
                     return found;
