@@ -43,14 +43,16 @@
                             top = 100;
                             break;
                     }
-                    var animationTop = new SPAnimation.State;
-                    animationTop.SetAttribute(1, 0);
-                    animationTop.SetAttribute(2, top);
-                    var hoverAnimation = new SPAnimation.Object(3, 0, elm.parentElement, animationTop, null, null);
-                    hoverAnimation.RunAnimation()
-                    elm.children[0].className = elm.children[0].getAttribute(type);
-                    elm.children[0].children[0].className = elm.children[0].children[0].getAttribute(type);
-                };
+                    SP.SOD.executeFunc('core.js', 'SPAnimation', function() {
+                        var animationTop = new SPAnimation.State;
+                        animationTop.SetAttribute(1, 0);
+                        animationTop.SetAttribute(2, top);
+                        var hoverAnimation = new SPAnimation.Object(3, 0, elm.parentElement, animationTop, null, null);
+                        hoverAnimation.RunAnimation()
+                        elm.children[0].className = elm.children[0].getAttribute(type);
+                        elm.children[0].children[0].className = elm.children[0].children[0].getAttribute(type);
+                    });
+                 };
 
             return {
                 hover: hover,
