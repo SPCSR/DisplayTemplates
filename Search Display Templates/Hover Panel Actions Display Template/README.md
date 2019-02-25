@@ -3,7 +3,7 @@ Adding or customizing search hover panel actions
 
 These display templates show you a couple of ways on how you could add and customize hover panel actions in your search center.
 
-Everything is explained in the following blog post: [Adding and customizing actions in the search hover panel](http://www.eliostruyf.com/adding-and-customizing-actions-in-the-search-hover-panel/ "Adding and customizing actions in the search hover panel")
+Everything is explained in the following blog post: [Adding and customizing actions in the search hover panel](https://www.eliostruyf.com/adding-customizing-actions-search-hover-panel/ "Adding and customizing actions in the search hover panel")
 
 **Important: The location of where I stored these display templates is: ~sitecollection/_catalogs/masterpage/SearchDT. If you are going to use one of these templates, it can be that you need to update the references to the file in your templates.**
 
